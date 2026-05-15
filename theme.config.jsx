@@ -1,3 +1,4 @@
+import React from 'react'
 import { useConfig } from 'nextra-theme-docs'
 
 export default {
@@ -24,8 +25,44 @@ export default {
   primaryHue: 220,
   primarySaturation: 90,
   banner: {
-    key: 'welcome',
-    text: '🎉 欢迎来到 Claude Code Academy！这是一个开源协作项目，欢迎贡献'
+    key: 'cc-service-notice-v1',
+    text: function BannerText() {
+      const [visible, setVisible] = React.useState(false)
+
+      React.useEffect(() => {
+        const dismissedAt = localStorage.getItem('cc-banner-dismissed-at')
+        if (!dismissedAt) {
+          setVisible(true)
+          return
+        }
+        const elapsed = Date.now() - parseInt(dismissedAt, 10)
+        if (elapsed >= 2 * 24 * 60 * 60 * 1000) {
+          setVisible(true)
+        }
+      }, [])
+
+      if (!visible) return null
+
+      function dismiss(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        localStorage.setItem('cc-banner-dismissed-at', Date.now().toString())
+        setVisible(false)
+      }
+
+      return (
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+          ⚠️ CC Club 的大模型 API 服务不向中国境内用户开放
+          <button
+            onClick={dismiss}
+            style={{ marginLeft: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', lineHeight: 1, padding: '0 0.25rem', color: 'inherit', opacity: 0.7 }}
+            aria-label="关闭"
+          >
+            ×
+          </button>
+        </span>
+      )
+    }
   },
   sidebar: {
     titleComponent({ title, type }) {
