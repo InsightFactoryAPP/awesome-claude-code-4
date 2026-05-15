@@ -1,4 +1,5 @@
 import React from 'react'
+import { useRouter } from 'next/router'
 import { useConfig } from 'nextra-theme-docs'
 
 export default {
@@ -9,6 +10,10 @@ export default {
       {/* <a href="https://claude-code.club" target="_blank" rel="noopener noreferrer" style={{ marginLeft: 8, fontSize: '14px', color: '#888' }}>by CC Club</a> */}
     </div>,
   logoLink: 'https://claude-code.club',
+  i18n: [
+    { locale: 'zh', name: '中文' },
+    { locale: 'en', name: 'English' }
+  ],
   head: () => {
     const { frontMatter, title } = useConfig()
     const pageTitle = title ? `CC Academy - ${title}` : 'CC Academy'
@@ -27,6 +32,7 @@ export default {
   banner: {
     key: 'cc-service-notice-v1',
     text: function BannerText() {
+      const { locale } = useRouter()
       const [visible, setVisible] = React.useState(false)
 
       React.useEffect(() => {
@@ -52,7 +58,9 @@ export default {
 
       return (
         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-          ⚠️ CC Club 的大模型 API 服务不向中国境内用户开放
+          {locale === 'en'
+            ? "⚠️ CC Club's LLM API service is not available to users in mainland China"
+            : '⚠️ CC Club 的大模型 API 服务不向中国境内用户开放'}
           <button
             onClick={dismiss}
             style={{ marginLeft: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', lineHeight: 1, padding: '0 0.25rem', color: 'inherit', opacity: 0.7 }}
@@ -84,7 +92,10 @@ export default {
     )
   },
   toc: {
-    title: '本页目录',
+    title: () => {
+      const { locale } = useRouter()
+      return locale === 'en' ? 'On This Page' : '本页目录'
+    },
     backToTop: true
   },
   navigation: {
@@ -93,9 +104,15 @@ export default {
   },
   darkMode: false,
   search: {
-    placeholder: '搜索文档...'
+    placeholder: () => {
+      const { locale } = useRouter()
+      return locale === 'en' ? 'Search docs...' : '搜索文档...'
+    }
   },
-  gitTimestamp: ({ timestamp }) => (
-    <>最后更新于 {timestamp.toLocaleDateString('zh-CN')}</>
-  )
+  gitTimestamp: ({ timestamp }) => {
+    const { locale } = useRouter()
+    return locale === 'en'
+      ? <>Last updated: {timestamp.toLocaleDateString('en-US')}</>
+      : <>最后更新于 {timestamp.toLocaleDateString('zh-CN')}</>
+  }
 }
