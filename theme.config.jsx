@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRouter } from 'next/router'
+import { useRouter } from 'nextra/hooks'
 import { useConfig } from 'nextra-theme-docs'
 
 export default {
