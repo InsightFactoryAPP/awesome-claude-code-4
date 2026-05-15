@@ -11,7 +11,6 @@ CC Club 提供的 `ANTHROPIC_BASE_URL` 配置：
 | `https://claude-code.club/api` | 默认地址（直连延迟 < 100ms 时最快） |
 | `https://jp.claude-code.club/api` | 日本节点（阿里云，回国优化） |
 | `https://hk.claude-code.club/api` | 香港节点（阿里云，回国优化） |
-| `https://sz.ai-code.club/api` | 深圳节点（国内，由服务器代为出境） |
 
 ## 技术栈
 
