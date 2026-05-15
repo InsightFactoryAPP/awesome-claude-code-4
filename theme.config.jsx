@@ -8,10 +8,6 @@ export default {
       {/* <a href="https://claude-code.club" target="_blank" rel="noopener noreferrer" style={{ marginLeft: 8, fontSize: '14px', color: '#888' }}>by CC Club</a> */}
     </div>,
   logoLink: 'https://claude-code.club',
-  project: {
-    link: 'https://github.com/zjh1943/awesome-claude-code'
-  },
-  docsRepositoryBase: 'https://github.com/zjh1943/awesome-claude-code/tree/main',
   head: () => {
     const { frontMatter, title } = useConfig()
     const pageTitle = title ? `CC Academy - ${title}` : 'CC Academy'
@@ -28,12 +24,8 @@ export default {
   primaryHue: 220,
   primarySaturation: 90,
   banner: {
-    key: 'beta-release',
-    text: (
-      <a href="https://github.com/zjh1943/awesome-claude-code" target="_blank">
-        🎉 欢迎来到 Claude Code Academy！这是一个开源协作项目，欢迎贡献 →
-      </a>
-    )
+    key: 'welcome',
+    text: '🎉 欢迎来到 Claude Code Academy！这是一个开源协作项目，欢迎贡献'
   },
   sidebar: {
     titleComponent({ title, type }) {
@@ -48,18 +40,11 @@ export default {
   footer: {
     text: (
       <>
-        MIT {new Date().getFullYear()} © <a href="https://github.com/zjh1943/awesome-claude-code" target="_blank">Claude Code Academy</a>
+        MIT {new Date().getFullYear()} © Claude Code Academy
         {' · '}
         Built with ❤️ by the community
       </>
     )
-  },
-  editLink: {
-    text: '在 GitHub 上编辑此页 →'
-  },
-  feedback: {
-    content: '有问题？给我们反馈 →',
-    labels: 'feedback'
   },
   toc: {
     title: '本页目录',

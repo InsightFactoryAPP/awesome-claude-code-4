@@ -37,9 +37,5 @@
     "learning",
     "resources"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/zjh1943/awesome-claude-code.git"
-  },
   "license": "MIT"
 }
