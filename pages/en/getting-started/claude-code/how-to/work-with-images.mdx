@@ -1,0 +1,65 @@
+---
+title: Work with Images
+description: Learn how to use images in Claude Code to analyze content and get code suggestions
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Work with Images
+
+Suppose you need to work with images in your codebase and want Claude to help analyze their content.
+
+<Steps>
+
+### Add Images to the Conversation
+
+You can use any of the following methods:
+
+1. Drag and drop an image into the Claude Code window
+2. Copy an image and paste it with ctrl+v in the CLI (do not use cmd+v)
+3. Provide Claude with the image path, for example: "Analyze this image: /path/to/your/image.png"
+
+### Ask Claude to Analyze the Image
+
+```
+> What does this image show?
+```
+
+```
+> Describe the UI elements in this screenshot
+```
+
+```
+> Are there any problematic elements in this diagram?
+```
+
+### Use Images to Provide Context
+
+```
+> Here's a screenshot of the error. What's causing it?
+```
+
+```
+> This is our current database schema. How should we modify it for the new feature?
+```
+
+### Get Code Suggestions from Visual Content
+
+```
+> Generate CSS to match this design mockup
+```
+
+```
+> What HTML structure would recreate this component?
+```
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* Use images when text descriptions would be unclear or verbose
+* Include error screenshots, UI designs, or diagrams for better context
+* You can use multiple images in a single conversation
+* Image analysis works for diagrams, screenshots, design mockups, and more
+</Callout>

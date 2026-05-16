@@ -1,0 +1,121 @@
+# macOS Manual Troubleshooting Guide
+
+If you cannot run the diagnostic script, or prefer to troubleshoot Claude Code's connectivity and authentication issues step by step manually, follow the steps below.
+
+## Preparation
+
+Open the **Terminal** application.
+
+## Step 1: Check the Basic Environment
+
+Claude Code requires the `curl` tool to test network connectivity.
+
+1.  **Check the curl version**
+    ```zsh
+    curl --version
+    ```
+    *Expected result*: Displays curl version information (e.g., `curl 8.x.x ...`).
+    *If it fails*: Install curl (macOS usually comes with it pre-installed).
+
+2.  **Check the shell type**
+    ```zsh
+    echo $SHELL
+    ```
+    *Expected result*: Usually `/bin/zsh` or `/bin/bash`.
+
+## Step 2: Check Authentication
+
+Claude Code authenticates using `ANTHROPIC_AUTH_TOKEN`.
+
+1.  **Check whether the token is set**
+    ```zsh
+    echo "${ANTHROPIC_AUTH_TOKEN:0:10}..."
+    ```
+    *Expected result*: Displays the first 10 characters of the token.
+    *If empty*: The token is not set. Run `export ANTHROPIC_AUTH_TOKEN='your-token'` and add it to `~/.zshrc`.
+
+2.  **Check for an incorrectly set API Key**
+    ```zsh
+    echo $ANTHROPIC_API_KEY
+    ```
+    *Expected result*: **Should be empty.**
+    *Note*: `claude-code.club` does not use `ANTHROPIC_API_KEY`. If this variable is set, it may cause conflicts — unset it with `unset ANTHROPIC_API_KEY`.
+
+3.  **Check the Base URL (optional)**
+    ```zsh
+    echo $ANTHROPIC_BASE_URL
+    ```
+    *Expected result*: Empty (default) or `https://claude-code.club/api`.
+
+## Step 3: Network Connectivity Check
+
+We need to confirm that `claude-code.club` is reachable.
+
+1.  **DNS resolution test**
+    ```zsh
+    host claude-code.club
+    ```
+    *Expected result*: Shows `has address ...` with a list of IP addresses.
+    *If it fails*: Shows `not found` or times out. Check your network or DNS settings.
+
+2.  **TLS/SSL handshake test**
+    ```zsh
+    echo | openssl s_client -connect claude-code.club:443 -servername claude-code.club 2>/dev/null | grep "Verify return code"
+    ```
+    *Expected result*: `Verify return code: 0 (ok)`.
+    *If it fails*: Shows a non-zero code, which may indicate a certificate issue or network interception.
+
+3.  **API connectivity test**
+    Try making a direct API request (requires the token from Step 2 to be set).
+    ```zsh
+    curl -v "https://claude-code.club/api/v1/models" \
+      -H "x-api-key: $ANTHROPIC_AUTH_TOKEN" \
+      -H "anthropic-version: 2023-06-01"
+    ```
+    *Expected result*: HTTP status code **200**.
+    *Common errors*:
+   - **401 Unauthorized**: Token is invalid or expired.
+   - **403 Forbidden**: Token has insufficient permissions.
+   - **Connection refused/timeout**: Network is unreachable.
+
+## Step 4: Check Proxy and VPN
+
+Proxies and VPNs are the most common causes of connectivity issues.
+
+1.  **Check proxy environment variables**
+    ```zsh
+    env | grep -i proxy
+    ```
+    *Expected result*: Empty if no proxy is in use.
+    *Note*: If `http_proxy` or `https_proxy` is set, make sure they point to the correct proxy server.
+    *Important*: Ensure `claude-code.club` is in the `no_proxy` list, or that your proxy allows access to this domain.
+
+2.  **Check macOS system proxy**
+    ```zsh
+    scutil --proxy
+    ```
+    Check whether `HTTPEnable` and `HTTPSEnable` are `1`.
+
+3.  **Check VPN**
+    If you are using a VPN (such as Cisco AnyConnect, GlobalProtect, etc.), try disconnecting the VPN and retrying, or contact your network administrator to confirm whether access to `claude-code.club` is permitted.
+
+## Step 5: Check Installation
+
+Confirm that the `claude` command is in your PATH.
+
+1.  **Find the claude binary**
+    ```zsh
+    which claude
+    ```
+    *Expected result*: Shows a path such as `/usr/local/bin/claude` or `/opt/homebrew/bin/claude`.
+    *If it shows `claude not found`*: Claude Code is not installed or not added to PATH.
+
+2.  **Check the PATH variable**
+    ```zsh
+    echo $PATH
+    ```
+    Confirm that the npm or Homebrew bin directory is included.
+
+---
+
+**If the steps above still do not resolve the issue**, record the output of the commands above and contact technical support.

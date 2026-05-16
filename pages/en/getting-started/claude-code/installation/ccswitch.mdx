@@ -1,0 +1,171 @@
+---
+title: Configure Claude Code in CC Switch
+description: Complete field reference for connecting Claude Code to the CC Club API via the CC Switch desktop app's GUI — every field shown with its correct value.
+---
+
+import { Callout, Cards, Steps } from 'nextra/components'
+
+# Configure Claude Code in CC Switch
+
+[CC Switch](https://github.com/farion1231/cc-switch/releases) is a cross-platform desktop application that lets you manage multiple API configurations for Claude Code, Codex, OpenCode, and Gemini CLI from a single graphical interface. This page covers exactly one thing: **what to fill in for each field in CC Switch's "Add Provider" form** to connect Claude Code to CC Club in 90 seconds — no more manually editing `~/.claude/settings.json`.
+
+## Before You Start
+
+<Cards>
+  <Cards.Card icon="🔑" title="Get an API Key" href="/getting-started/get-api-key">
+    You cannot fill in field 3 without a CC Club Key. Go get one for free first.
+  </Cards.Card>
+  <Cards.Card icon="📦" title="Install CC Switch" href="/getting-started/opencode-installation#方法二使用-cc-switch-配置">
+    Download and installation steps for Windows / macOS / Linux are shared with the OpenCode section.
+  </Cards.Card>
+</Cards>
+
+<Callout type="info">
+  Open CC Switch → switch to the **Claude** group on the left → click **+ Add Provider**,
+  then fill in each of the 7 fields below.
+</Callout>
+
+## Quick Reference Table
+
+If you just want a quick reference and don't need to read the full guide, this table is all you need:
+
+| # | Field | What to Enter |
+|---|------|---------------|
+| 1 | Provider Name / Note | Whatever you like, e.g. `CC Club / Claude`, `CC Club Sonnet (1M)` |
+| 2 | Official Website | **Leave blank** |
+| 3 | API | Your CC Club API Key — see [Get API Key](/getting-started/get-api-key) |
+| 4 | Request URL | `https://claude-code.club/api` |
+| 5 | API Format | `Anthropic Messages (Native)` |
+| 6 | Model Region | **Leave blank** (model is specified via the `model` field in the Config JSON) |
+| 7 | Config JSON | See [Full JSON snippet](#config-json-full-version) |
+
+## Field Details
+
+<Steps>
+
+### Provider Name / Note
+
+Name it whatever you like — something you can recognize at a glance in the CC Switch list. It is recommended to include "CC Club" and the model identifier, e.g. `CC Club / Sonnet 4.6 (1M)`.
+
+<Callout type="info">
+  This field **only affects the display in the list** — it is not included in actual requests. Chinese characters are perfectly fine.
+</Callout>
+
+### Official Website
+
+**Leave blank.** CC Club does not require this field, and leaving it blank will not trigger any validation errors.
+
+### API (i.e. API Key)
+
+Paste the Key you obtained from the [Get API Key](/getting-started/get-api-key) page.
+
+<Callout type="warning">
+  The Key looks like `cr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`. **Do not include leading or trailing spaces.** CC Switch will not display it in plain text after saving — it will be masked on subsequent visits. This is expected behavior.
+</Callout>
+
+### Request URL (Base URL)
+
+```
+https://claude-code.club/api
+```
+
+This is CC Club's default address, which is **fastest when direct connection latency is under 100ms**. If your network is noticeably slow to the default address, you can switch to one of the region-optimized nodes below:
+
+| Address | When to Use |
+|---|---|
+| `https://claude-code.club/api`     | Default (fastest for direct connection) |
+| `https://jp.claude-code.club/api`  | Japan node (Alibaba Cloud, optimized for return to China) |
+| `https://hk.claude-code.club/api`  | Hong Kong node (Alibaba Cloud, optimized for return to China) |
+| `https://sz.ai-code.club/api`      | Shenzhen node (domestic relay with outbound routing) |
+
+### API Format
+
+Select **`Anthropic Messages (Native)`** from the dropdown.
+
+<Callout type="info">
+  The CC Club interface is **fully compatible** with Anthropic's official protocol. You **must** select the native Messages protocol. If you accidentally select OpenAI Chat Completions, the request body structure will differ and you will get a 4xx error immediately.
+</Callout>
+
+### Model Region
+
+**Leave blank.**
+
+The reason for leaving it blank: the model is specified uniformly via the `model` field in the Config JSON below. Leaving this field blank allows CC Switch to defer to the JSON value, avoiding conflicts between the two.
+
+### Config JSON (Full Version)
+
+This is the core of the entire form. **Copy the entire snippet** into the JSON input box, then replace the empty string value for `ANTHROPIC_AUTH_TOKEN` with your own API Key:
+
+```json
+{
+  "effortLevel": "medium",
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "",
+    "ANTHROPIC_BASE_URL": "https://claude-code.club/api"
+  },
+  "model": "sonnet[1m]"
+}
+```
+
+**Field meanings**:
+
+| Field | Meaning | Modification Advice |
+|---|---|---|
+| `effortLevel` | Claude's thinking intensity level (`low` / `medium` / `high`) | Keep `medium` generally; increase to `high` for complex tasks |
+| `env.ANTHROPIC_AUTH_TOKEN` | API Key environment variable injected into the Claude Code process | **Required**: enter your own Key |
+| `env.ANTHROPIC_BASE_URL`  | Base URL environment variable injected into the Claude Code process | Should match the Request URL field above |
+| `model` | The default model used when Claude Code starts | `sonnet[1m]` = Sonnet 4.6 + 1M context, best value choice |
+
+<Callout type="warning">
+  JSON does not allow **trailing commas** — there must be no extra `,` before the closing `}` in the snippet above, or validation will fail on save.
+</Callout>
+
+</Steps>
+
+## Save and Verify
+
+<Steps>
+
+### Click "Save" in the bottom-right corner
+
+CC Switch will validate the JSON syntax. If it passes, this provider entry will appear in the left-hand list.
+
+### Click on this provider card to activate it
+
+CC Switch uses a "whoever is selected becomes active" model — once the card shows a checkmark, CC Switch will write the corresponding configuration to Claude Code's `~/.claude/settings.json`.
+
+### Run Claude Code once in a terminal
+
+```bash
+claude --version
+claude "explain vibe coding in one sentence"
+```
+
+If you get a quick response, it means the Key, Base URL, and model are all wired up correctly.
+
+</Steps>
+
+<Callout type="success">
+  Once this step succeeds, the entire **CC Switch + Claude Code + CC Club** chain is connected. Switching nodes, changing models, or managing multiple accounts in the future can all be done with one click in CC Switch — no more editing config files by hand.
+</Callout>
+
+## FAQ
+
+### Q: JSON validation failed on save?
+
+The two most common pitfalls:
+
+1. **Incomplete structure** — missing a `}` or `"`. Copy the [full JSON snippet](#config-json-full-version) on this page from scratch.
+2. **Trailing comma** — an extra `,` at the end of a key-value pair. JSON does not allow this.
+
+### Q: Running `claude` still reports "Invalid API key" after saving?
+
+First confirm that this provider **has a checkmark** (highlighted). CC Switch's logic is "actively selected = active" — saving only creates the configuration, **it does not activate it**.
+
+### Q: I want to configure another Claude model (e.g. Opus) — how?
+
+No need to modify this provider entry. **Duplicate** this configuration and change `model` to `opus[1m]`. CC Switch allows any number of same-source providers to coexist; just click to switch whichever one you need.
+
+### Q: Can multiple Claude providers be active at the same time?
+
+No. Claude Code **only reads** the currently active configuration at any given time — CC Switch switches which one is active, not running all in parallel. If you need to use different models in parallel, you would need multiple terminals / projects + multiple settings.json files.

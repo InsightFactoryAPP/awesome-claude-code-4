@@ -1,0 +1,88 @@
+---
+title: How to Configure Base URL and Auth Token
+description: A summary of methods for configuring base URL and auth token in Claude Code
+---
+
+import { Callout } from 'nextra/components'
+
+# How to Configure Base URL and Auth Token?
+
+Claude Code's `ANTHROPIC_BASE_URL` and `ANTHROPIC_AUTH_TOKEN` can be configured in three ways:
+
+## Method 1: User-Level Config File (Recommended)
+
+**File path:** `~/.claude/settings.json`
+
+**Example:**
+
+```json
+{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "your-api-key",
+    "ANTHROPIC_BASE_URL": "https://claude-code.club/api"
+  }
+}
+```
+
+<Callout type="info">
+This is the officially recommended configuration method for Claude Code. It applies to all projects and eliminates the need to manually set environment variables each time.
+</Callout>
+
+## Method 2: Project-Level Config File
+
+**File path:** `<project-root>/.claude/settings.json`
+
+**Example:**
+
+```json
+{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "your-project-specific-api-key",
+    "ANTHROPIC_BASE_URL": "https://claude-code.club/api"
+  }
+}
+```
+
+<Callout type="info">
+If you want to use a different API endpoint or key for a specific project, create a `.claude/settings.json` file in the project directory. Project-level config overrides user-level config.
+</Callout>
+
+## Method 3: Environment Variables
+
+Configure via your operating system's environment variables. Refer to the guide for your OS:
+
+- [macOS — Set Environment Variables](/getting-started/installation/macos#3-设置环境变量)
+- [Windows — Set Environment Variables](/getting-started/installation/windows#3-设置环境变量)
+- [Linux — Set Environment Variables](/getting-started/installation/linux#3-设置环境变量)
+
+## Configuration Priority
+
+When multiple configuration methods are present, priority from highest to lowest is:
+
+1. **Environment variables** — Variables set in the system or shell
+2. **Project-level config file** — `<project-root>/.claude/settings.json`
+3. **User-level config file** — `~/.claude/settings.json`
+
+### Priority Explained
+
+- **Environment variables**: In Claude Code's official settings hierarchy, environment variables (and command-line arguments) are treated as high-priority inputs that override local config. They are intended for temporary or per-session overrides and generally take precedence over file-based settings of the same name.
+- **Project-level config** `./.claude/settings.json`: This is a "project-level" setting, more specific than user-level. It applies to the current project and overrides settings of the same name in `~/.claude/settings.json`.
+- **User-level config** `~/.claude/settings.json`: This is the most general "user-level" global config, serving as the default for all projects. It only takes effect when a more specific layer (project file or environment variable) does not define the same setting.
+
+### Recommended Strategy
+
+- **Environment variables**: For temporary overrides, such as testing a different API endpoint
+- **Project-level config**: For project-specific configuration, such as using a different key for a particular project
+- **User-level config**: For global defaults that serve as the baseline for all projects
+
+## Summary
+
+| Method | File Path | Use Case | Priority |
+|--------|-----------|----------|----------|
+| Environment variables | System environment | Temporary overrides, scripting | High |
+| Project-level config | `<project-root>/.claude/settings.json` | Project-specific config | Medium |
+| User-level config | `~/.claude/settings.json` | Global defaults | Low |
+
+<Callout type="info">
+To configure additional parameters (such as `ANTHROPIC_MODEL`), you can also add them to the `env` field in `settings.json`.
+</Callout>

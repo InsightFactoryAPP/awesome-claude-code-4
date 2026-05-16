@@ -1,0 +1,71 @@
+---
+title: Run Parallel Sessions with Git Worktrees
+description: Learn how to use Git worktrees to run multiple Claude Code instances in fully isolated environments
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Run Parallel Sessions with Git Worktrees
+
+Suppose you need to work on multiple tasks simultaneously with complete code isolation between Claude Code instances.
+
+<Steps>
+
+### Understand Git Worktrees
+
+Git worktrees allow you to check out multiple branches of the same repository into separate directories. Each worktree has its own working directory and isolated files while sharing the same Git history. Learn more in the [official Git worktree documentation](https://git-scm.com/docs/git-worktree).
+
+### Create a New Worktree
+
+```bash
+# Create a new worktree with a new branch
+git worktree add ../project-feature-a -b feature-a
+
+# Or create a worktree from an existing branch
+git worktree add ../project-bugfix bugfix-123
+```
+
+This creates a new directory containing a separate working copy of the repository.
+
+### Run Claude Code in Each Worktree
+
+```bash
+# Navigate to your worktree
+cd ../project-feature-a
+
+# Run Claude Code in this isolated environment
+claude
+```
+
+### Run Claude in Another Worktree
+
+```bash
+cd ../project-bugfix
+claude
+```
+
+### Manage Your Worktrees
+
+```bash
+# List all worktrees
+git worktree list
+
+# Remove a worktree when done
+git worktree remove ../project-feature-a
+```
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* Each worktree has its own independent file state, making it perfect for parallel Claude Code sessions
+* Changes made in one worktree do not affect other worktrees, preventing Claude instances from interfering with each other
+* All worktrees share the same Git history and remote connections
+* For long-running tasks, you can have Claude working in one worktree while continuing development in another
+* Use descriptive directory names to easily identify the task for each worktree
+* Remember to initialize the development environment in each new worktree according to your project setup. Depending on your stack, this may include:
+  * JavaScript projects: run dependency installation (`npm install`, `yarn`)
+  * Python projects: set up a virtual environment or install via package manager
+  * Other languages: follow the project's standard setup process
+</Callout>

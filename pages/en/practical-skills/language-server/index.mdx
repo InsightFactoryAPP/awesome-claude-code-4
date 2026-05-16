@@ -1,7 +1,157 @@
 ---
 title: Language Server Protocol (LSP)
+description: Understand Claude Code's LSP support and give Claude real-time code intelligence
 ---
+
+import { Callout, Cards } from 'nextra/components'
 
 # Language Server Protocol (LSP)
 
-> 🚧 English translation coming soon.
+The Language Server Protocol (LSP) is an open, JSON-RPC-based protocol for communication between code editors and language servers. Originally developed by Microsoft for VS Code, it has since become an industry standard.
+
+Claude Code natively supports LSP, giving Claude the same intelligent code capabilities as a professional IDE while processing your code.
+
+## What Does LSP Bring to Claude Code?
+
+Through LSP integration, Claude gains the following capabilities:
+
+| Feature | Description |
+|-----|------|
+| **Real-time diagnostics** | Claude sees errors and warnings immediately after every edit |
+| **Go to definition** | Quickly locate where a function, variable, or class is defined |
+| **Find references** | Find all usages of a code symbol across the project |
+| **Hover information** | Get type information and documentation comments |
+| **Language awareness** | Understand the type and context of code symbols |
+
+<Callout type="info">
+LSP is a native plugin feature of Claude Code — it does not depend on VS Code or any other IDE. You can use Claude Code independently in a terminal and enjoy full code intelligence support.
+</Callout>
+
+## How It Works
+
+```
+┌─────────────────┐     LSP Protocol      ┌──────────────────────┐
+│   Claude Code   │ ◄──────────────────► │  Language Server     │
+│   (client)      │    JSON-RPC           │  (e.g. typescript-   │
+│                 │                       │   language-server)   │
+└─────────────────┘                       └──────────────────────┘
+         │                                          │
+         │                                          │
+         ▼                                          ▼
+  Sends code action requests               Analyzes code and returns results
+  (go to definition, find references…)    (locations, types, errors…)
+```
+
+Once you install and enable an LSP plugin:
+
+1. **On startup**: Claude Code automatically starts the language servers configured in installed plugins
+2. **On edit**: The language server analyzes your code in real time after every file change
+3. **Diagnostics**: Errors and warnings are automatically fed back to Claude
+4. **Navigation**: Claude can use go-to-definition, find-references, and other operations
+
+## Installing LSP Plugins
+
+### Install from the Official Marketplace (Recommended)
+
+The easiest approach is to install from the official plugin marketplace:
+
+```bash
+# Run inside Claude Code
+/plugin
+# Then select the Discover tab and search for "lsp"
+```
+
+### Officially Supported LSP Plugins
+
+| Plugin | Language Server | Installation |
+|-----|-----------|---------|
+| `pyright-lsp` | Pyright (Python) | `pip install pyright` or `npm install -g pyright` |
+| `typescript-lsp` | TypeScript Language Server | `npm install -g typescript-language-server typescript` |
+| `rust-lsp` | rust-analyzer | [See installation guide](https://rust-analyzer.github.io/manual.html#installation) |
+
+<Callout type="warning">
+LSP plugins are configuration files only — they do not include the language server binary itself. You must install the corresponding language server first, then install the plugin.
+</Callout>
+
+## LSP Plugin Configuration Format
+
+If the official marketplace doesn't have the language you need, you can create your own LSP plugin.
+
+### Configuration File Location
+
+- Standalone file: `.lsp.json` in the plugin root directory
+- Inline configuration: in the `lspServers` field of `plugin.json`
+
+### Configuration Example
+
+```json
+{
+  "typescript": {
+    "command": "typescript-language-server",
+    "args": ["--stdio"],
+    "extensionToLanguage": {
+      ".ts": "typescript",
+      ".tsx": "typescriptreact",
+      ".js": "javascript",
+      ".jsx": "javascriptreact"
+    }
+  }
+}
+```
+
+### Required Fields
+
+| Field | Description |
+|-----|------|
+| `command` | LSP binary name (must be on your PATH) |
+| `extensionToLanguage` | Mapping of file extensions to language identifiers |
+
+### Optional Fields
+
+| Field | Description |
+|-----|------|
+| `args` | Command-line arguments for starting the language server |
+| `transport` | Communication mode: `stdio` (default) or `socket` |
+| `env` | Environment variables to set when starting the server |
+| `initializationOptions` | Options passed to the server during initialization |
+| `settings` | Settings sent via `workspace/didChangeConfiguration` |
+| `workspaceFolder` | Workspace folder path |
+| `startupTimeout` | Maximum time to wait for server startup (milliseconds) |
+| `shutdownTimeout` | Maximum time to wait for graceful shutdown (milliseconds) |
+| `restartOnCrash` | Whether to automatically restart the server on crash |
+| `maxRestarts` | Maximum restart attempts before giving up |
+| `loggingConfig` | Debug logging configuration |
+
+## Debugging LSP Issues
+
+If you encounter LSP-related problems, enable verbose logging:
+
+```bash
+claude --enable-lsp-logging
+```
+
+Log files are located in the `~/.claude/debug/` directory.
+
+### Common Issues
+
+**"Executable not found in $PATH"**
+
+The language server is not installed or is not on your system PATH. Install the corresponding language server first.
+
+**"No LSP server available for file type"**
+
+No LSP plugin is configured for that file type. Check that the plugin is correctly installed and that `extensionToLanguage` includes the extension in question.
+
+## Available LSP Plugins
+
+<Cards>
+  <Cards.Card title="TypeScript LSP" href="/practical-skills/language-server/typescript-lsp">
+    Full code intelligence support for TypeScript/JavaScript projects
+  </Cards.Card>
+</Cards>
+
+## Reference Resources
+
+- [Claude Code Official Plugin Documentation](https://code.claude.com/docs/en/plugins-reference#lsp-servers)
+- [boostvolt/claude-code-lsps](https://github.com/boostvolt/claude-code-lsps) — Community-maintained LSP plugin collection
+- [Language Server Protocol Official Specification](https://microsoft.github.io/language-server-protocol/)

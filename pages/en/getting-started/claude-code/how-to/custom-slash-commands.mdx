@@ -1,0 +1,119 @@
+---
+title: Create Custom Slash Commands
+description: Learn how to create custom slash commands to quickly execute specific prompts or tasks
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Create Custom Slash Commands
+
+Claude Code supports custom slash commands, which you can create to quickly execute specific prompts or tasks.
+
+For more details, see the [Slash Commands](https://docs.claude.com/en/docs/claude-code/slash-commands) reference page.
+
+## Create Project-Specific Commands
+
+Suppose you want to create reusable slash commands for your project that all team members can use.
+
+<Steps>
+
+### Create the Commands Directory in Your Project
+
+```bash
+mkdir -p .claude/commands
+```
+
+### Create a Markdown File for Each Command
+
+```bash
+echo "Analyze the performance of this code and suggest three specific optimizations:" > .claude/commands/optimize.md
+```
+
+### Use the Custom Command in Claude Code
+
+```
+> /optimize
+```
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* The command name is derived from the filename (e.g., `optimize.md` becomes `/optimize`)
+* You can organize commands in subdirectories (e.g., `.claude/commands/frontend/component.md` creates `/component`, shown as "(project:frontend)" in the description)
+* Project commands are available to everyone who clones the repository
+* The Markdown file content becomes the prompt sent to Claude when the command is invoked
+</Callout>
+
+## Add Command Arguments Using $ARGUMENTS
+
+Suppose you want to create flexible slash commands that can accept additional input from the user.
+
+<Steps>
+
+### Create a Command File with the $ARGUMENTS Placeholder
+
+```bash
+echo 'Find and fix issue #$ARGUMENTS. Follow these steps:
+1. Understand the issue described in the ticket
+2. Locate the relevant code in our codebase
+3. Implement a solution that addresses the root cause
+4. Add appropriate tests
+5. Prepare a concise PR description' > .claude/commands/fix-issue.md
+```
+
+### Use the Command with an Issue Number
+
+In a Claude session, use the command with an argument.
+
+```
+> /fix-issue 123
+```
+
+This replaces `$ARGUMENTS` with "123" in the prompt.
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* The `$ARGUMENTS` placeholder is replaced with any text that follows the command
+* You can place `$ARGUMENTS` anywhere in the command template
+* Other useful applications: generating test cases for specific functions, creating documentation for components, reviewing code in specific files, or translating content into a specified language
+</Callout>
+
+## Create Personal Slash Commands
+
+Suppose you want to create personal slash commands that work across all your projects.
+
+<Steps>
+
+### Create the Commands Directory in Your Home Folder
+
+```bash
+mkdir -p ~/.claude/commands
+```
+
+### Create a Markdown File for Each Command
+
+```bash
+echo "Review this code for security vulnerabilities, focusing on:" > ~/.claude/commands/security-review.md
+```
+
+### Use Your Personal Custom Command
+
+```
+> /security-review
+```
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* Personal commands are shown with "(user)" in their description when listed via `/help`
+* Personal commands are only available to you and are not shared with your team
+* Personal commands work across all your projects
+* You can use these commands to maintain a consistent workflow across different codebases
+</Callout>

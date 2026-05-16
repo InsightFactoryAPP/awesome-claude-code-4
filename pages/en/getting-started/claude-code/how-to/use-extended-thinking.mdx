@@ -1,0 +1,61 @@
+---
+title: Use Extended Thinking
+description: Learn how to use the extended thinking feature for complex architectural decisions and challenging problems
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Use Extended Thinking
+
+Suppose you are working on complex architectural decisions, challenging bugs, or multi-step implementation planning that requires deep reasoning.
+
+<Callout type="warning">
+[Extended thinking](https://docs.claude.com/en/docs/build-with-claude/extended-thinking) is disabled by default in Claude Code. You can enable it on demand using the `Tab` key to toggle thinking, or by using prompts like "think" or "think hard". You can also permanently enable it by setting the [`MAX_THINKING_TOKENS` environment variable](https://docs.claude.com/en/docs/claude-code/settings#environment-variables) in settings.
+</Callout>
+
+<Steps>
+
+### Provide Context and Let Claude Think
+
+```
+> I need to implement a new authentication system using OAuth2 for our API. Think deeply about the best approach for implementing this in our codebase.
+```
+
+Claude will gather relevant information from your codebase and use extended thinking, which will be visible in the interface.
+
+### Refine the Thinking with Follow-Up Prompts
+
+```
+> think about potential security vulnerabilities in this approach
+```
+
+```
+> think hard about edge cases we should handle
+```
+
+</Steps>
+
+<Callout type="info">
+**Tips for getting the most value from extended thinking:**
+
+[Extended thinking](https://docs.claude.com/en/docs/build-with-claude/extended-thinking) is most valuable for complex tasks such as:
+
+* Planning complex architectural changes
+* Debugging intricate problems
+* Creating implementation plans for new features
+* Understanding complex codebases
+* Evaluating trade-offs between different approaches
+
+Use the `Tab` key to toggle thinking on and off during a session.
+
+The way you prompt for thinking produces different levels of depth:
+
+* "think" triggers basic extended thinking
+* Intensifiers such as "think hard", "think more", "think a lot", or "think longer" trigger deeper thinking
+
+For more extended thinking prompting tips, see [Extended Thinking Tips](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/extended-thinking-tips).
+</Callout>
+
+<Callout>
+Claude will display its thinking process above the response in italic gray text.
+</Callout>

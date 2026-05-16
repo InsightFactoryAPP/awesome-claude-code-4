@@ -1,0 +1,618 @@
+---
+title: OpenClaw Installation and Configuration
+description: Installation and configuration guide for OpenClaw (using CC Club API proxy service)
+---
+
+import { Callout, Tabs, Steps } from 'nextra/components'
+
+# OpenClaw Installation and Configuration Guide
+
+This guide explains how to install OpenClaw and configure it to use CC Club's API proxy.
+
+<Callout type="info">
+**About this document**
+This document focuses on helping you configure the CC Club `baseUrl` and `apiKey` in OpenClaw, so you can access Claude without restrictions. For other OpenClaw features and detailed documentation, refer to the [official documentation](https://docs.openclaw.ai).
+</Callout>
+
+## System Requirements
+
+| Item | Minimum | Recommended |
+|------|----------|------|
+| Node.js | ≥ 22.12.0 | Latest LTS |
+| Memory | 1GB | 4GB+ |
+| Operating system | macOS 12+ / Ubuntu 20.04+ / Windows 10+ | macOS 14+ |
+
+## 1. Install OpenClaw
+
+<Tabs items={['Install script (recommended)', 'Homebrew (macOS)', 'npm / pnpm', 'Ubuntu server', 'Docker']}>
+  <Tabs.Tab>
+    **macOS / Linux / WSL2:**
+    ```bash
+    curl -fsSL https://openclaw.ai/install.sh | bash
+    ```
+
+    **Windows (PowerShell):**
+    ```powershell
+    iwr -useb https://openclaw.ai/install.ps1 | iex
+    ```
+
+    The install script automatically detects your environment, installs the CLI, and runs the onboarding wizard. To skip the wizard and only install the CLI:
+    ```bash
+    curl -fsSL https://openclaw.ai/install.sh | bash -s -- --no-onboard
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    brew install openclaw/tap/openclaw
+    openclaw onboard --install-daemon
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    # npm
+    npm install -g openclaw@latest
+
+    # or pnpm
+    pnpm add -g openclaw@latest
+
+    openclaw onboard --install-daemon
+    ```
+
+    <Callout type="warning">
+    If `sharp` installation fails (macOS + Homebrew libvips conflict), use:
+    ```bash
+    npm install -g openclaw@latest --ignore-scripts
+    npm rebuild sharp --platform=linux --arch=x64
+    ```
+    </Callout>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    Ubuntu servers need Node.js installed first — nvm is recommended:
+
+    ```bash
+    # Install nvm
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+    # Load nvm (no need to restart shell)
+    \. "$HOME/.nvm/nvm.sh"
+
+    # Install Node.js 24
+    nvm install 24
+
+    # Verify
+    node -v
+    npm -v
+    ```
+
+    Then install OpenClaw:
+    ```bash
+    npm install -g openclaw@latest
+    ```
+
+    <Callout type="info">
+    The Node.js path installed by nvm is written into the systemd service file. After upgrading the Node.js version, run `openclaw doctor --repair` to update the service configuration.
+    </Callout>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    git clone https://github.com/openclaw/openclaw.git
+    cd openclaw
+
+    # One-click interactive startup
+    ./docker-setup.sh
+    ```
+
+    Or manually with Docker Compose:
+    ```bash
+    cp .env.example .env
+    # Edit .env to fill in API keys and tokens
+    docker compose up -d
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## 2. Run the Onboarding Wizard
+
+After installation, run the onboarding to complete the initial configuration:
+
+```bash
+openclaw onboard --install-daemon
+```
+
+The wizard will guide you through:
+1. Selecting a model provider (choose Anthropic)
+2. Entering your API key
+3. Setting up the Gateway (port, authentication method)
+4. Configuring messaging channels (Telegram / WhatsApp / Discord, etc.)
+5. Installing the background service (launchd / systemd / Windows scheduled task)
+
+## 3. Configure the CC Club API Proxy
+
+<Callout type="warning">
+**Important**: Using CC Club requires manually configuring two things: the **API key** and a **custom baseUrl**.
+</Callout>
+
+### Configuration File Locations
+
+OpenClaw's configuration directory:
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+    ```
+    ~/.openclaw/
+    ├── openclaw.json               # Main configuration file
+    ├── .env                        # Environment variables (API keys and other sensitive info)
+    └── agents/main/agent/
+        └── auth-profiles.json      # API key credentials
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```
+    C:\Users\<username>\.openclaw\
+    ├── openclaw.json               # Main configuration file
+    └── agents\main\agent\
+        └── auth-profiles.json      # API key credentials
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### Step 1: Write Your API Key
+
+Edit `~/.openclaw/agents/main/agent/auth-profiles.json` (Windows: `C:\Users\<username>\.openclaw\agents\main\agent\auth-profiles.json`):
+
+```json
+{
+  "version": 1,
+  "profiles": {
+    "anthropic:default": {
+      "type": "api_key",
+      "provider": "anthropic",
+      "key": "your-CC-Club-API-Key"
+    }
+  },
+  "lastGood": {
+    "anthropic": "anthropic:default"
+  }
+}
+```
+
+You can also configure this via the command line:
+```bash
+openclaw onboard --auth-choice apiKey --anthropic-api-key your-CC-Club-API-Key
+```
+
+### Step 2: Configure the Custom baseUrl
+
+Edit `~/.openclaw/openclaw.json` and add a `models` section:
+
+```json
+{
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "anthropic": {
+        "baseUrl": "https://claude-code.club/api",
+        "models": []
+      }
+    }
+  }
+}
+```
+
+<Callout type="info">
+**`"models": []` is required**. Leaving it empty means the provider's default model list will be used. Omitting this field will cause a configuration validation error:
+```
+Invalid config: models.providers.anthropic.models: expected array, received undefined
+```
+</Callout>
+
+### CC Club API Nodes
+
+Choose the best node based on your network conditions:
+
+| Address | Description |
+|------|------|
+| `https://claude-code.club/api` | Default address (fastest when direct connection latency < 100ms) |
+| `https://jp.claude-code.club/api` | Japan node (Alibaba Cloud, optimized for China) |
+| `https://hk.claude-code.club/api` | Hong Kong node (Alibaba Cloud, optimized for China) |
+
+Enter one of the above addresses in the `models.providers.anthropic.baseUrl` field of `openclaw.json`.
+
+### Step 3: Restart the Gateway
+
+<Tabs items={['macOS', 'Linux / Ubuntu', 'Windows']}>
+  <Tabs.Tab>
+    ```bash
+    launchctl stop ai.openclaw.gateway
+    launchctl start ai.openclaw.gateway
+    ```
+    Or:
+    ```bash
+    kill $(lsof -ti :18789) && openclaw gateway
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    systemctl --user restart openclaw-gateway.service
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    openclaw gateway stop
+    openclaw gateway start
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## 4. Complete Configuration Example
+
+Here is a complete `openclaw.json` example using CC Club:
+
+```json
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.19"
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-6"
+      },
+      "workspace": "~/.openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "anthropic": {
+        "baseUrl": "https://claude-code.club/api",
+        "models": []
+      }
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "gateway": {
+    "mode": "local",
+    "auth": {
+      "mode": "token",
+      "token": "your-gateway-token"
+    },
+    "port": 18789
+  }
+}
+```
+
+**Key configuration notes:**
+
+| Config key | Description | Example value |
+|--------|------|--------|
+| `agents.defaults.model.primary` | Default model to use — requires provider prefix | `anthropic/claude-sonnet-4-6` |
+| `models.providers.anthropic.baseUrl` | CC Club API address | `https://claude-code.club/api` |
+| `models.providers.anthropic.models` | Model list — leave empty to use defaults | `[]` |
+| `gateway.auth.token` | Dashboard access token | Generate with `openssl rand -hex 32` |
+| `gateway.port` | Gateway listening port | `18789` |
+
+## 5. Start the Gateway
+
+```bash
+# Foreground (for debugging)
+openclaw gateway --port 18789 --verbose
+
+# Background service (recommended)
+openclaw onboard --install-daemon
+```
+
+When the Gateway starts successfully, it will display:
+```
+[gateway] listening on ws://127.0.0.1:18789 (PID xxxxx)
+```
+
+### Service Management
+
+<Tabs items={['macOS', 'Linux / Ubuntu', 'Windows']}>
+  <Tabs.Tab>
+    ```bash
+    # Check status
+    launchctl list | grep openclaw
+
+    # Stop / Start
+    launchctl stop ai.openclaw.gateway
+    launchctl start ai.openclaw.gateway
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    # Check status
+    systemctl --user status openclaw-gateway
+
+    # Restart
+    systemctl --user restart openclaw-gateway
+
+    # View logs
+    journalctl --user -u openclaw-gateway -f
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    # Install as a scheduled task with administrator privileges
+    openclaw gateway install --force
+    openclaw gateway start
+    openclaw gateway status
+
+    # Uninstall
+    openclaw gateway uninstall
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## 6. Access the Dashboard
+
+```bash
+# Open automatically (recommended)
+openclaw dashboard
+
+# Or navigate manually
+# http://127.0.0.1:18789/#token=your-gateway-token
+```
+
+Dashboard features:
+
+| Feature | Description |
+|------|------|
+| **Chat** | Chat directly with AI |
+| **Agents** | Manage agent sessions and history |
+| **Channels** | View channel status |
+| **Models** | View available models |
+| **Settings** | Configure tokens, themes, etc. |
+
+## 7. Configure Messaging Channels
+
+### Telegram
+
+<Steps>
+### Create a Bot
+
+Open Telegram, find [@BotFather](https://t.me/BotFather), send `/newbot`, set a name and username as prompted, and obtain the Bot Token (format: `123456789:ABCDEF...`).
+
+### Configure the Channel
+
+Add the following to `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "open",
+      "allowFrom": ["*"],
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": { "enabled": true }
+    }
+  }
+}
+```
+
+### Set the Bot Token
+
+```bash
+# ~/.openclaw/.env
+TELEGRAM_BOT_TOKEN=123456789:ABCDEF...
+```
+
+### Pair with Telegram
+
+Send a message to your Bot in Telegram. The Bot will return a pairing code, which you then approve on the server:
+
+```bash
+openclaw pairing approve telegram XXXXXXXX
+```
+</Steps>
+
+### Discord / Slack / WhatsApp
+
+WhatsApp requires scanning a QR code to log in:
+```bash
+openclaw channels login --channel whatsapp
+```
+
+For Discord and Slack, configure the Bot Token in `.env` — see the [official documentation](https://docs.openclaw.ai) for details.
+
+## 8. Complete Ubuntu Server Setup
+
+Full steps for deploying OpenClaw on a remote Ubuntu server:
+
+<Steps>
+### Install Node.js (via nvm)
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+\. "$HOME/.nvm/nvm.sh"
+nvm install 24
+```
+
+### Install OpenClaw
+
+```bash
+npm install -g openclaw@latest
+```
+
+### Configure CC Club API Key
+
+Edit `~/.openclaw/agents/main/agent/auth-profiles.json`:
+
+```json
+{
+  "version": 1,
+  "profiles": {
+    "anthropic:default": {
+      "type": "api_key",
+      "provider": "anthropic",
+      "key": "cr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+  },
+  "lastGood": {
+    "anthropic": "anthropic:default"
+  }
+}
+```
+
+### Configure the Custom baseUrl
+
+Edit `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "anthropic": {
+        "baseUrl": "https://claude-code.club/api",
+        "models": []
+      }
+    }
+  }
+}
+```
+
+### Run the Onboarding Wizard
+
+```bash
+openclaw onboard --install-daemon
+```
+
+Select the Anthropic model in the wizard and configure your Telegram Bot Token.
+
+### Pair with Telegram
+
+```bash
+openclaw pairing approve telegram XXXXXXXX
+```
+</Steps>
+
+## 9. Troubleshooting
+
+### API Key Error: `No API key found for provider "anthropic"`
+
+**Checklist:**
+1. Confirm the file exists: `~/.openclaw/agents/main/agent/auth-profiles.json`
+2. Confirm the format is correct (refer to Section 3)
+3. Restart the Gateway
+
+### Configuration File Validation Failure
+
+```
+Invalid config: models.providers.anthropic.models: expected array, received undefined
+```
+
+**Fix**: Add `"models": []` under `models.providers.anthropic` in `openclaw.json`.
+
+### Gateway Port Already in Use
+
+```
+Port 18789 is already in use. pid xxxxx
+```
+
+**Fix (Linux/macOS):**
+```bash
+kill $(lsof -ti :18789)
+```
+
+**Fix (Windows):**
+```powershell
+Stop-Process -Id <pid> -Force
+```
+
+### TUI shows `pairing required` or `device token mismatch`
+
+```bash
+# Clear old device pairing files
+rm -f ~/.openclaw/devices/paired.json \
+      ~/.openclaw/identity/device-auth.json \
+      ~/.openclaw/identity/device.json
+
+# Restart Gateway
+systemctl --user restart openclaw-gateway.service
+
+# Verify status
+sleep 5 && openclaw gateway status
+```
+
+### Dashboard shows "unauthorized"
+
+Access with a token-bearing URL:
+```
+http://localhost:18789/#token=your-gateway-token
+```
+
+Or view the current token:
+```bash
+openclaw config get gateway.auth.token
+```
+
+### Verify Proxy Reachability
+
+```bash
+curl -X POST "https://claude-code.club/api/v1/messages" \
+  -H "x-api-key: your-API-Key" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model":"claude-sonnet-4-6","max_tokens":64,"messages":[{"role":"user","content":"hi"}]}'
+```
+
+### Update OpenClaw
+
+```bash
+# Stable release (recommended)
+openclaw update --channel stable
+
+# Or update directly via npm
+npm update -g openclaw
+```
+
+## Quick Command Reference
+
+```bash
+openclaw --version              # Show version
+openclaw doctor                 # Diagnose configuration issues
+openclaw doctor --repair        # Auto-fix configuration
+openclaw gateway --verbose      # Start Gateway (verbose logging)
+openclaw dashboard              # Open Dashboard
+openclaw status                 # Show running status
+openclaw onboard                # Re-run the onboarding wizard
+openclaw tui                    # Open the terminal interactive interface
+openclaw logs --follow          # Stream logs in real time
+openclaw update --channel stable # Update to stable release
+```
+
+## Comparison with Claude Code
+
+| Item | Claude Code | OpenClaw |
+|--------|-------------|----------|
+| **Purpose** | Command-line coding assistant | Self-hosted multi-channel AI gateway |
+| **Configuration tool** | CC Switch / environment variables | Manual JSON editing |
+| **Configuration file** | `~/.claude/settings.json` | `~/.openclaw/openclaw.json` |
+| **API key storage** | Environment variables | `auth-profiles.json` |
+| **Interface** | Command line | Web Dashboard |
+| **Messaging platforms** | Terminal | Telegram, WhatsApp, and 20+ more |
+
+## References
+
+- Official documentation: [https://docs.openclaw.ai/](https://docs.openclaw.ai/)
+- GitHub repository: [https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw)
+- [Get CC Club API Key](/getting-started/get-api-key)
+- [CC Club Node Configuration](/getting-started/faq/config-baseurl-authtoken)
+
+<Callout type="info">
+**Note**: Compared to Claude Code, OpenClaw may consume more quota because it needs to handle more channels and context requests.
+</Callout>

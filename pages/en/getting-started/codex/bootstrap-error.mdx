@@ -1,0 +1,193 @@
+---
+title: "Codex Startup Error: 502 Bad Gateway / TUI Bootstrap Failure"
+description: How to fix Codex startup errors caused by stale or inconsistent local configuration files
+---
+
+import { Callout, Tabs, Steps } from 'nextra/components'
+
+# Codex Startup Error: 502 Bad Gateway / TUI Bootstrap Failure
+
+Some users encounter the following errors when starting Codex:
+
+```text
+unexpected status 502 Bad Gateway
+```
+
+or:
+
+```text
+account/read failed during TUI bootstrap
+```
+
+This issue is usually not a server-side failure. It is typically caused by local Codex configuration files that have not been updated in time, resulting in the client reading stale or incompatible configuration.
+
+## Cause
+
+- `~/.codex/config.toml` still contains old content
+- `~/.codex/auth.json` contains outdated authentication information
+- Configuration was copied manually but some fields were missed
+- The local files were not updated after changing accounts, endpoint URLs, or authentication methods
+
+<Callout type="warning">
+Before modifying configuration files, it is recommended to back up the originals first to avoid being unable to roll back after overwriting.
+</Callout>
+
+## Resolution
+
+<Steps>
+
+### Locate the Local Configuration Directory
+
+Codex configuration files are typically located at:
+
+```text
+~/.codex/config.toml
+~/.codex/auth.json
+```
+
+The corresponding paths on different operating systems are as follows.
+
+<Tabs items={['Windows (PowerShell)', 'macOS / Linux']}>
+  <Tabs.Tab>
+
+```powershell
+$env:USERPROFILE\.codex\config.toml
+$env:USERPROFILE\.codex\auth.json
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```bash
+~/.codex/config.toml
+~/.codex/auth.json
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+### Back Up the Original Files First
+
+<Tabs items={['Windows (PowerShell)', 'macOS / Linux']}>
+  <Tabs.Tab>
+
+```powershell
+Copy-Item $env:USERPROFILE\.codex\config.toml $env:USERPROFILE\.codex\config.toml.bak -ErrorAction SilentlyContinue
+Copy-Item $env:USERPROFILE\.codex\auth.json $env:USERPROFILE\.codex\auth.json.bak -ErrorAction SilentlyContinue
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```bash
+cp ~/.codex/config.toml ~/.codex/config.toml.bak 2>/dev/null || true
+cp ~/.codex/auth.json ~/.codex/auth.json.bak 2>/dev/null || true
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+### Open the Configuration Files
+
+<Tabs items={['Windows (PowerShell)', 'macOS / Linux']}>
+  <Tabs.Tab>
+
+```powershell
+notepad $env:USERPROFILE\.codex\config.toml
+notepad $env:USERPROFILE\.codex\auth.json
+```
+
+To check whether the files exist first:
+
+```powershell
+Test-Path $env:USERPROFILE\.codex\config.toml
+Test-Path $env:USERPROFILE\.codex\auth.json
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```bash
+nano ~/.codex/config.toml
+nano ~/.codex/auth.json
+```
+
+If you prefer VS Code:
+
+```bash
+code ~/.codex/config.toml
+code ~/.codex/auth.json
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+### Overwrite the Old Content with the Latest Configuration from the Docs
+
+Open the official installation and configuration documentation:
+
+```text
+https://academy.claude-code.club/getting-started/codex-installation
+```
+
+Compare the latest examples in the documentation and update the content of both files accordingly.
+
+Key things to check:
+
+- Is the API endpoint URL still valid?
+- Are all authentication fields present and complete?
+- Does the configuration format match the latest documentation?
+- Are there any leftover fields from an older version?
+
+<Callout type="info">
+If you are unsure whether a particular configuration block should be kept, the safest approach is to copy the latest example from the documentation and replace your local configuration with it.
+</Callout>
+
+### Save and Restart Codex
+
+After making your changes, close the current terminal and open a new one, then run:
+
+<Tabs items={['Windows (PowerShell)', 'macOS / Linux']}>
+  <Tabs.Tab>
+
+```powershell
+codex
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```bash
+codex
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+If you just want to verify that the configuration is back to normal, you can re-run your original command first.
+
+</Steps>
+
+## How to Tell If It's Fixed
+
+If the fix is successful, you will typically see:
+
+- Codex starts normally without the `502 Bad Gateway` error
+- The `account/read failed during TUI bootstrap` error no longer appears
+- You can enter the interactive interface normally
+- Subsequent requests are sent successfully
+
+## If the Error Persists
+
+If the same error continues after the update, check the following:
+
+1. Did you edit the configuration directory for the wrong account?
+2. Were only `config.toml` or `auth.json` updated, leaving the other file still outdated?
+3. Are there extra spaces, missing quotes, or JSON/TOML format errors in the configuration?
+4. Is the terminal still using an old session? Try fully closing it and opening a new one.
+
+## Additional Notes
+
+- These errors are usually not server-side failures — they are local configuration file issues
+- For Windows users, first check the `%USERPROFILE%\\.codex\\` directory
+- If the issue appeared as "it worked before, then suddenly stopped," stale configuration is the most likely cause

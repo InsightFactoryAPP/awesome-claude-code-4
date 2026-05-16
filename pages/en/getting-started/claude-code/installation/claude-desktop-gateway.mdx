@@ -1,0 +1,224 @@
+---
+title: Claude Desktop Third-party Gateway Configuration
+description: Configure a third-party Gateway compatible with the Anthropic Messages API in Claude Desktop (GUI client) — complete guide for Windows and macOS
+---
+
+import { Callout, Tabs } from 'nextra/components'
+
+# Claude Desktop Third-party Gateway Configuration Guide
+
+This guide is for users who have **Claude Desktop** (the GUI client) installed and want to connect it to a third-party Gateway that is compatible with the Anthropic Messages API. This article uses `https://claude-code.club/api` as the example.
+
+If you are only using the Claude Code CLI, please refer to [Configure Base URL and Auth Token](/getting-started/faq/config-baseurl-authtoken) instead.
+
+## 1. Core Concepts and Address Selection
+
+Claude Desktop's **third-party inference configuration** is used to forward model requests to a custom Gateway. The Gateway must be compatible with the Anthropic Messages API; it is **different from** an OpenAI-style `/v1/responses` endpoint.
+
+| Configuration | Recommended Value / Notes |
+|---|---|
+| Gateway base URL | `https://claude-code.club/api` |
+| Authentication method | `bearer` (i.e. `Authorization: Bearer <your API Key>`) |
+| Extra request headers | Generally leave blank unless the provider explicitly requires them |
+
+<Callout type="warning">
+**Do not mix up addresses.** Claude Desktop's Gateway configuration should use an Anthropic-compatible address (e.g. `https://claude-code.club/api`); do not enter an OpenAI / Codex-style address (e.g. `https://claude-code.club/openai`) into Claude Desktop.
+</Callout>
+
+## 2. Pre-configuration Checklist
+
+- Latest Claude Desktop is installed
+- A valid API Key has been obtained (see [Get API Key](/getting-started/get-api-key))
+- Do not use an old Key that has already been exposed in chats, screenshots, or repositories; if leaked, invalidate it immediately and create a new one
+- Able to fully quit and reopen Claude Desktop (third-party inference configurations typically require an application restart to take effect)
+
+## 3. GUI Configuration (Recommended)
+
+### 3.1 Open the Third-party Inference Configuration
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    1. Open Claude Desktop
+    2. In the menu bar, go to `Help` → `Troubleshooting`
+    3. Enable `Enable Developer mode`
+    4. Go to the menu `Developer` → `Configure third-party inference`
+  </Tabs.Tab>
+  <Tabs.Tab>
+    1. Open Claude Desktop
+    2. In the menu bar, go to `Help` → `Troubleshooting`
+    3. Enable `Enable Developer mode`
+    4. Go to the menu `Developer` → `Configure third-party inference`
+  </Tabs.Tab>
+</Tabs>
+
+### 3.2 Fill in Gateway Credentials
+
+| UI Field | What to Enter |
+|---|---|
+| `Gateway base URL` | `https://claude-code.club/api` |
+| `Gateway API key` | Your valid API Key (do not expose the real value in documentation or screenshots) |
+| `Gateway auth scheme` | `bearer` |
+| `Gateway extra headers` | Leave blank |
+
+### 3.3 Apply the Configuration
+
+1. Prefer clicking **`Apply locally`**
+2. After seeing the success prompt, **fully quit** Claude Desktop
+3. Reopen Claude Desktop and send a test message
+4. If it replies normally, the configuration is in effect
+
+<Callout type="warning">
+**Fully quit** means you must ensure the process has ended — on macOS, use Activity Monitor to confirm the `Claude` process has exited; on Windows, end all `Claude` processes in Task Manager. Simply closing the window often does not apply the configuration.
+</Callout>
+
+## 4. Export as Fallback
+
+If `Apply locally` does not work, or you need to deploy the same configuration to multiple machines in bulk, you can use **Export** to generate a system-level configuration file.
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    **macOS: Export `.mobileconfig`**
+
+    1. On the `Configure third-party inference` page, click `Export`
+    2. Select `macOS configuration profile (.mobileconfig)`
+    3. Save to a secure location on your machine
+    4. Double-click the `.mobileconfig` file and follow the system prompts to install it via `System Settings`
+    5. After installation, fully quit and reopen Claude Desktop
+
+    <Callout type="warning">
+      The `.mobileconfig` may contain the API Key in plain text. Only install it on trusted devices, and securely delete the original file after use.
+    </Callout>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Windows: Export `.reg`**
+
+    1. On the `Configure third-party inference` page, click `Export`
+    2. Select `Windows registry file (.reg)`
+    3. Save to a secure location on your machine
+    4. Double-click the `.reg` file and confirm the registry import
+    5. Fully quit and reopen Claude Desktop
+
+    <Callout type="warning">
+      The `.reg` file may contain the API Key in plain text. It is recommended to delete the file immediately after importing; do not upload it to GitHub, cloud storage, or share it with others.
+    </Callout>
+  </Tabs.Tab>
+</Tabs>
+
+## 5. Export Menu Format Reference
+
+| Export Option | Purpose |
+|---|---|
+| `Windows registry file (.reg)` | Recommended fallback format for Windows; imports into the registry |
+| `macOS configuration profile (.mobileconfig)` | Recommended fallback format for macOS; system configuration profile |
+| `Plain JSON (.json)` | Usually not imported directly; used for troubleshooting or secondary processing by management systems |
+| `Firewall allowlist (.txt)` | Firewall allowlist — **not** a Gateway account configuration |
+| `Copy to clipboard (redacted)` | Suitable for sharing with others for configuration troubleshooting; sensitive values are hidden, so **cannot** be used as a complete import |
+
+## 6. CLI Environment Variables (Optional)
+
+If you also use Claude Code CLI in the terminal, you can additionally configure environment variables. The Claude Desktop Gateway GUI configuration and CLI environment variables are two separate entry points, but it is recommended to use the same address and Key for both.
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    Write the variables into your zsh / bash configuration:
+
+    ```bash
+    cat >> ~/.zshrc <<'EOF'
+    export ANTHROPIC_BASE_URL="https://claude-code.club/api"
+    export ANTHROPIC_AUTH_TOKEN="your-api-key"
+    export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"
+    EOF
+    source ~/.zshrc
+    ```
+
+    Verify they took effect:
+
+    ```bash
+    echo $ANTHROPIC_BASE_URL
+    echo $ANTHROPIC_AUTH_TOKEN
+    echo $CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    Write user-level environment variables in PowerShell:
+
+    ```powershell
+    [System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://claude-code.club/api", "User")
+    [System.Environment]::SetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", "your-api-key", "User")
+    [System.Environment]::SetEnvironmentVariable("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC", "1", "User")
+    ```
+
+    Close the current PowerShell after setting, then reopen and verify:
+
+    ```powershell
+    echo $env:ANTHROPIC_BASE_URL
+    echo $env:ANTHROPIC_AUTH_TOKEN
+    echo $env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## 7. Verification
+
+- Claude Desktop starts normally
+- After sending a message, no errors such as `authentication`, `invalid api key`, or `gateway unavailable` appear
+- Response speed and model behavior match the Gateway service expectations
+- If also using CLI, you can run `echo` commands to confirm the environment variable values exist
+
+If you have previously successfully configured via `Apply locally` and the conversation is working normally, the local Gateway configuration is already in effect.
+
+## 8. Troubleshooting
+
+| Symptom | Action |
+|---|---|
+| `Invalid API key` | Key is wrong, expired, disabled, or does not belong to this Gateway. Regenerate and re-enter it |
+| Connection failed / `Gateway unavailable` | Check the network; verify the Gateway base URL is `https://claude-code.club/api` with no extra `/v1/messages` appended |
+| Model unavailable | The current account or Gateway does not support the requested model; contact the provider to confirm available models |
+| `Apply locally` not taking effect | Fully quit Claude Desktop and restart; on Windows try `.reg`, on macOS try `.mobileconfig` |
+| Configuration file still fails after import | Reopen the configuration page and check Base URL, auth scheme, and extra headers for correctness |
+
+## 9. Restore Default Configuration
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    If a `.mobileconfig` profile was installed, find it in `System Settings` under `Profiles` / `Device Management`, delete the corresponding Claude configuration profile, then restart Claude Desktop.
+
+    <Callout type="info">
+      The entry name may vary slightly across macOS versions (System Preferences / System Settings / Profiles).
+    </Callout>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    If the configuration was previously written via a registry policy, delete the policy entry in PowerShell and then restart Claude Desktop:
+
+    ```powershell
+    Remove-Item -Path "HKCU:\SOFTWARE\Policies\Claude" -Recurse -Force
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## 10. Security Guidelines
+
+<Callout type="warning">
+- An API Key is equivalent to a password; do not write it into public documents, screenshots, or Git repositories
+- Exported `.reg` / `.mobileconfig` / `.json` files may contain the Key in plain text; keep them only for a short time
+- If a Key is copied to a chat, screenshot, log, or repository, invalidate it immediately and regenerate a new one
+- When sharing configurations with a team, share only the steps and placeholders — never share the real key
+</Callout>
+
+## 11. Recommended Final Configuration
+
+| Field | Value |
+|---|---|
+| `Gateway base URL` | `https://claude-code.club/api` |
+| `Gateway API key` | Your valid API Key |
+| `Gateway auth scheme` | `bearer` |
+| `Gateway extra headers` | Leave blank |
+
+On both Windows and macOS, prefer **`Apply locally`** first; only export the platform-specific configuration file if local apply fails, you need bulk deployment, or you need to back up the configuration.
+
+## 12. References
+
+- [Get API Key](/getting-started/get-api-key) — claude-code.club API Key application process
+- [Configure Base URL and Auth Token](/getting-started/faq/config-baseurl-authtoken) — Three configuration methods from the Claude Code CLI perspective
+- [Claude Desktop Third-party Inference / Gateway Configuration Docs](https://claude.com/docs/cowork/3p/configuration)
+- [Claude Desktop Installation Instructions](https://support.claude.com/en/articles/10065433-install-claude-desktop)

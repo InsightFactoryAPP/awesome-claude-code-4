@@ -1,7 +1,535 @@
 ---
-title: 质量红线配置
+title: Quality Gates Configuration
+description: Use a "never" list to tame your AI — set a hard floor for code quality
 ---
 
-# 质量红线配置
+import { Callout, Steps } from 'nextra/components'
 
-> 🚧 English translation coming soon.
+# Quality Gates Configuration
+
+Quality gates are one of the most important configurations in CLAUDE.md — they define the **minimum quality standard** for code Claude Code produces, a floor that must never be crossed.
+
+## 1. What Are Quality Gates
+
+### 1.1 Defining Quality Gates
+
+Quality gates are not "suggestions" or "best practices" — they are **non-negotiable baseline rules**.
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '24px 0' }}>
+  <div style={{ padding: '16px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#c53030' }}>❌ Suggestions / Best Practices</h4>
+    <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#2d3748' }}>
+      <p>"Try to avoid using the any type"</p>
+      <p>"It's recommended to add error handling"</p>
+      <p>"Unit tests are suggested"</p>
+      <p>↓</p>
+      <p style={{ fontWeight: 'bold', color: '#c53030' }}>Claude may "use its judgment"</p>
+    </div>
+  </div>
+  <div style={{ padding: '16px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '2px solid #48bb78' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#22543d' }}>✅ Quality Gates</h4>
+    <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#2d3748' }}>
+      <p>"Never use the any type"</p>
+      <p>"Error handling is mandatory"</p>
+      <p>"All tests must pass"</p>
+      <p>↓</p>
+      <p style={{ fontWeight: 'bold', color: '#22543d' }}>Claude will follow them strictly</p>
+    </div>
+  </div>
+</div>
+
+### 1.2 The Problem Without Quality Gates
+
+Without explicit quality gates, Claude may:
+
+<div style={{ margin: '16px 0' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+    <div style={{ padding: '12px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#c53030' }}>Cut corners</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>"For simplicity, skipping error handling here"</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#c53030' }}>Simplify</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>"Using any for now, will improve types later"</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#c53030' }}>Punt</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>"Feature works, TODO: add tests"</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#c53030' }}>Forget to check</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Commit directly without running the linter</div>
+    </div>
+  </div>
+</div>
+
+<Callout type="error">
+**The core problem**: Without gates, low-quality code slips into the project. These issues are often only discovered later, and fixing them costs far more than getting them right the first time.
+</Callout>
+
+### 1.3 Gates vs. Suggestions
+
+<div style={{ maxWidth: '700px' }}>
+
+| Type | Phrasing | How Claude interprets it | Example |
+|:------|:------|:--------------|:------|
+| Gate | Never / Must / Prohibited | 100% mandatory | "Never use any" |
+| Suggestion | Try to / Recommended / Suggested | May use judgment | "Try to avoid any" |
+
+</div>
+
+---
+
+## 2. Two Types of Quality Gates
+
+Quality gates fall into two categories: **mandatory pre-commit checks** (must pass before committing) and **absolute prohibition list** (never allowed under any circumstances).
+
+<div style={{ margin: '24px 0', padding: '20px', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+  <div style={{ display: 'flex', alignItems: 'stretch', justifyContent: 'center', gap: '24px', flexWrap: 'wrap' }}>
+    <div style={{ padding: '20px', backgroundColor: '#f0fff4', borderRadius: '8px', textAlign: 'center', flex: '1', minWidth: '200px', maxWidth: '280px', border: '2px solid #86efac' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '18px', color: '#15803d' }}>Mandatory Pre-Commit Checks</div>
+      <div style={{ fontSize: '14px', color: '#047857', marginTop: '8px' }}>CHECK BEFORE COMMIT</div>
+      <div style={{ fontSize: '48px', marginTop: '12px' }}>✓</div>
+      <div style={{ fontSize: '13px', marginTop: '8px', color: '#4b5563' }}>Quality gates that must pass</div>
+    </div>
+    <div style={{ padding: '20px', backgroundColor: '#fff5f5', borderRadius: '8px', textAlign: 'center', flex: '1', minWidth: '200px', maxWidth: '280px', border: '2px solid #fc8181' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '18px', color: '#c53030' }}>Absolute Prohibition List</div>
+      <div style={{ fontSize: '14px', color: '#c53030', marginTop: '8px' }}>NEVER ALLOWED</div>
+      <div style={{ fontSize: '48px', marginTop: '12px' }}>✗</div>
+      <div style={{ fontSize: '13px', marginTop: '8px', color: '#4b5563' }}>Behaviors never permitted</div>
+    </div>
+  </div>
+</div>
+
+### 2.1 Mandatory Pre-Commit Checks (Must Pass)
+
+These are automated checks that must pass before any code is committed. If any one fails, the commit cannot proceed.
+
+<div style={{ padding: '16px', backgroundColor: '#f0fdf4', borderRadius: '8px', border: '2px solid #86efac', margin: '16px 0' }}>
+  <div style={{ fontWeight: 'bold', marginBottom: '12px', color: '#15803d' }}>Four Mandatory Checks</div>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #d1fae5' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>1. Linter Check</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Zero warnings, zero errors</div>
+      <div style={{ fontSize: '12px', color: '#15803d', marginTop: '4px', fontFamily: 'monospace' }}>eslint . --max-warnings 0</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #d1fae5' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>2. Test Check</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>All tests must pass</div>
+      <div style={{ fontSize: '12px', color: '#15803d', marginTop: '4px', fontFamily: 'monospace' }}>npm test / pytest</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #d1fae5' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>3. Format Check</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Code is correctly formatted</div>
+      <div style={{ fontSize: '12px', color: '#15803d', marginTop: '4px', fontFamily: 'monospace' }}>prettier --check .</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #d1fae5' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>4. Type Check</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>TypeScript strict mode passes</div>
+      <div style={{ fontSize: '12px', color: '#15803d', marginTop: '4px', fontFamily: 'monospace' }}>tsc --noEmit</div>
+    </div>
+  </div>
+</div>
+
+**Configuration example**:
+
+```markdown
+## Mandatory Pre-Commit Checks
+
+**All of the following checks must pass before any commit is allowed:**
+
+1. **Linter Check**: `npm run lint` must produce zero warnings and zero errors
+2. **Test Check**: `npm test` must pass completely
+3. **Format Check**: `npm run format:check` must pass
+4. **Type Check**: `npm run type-check` must pass
+
+**Important**: If any check fails, it must be fixed before committing. Never use `--no-verify` to bypass checks.
+```
+
+<Callout type="warning">
+**Key point**: Require "zero warnings, zero errors" — not "try to reduce warnings." Vague standards get exploited.
+</Callout>
+
+---
+
+### 2.2 Absolute Prohibition List (Never Allowed)
+
+These behaviors are prohibited under any circumstances, with no exceptions.
+
+<div style={{ padding: '16px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181', margin: '16px 0' }}>
+  <div style={{ fontWeight: 'bold', marginBottom: '12px', color: '#c53030' }}>Absolute Prohibition List</div>
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
+    <div style={{ padding: '10px 12px', backgroundColor: 'white', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '12px', border: '1px solid #fee2e2' }}>
+      <span style={{ color: '#c53030', fontWeight: 'bold' }}>✗</span>
+      <div>
+        <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Never commit code that fails tests</div>
+        <div style={{ fontSize: '12px', color: '#4b5563' }}>Even "just a small change" must pass the test suite</div>
+      </div>
+    </div>
+    <div style={{ padding: '10px 12px', backgroundColor: 'white', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '12px', border: '1px solid #fee2e2' }}>
+      <span style={{ color: '#c53030', fontWeight: 'bold' }}>✗</span>
+      <div>
+        <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Never use TODO/FIXME in final code</div>
+        <div style={{ fontSize: '12px', color: '#4b5563' }}>No "to be completed" placeholders in committed code</div>
+      </div>
+    </div>
+    <div style={{ padding: '10px 12px', backgroundColor: 'white', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '12px', border: '1px solid #fee2e2' }}>
+      <span style={{ color: '#c53030', fontWeight: 'bold' }}>✗</span>
+      <div>
+        <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Never skip error handling</div>
+        <div style={{ fontSize: '12px', color: '#4b5563' }}>Every operation that can fail must have error handling</div>
+      </div>
+    </div>
+    <div style={{ padding: '10px 12px', backgroundColor: 'white', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '12px', border: '1px solid #fee2e2' }}>
+      <span style={{ color: '#c53030', fontWeight: 'bold' }}>✗</span>
+      <div>
+        <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Never hardcode secrets/credentials</div>
+        <div style={{ fontSize: '12px', color: '#4b5563' }}>Must use environment variables, even in development</div>
+      </div>
+    </div>
+    <div style={{ padding: '10px 12px', backgroundColor: 'white', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '12px', border: '1px solid #fee2e2' }}>
+      <span style={{ color: '#c53030', fontWeight: 'bold' }}>✗</span>
+      <div>
+        <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Never use the any type</div>
+        <div style={{ fontSize: '12px', color: '#4b5563' }}>Use unknown instead, then apply type guards</div>
+      </div>
+    </div>
+    <div style={{ padding: '10px 12px', backgroundColor: 'white', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '12px', border: '1px solid #fee2e2' }}>
+      <span style={{ color: '#c53030', fontWeight: 'bold' }}>✗</span>
+      <div>
+        <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Never swallow exceptions</div>
+        <div style={{ fontSize: '12px', color: '#4b5563' }}>Caught exceptions must be logged or re-thrown</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+**Configuration example**:
+
+```markdown
+## Absolute Prohibition List
+
+**The following behaviors are never allowed, with no exceptions:**
+
+### Code Quality
+- Never commit code that fails tests
+- Never use TODO/FIXME/HACK in final code
+- Never skip error handling
+- Never swallow exceptions (empty catch blocks)
+- Never use magic numbers (define constants instead)
+
+### Type Safety
+- Never use the any type (use unknown + type guards)
+- Never use @ts-ignore (fix the root issue)
+- Never disable ESLint rules (eslint-disable)
+
+### Security
+- Never hardcode secrets, passwords, or tokens
+- Never include sensitive data in code
+- Never trust unvalidated user input
+```
+
+<Callout type="error">
+**Watch your wording**: Use "never" not "don't", use "must" not "should." Strong language makes Claude enforce rules more strictly.
+</Callout>
+
+---
+
+## 3. Full Configuration Template
+
+Here is a complete template you can copy directly into your CLAUDE.md:
+
+```markdown
+## Quality Gates
+
+**Important: The following rules are absolute minimums with no exceptions whatsoever**
+
+### Mandatory Pre-Commit Checks (All Must Pass)
+
+Before committing any code, ensure all of the following checks pass:
+
+1. **Linter Check**
+   - Command: `npm run lint`
+   - Standard: zero warnings, zero errors
+   - Never use `eslint-disable` to bypass rules
+
+2. **Test Check**
+   - Command: `npm test`
+   - Standard: all tests must pass
+   - New code must have corresponding tests
+
+3. **Format Check**
+   - Command: `npm run format:check`
+   - Standard: all files are correctly formatted
+
+4. **Type Check** (TypeScript projects)
+   - Command: `npm run type-check`
+   - Standard: no errors under TypeScript strict mode
+
+### Absolute Prohibition List (Never Allowed)
+
+The following behaviors are prohibited under any circumstances:
+
+**Code Quality**
+- Never commit code that fails tests
+- Never use TODO/FIXME in final code
+- Never skip error handling
+- Never swallow exceptions (empty catch blocks)
+- Never use magic numbers
+
+**Type Safety**
+- Never use the any type (use unknown instead)
+- Never use @ts-ignore
+- Never disable ESLint rules
+
+**Security**
+- Never hardcode secrets/credentials
+- Never output sensitive data in logs
+- Never skip input validation
+
+### Handling Violations
+
+If code is found to violate any of the above gates:
+1. Must fix immediately
+2. Cannot be bypassed in any way
+3. Cannot be excepted as a "temporary solution"
+```
+
+---
+
+## 4. Making Quality Gates Actually Work
+
+Writing the configuration is not enough. Apply these techniques to ensure gates are truly enforced.
+
+### 4.1 Use Strong Language
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '16px 0' }}>
+  <div style={{ padding: '16px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#c53030' }}>❌ Weak constraint words</h4>
+    <div style={{ fontSize: '14px', lineHeight: '2', color: '#2d3748' }}>
+      <p>• "Try to avoid using any"</p>
+      <p>• "It's recommended to add error handling"</p>
+      <p>• "Don't skip tests"</p>
+      <p>• "Should run the linter"</p>
+    </div>
+  </div>
+  <div style={{ padding: '16px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '2px solid #48bb78' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#22543d' }}>✅ Strong constraint words</h4>
+    <div style={{ fontSize: '14px', lineHeight: '2', color: '#2d3748' }}>
+      <p>• "**Never** use the any type"</p>
+      <p>• "**Must** add error handling"</p>
+      <p>• "**Prohibited** to skip tests"</p>
+      <p>• "**Required** to run linter"</p>
+    </div>
+  </div>
+</div>
+
+### 4.2 Give Specific Standards
+
+Vague standards get "flexibly interpreted" — specific standards can be strictly enforced.
+
+<div style={{ maxWidth: '600px' }}>
+
+| Vague Standard | Specific Standard |
+|:---------|:---------|
+| "Reduce linter warnings" | "Zero warnings, zero errors" |
+| "Write some tests" | "Coverage ≥ 80%" |
+| "Pay attention to code quality" | "Functions no longer than 30 lines" |
+| "Handle errors properly" | "Every try block must have a catch" |
+
+</div>
+
+### 4.3 State the Consequences of Violations
+
+Make clear to Claude the seriousness of crossing a quality gate:
+
+```markdown
+## Consequences of Gate Violations
+
+If code output violates any of the above gates:
+- The code will be considered **unacceptable** and must be rewritten
+- No "special circumstances" or "temporary solution" exceptions are accepted
+- "Commit now, fix later" is not accepted
+```
+
+---
+
+## 5. Customizing Gates for Your Team
+
+### 5.1 Universal Gates (Recommended for All Projects)
+
+The following gates apply to the vast majority of projects:
+
+<div style={{ padding: '16px', backgroundColor: '#f0fdf4', borderRadius: '8px', border: '2px solid #86efac', margin: '16px 0' }}>
+  <div style={{ fontWeight: 'bold', marginBottom: '12px', color: '#15803d' }}>Universal Gate Checklist</div>
+  <div style={{ fontSize: '14px', lineHeight: '2', color: '#2d3748' }}>
+    <p>✓ All tests must pass</p>
+    <p>✓ Never skip error handling</p>
+    <p>✓ Never hardcode sensitive information</p>
+    <p>✓ Linter check must pass</p>
+    <p>✓ Never commit code with TODO placeholders</p>
+  </div>
+</div>
+
+### 5.2 Optional Gates (Add as Needed)
+
+The following gates can be added based on team requirements:
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', margin: '16px 0' }}>
+  <div style={{ padding: '12px', backgroundColor: '#f9fafb', borderRadius: '6px', border: '1px solid #d1d5db' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Emoji Ban</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>"Never use emojis in code or comments"</div>
+  </div>
+  <div style={{ padding: '12px', backgroundColor: '#f9fafb', borderRadius: '6px', border: '1px solid #d1d5db' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Specific Code Style</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>"Never use var — must use const/let"</div>
+  </div>
+  <div style={{ padding: '12px', backgroundColor: '#f9fafb', borderRadius: '6px', border: '1px solid #d1d5db' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Coverage Requirement</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>"Test coverage must be ≥ 80%"</div>
+  </div>
+  <div style={{ padding: '12px', backgroundColor: '#f9fafb', borderRadius: '6px', border: '1px solid #d1d5db' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Comment Requirements</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>"Public APIs must have JSDoc"</div>
+  </div>
+</div>
+
+### 5.3 Tech-Stack-Specific Gates
+
+<div style={{ margin: '16px 0' }}>
+  <div style={{ marginBottom: '12px' }}>
+    <div style={{ padding: '12px', backgroundColor: '#eff6ff', borderRadius: '8px', marginBottom: '8px', border: '2px solid #60a5fa' }}>
+      <div style={{ fontWeight: 'bold', color: '#1e40af' }}>TypeScript Projects</div>
+      <div style={{ fontSize: '14px', marginTop: '8px', color: '#2d3748' }}>
+        • Never use any — use unknown instead<br/>
+        • Never use @ts-ignore<br/>
+        • Must enable strict mode<br/>
+        • Never use non-null assertions (!)
+      </div>
+    </div>
+  </div>
+  <div style={{ marginBottom: '12px' }}>
+    <div style={{ padding: '12px', backgroundColor: '#fffbeb', borderRadius: '8px', marginBottom: '8px', border: '2px solid #fbbf24' }}>
+      <div style={{ fontWeight: 'bold', color: '#92400e' }}>Python Projects</div>
+      <div style={{ fontSize: '14px', marginTop: '8px', color: '#2d3748' }}>
+        • Never use bare except<br/>
+        • Must use type annotations<br/>
+        • Never use eval/exec<br/>
+        • Must pass mypy checks
+      </div>
+    </div>
+  </div>
+  <div>
+    <div style={{ padding: '12px', backgroundColor: '#f0fdf4', borderRadius: '8px', border: '2px solid #86efac' }}>
+      <div style={{ fontWeight: 'bold', color: '#15803d' }}>Frontend Projects</div>
+      <div style={{ fontSize: '14px', marginTop: '8px', color: '#2d3748' }}>
+        • Never manipulate the DOM directly (use framework methods)<br/>
+        • Never use inline styles in components (use CSS classes)<br/>
+        • Must handle loading and error states<br/>
+        • Never ignore accessibility attributes
+      </div>
+    </div>
+  </div>
+</div>
+
+---
+
+## 6. FAQ
+
+### Q: What if Claude still violates a gate?
+
+<Callout type="warning">
+**Solution**: Strengthen the constraint language and require Claude to self-check before submitting.
+</Callout>
+
+```markdown
+## Pre-Submission Self-Check
+
+Before outputting final code, confirm each item:
+
+- [ ] Did I use the any type? → If yes, change to unknown
+- [ ] Are there empty catch blocks? → If yes, add error handling
+- [ ] Are there TODO/FIXME comments? → If yes, complete them now
+- [ ] Are there hardcoded configurations? → If yes, move to environment variables
+- [ ] Did I run the linter? → If not, run it now
+
+**Only output the code after all items are confirmed**
+```
+
+### Q: What if gates are too strict and reduce efficiency?
+
+<Callout type="info">
+**Solution**: Distinguish between "during development" and "at commit time" requirements.
+</Callout>
+
+```markdown
+## Development Process vs. Commit Standards
+
+### During Development (can be relaxed)
+- May use console.log for debugging
+- May temporarily skip some tests
+- May use simplified implementations
+
+### At Commit Time (must be strict)
+- Must remove all debug code
+- Must ensure all tests pass
+- Must be production-ready code
+```
+
+### Q: How do I balance the number of gates?
+
+<Callout type="info">
+**Suggestion**: Start with core gates, then add gradually.
+</Callout>
+
+<Steps>
+
+### Phase 1: Core Gates (3–5)
+
+Start with the most important gates:
+- Tests must pass
+- Never skip error handling
+- Never hardcode secrets
+
+### Phase 2: Extended Gates (5–10)
+
+After using for a while, expand based on problems you encounter:
+- Type safety related
+- Code style related
+- Security related
+
+### Phase 3: Team Customization (10–15)
+
+Build the team's complete, tailored gate checklist
+
+</Steps>
+
+---
+
+## 7. Summary
+
+Quality gates are one of the most important configurations in CLAUDE.md:
+
+<div style={{ maxWidth: '600px' }}>
+
+| Key Point | Description |
+|:------|:------|
+| **Set a clear floor** | Use "never" not "try to" — leave no room for ambiguity |
+| **Two types of gates** | Pre-commit checks + absolute prohibition list |
+| **Specific standards** | "Zero warnings" not "fewer warnings" |
+| **Customizable** | Adjust to fit your tech stack and team needs |
+
+</div>
+
+<Callout type="info">
+**Working with other configurations**:
+- Pair with [Three-Phase Workflow](/practical-skills/config/workflow): enforce quality checks during the implementation phase
+- Pair with [Coding Standards](/practical-skills/config/coding-standards): define specific code conventions
+- Pair with security standards: strengthen security-related gates
+</Callout>
+
+## Next Steps
+
+- [Coding Standards Configuration](/practical-skills/config/coding-standards) — define code style conventions
+- [Three-Phase Workflow Configuration](/practical-skills/config/workflow) — ensure quality checks are executed
+- [Back to Configuration Guide Home](/practical-skills/config)

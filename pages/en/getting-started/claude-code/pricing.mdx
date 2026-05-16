@@ -1,0 +1,129 @@
+---
+title: Pricing & Plans
+description: CC Club plan pricing, model multipliers, exchange rates, and weekly quota rules
+tocDepth: 3
+---
+
+import { Callout } from 'nextra/components'
+import { PricingTable, ModelRatesTable, WeeklyQuotaTable } from '../../../../components/PricingTable'
+
+# Pricing & Plans
+
+<Callout type="warning">
+**Important:** Sharing a single API Key among multiple users is strictly prohibited. Sharing may result in account risk control, quota anomalies, or service interruption.
+</Callout>
+
+## CC Club Plan Pricing
+
+CC Club plans are determined by two factors: **weekly quota** and **model multiplier**. Different model families have different official costs and consume your weekly quota at different rates.
+
+<PricingTable />
+
+## Model Multipliers & Exchange Rates
+
+Different model families have different multipliers and effective exchange rates depending on your plan.
+
+<ModelRatesTable />
+
+<Callout type="info">
+The Free plan does not display a fixed effective exchange rate.
+</Callout>
+
+## What Is a Model Multiplier?
+
+The model multiplier determines how much of your weekly quota is consumed when using a given model family.
+
+Formula:
+
+```text
+Official model cost × model multiplier = weekly quota consumed
+```
+
+A lower multiplier means your quota lasts longer; a higher multiplier means faster consumption.
+
+For the Max plan (210 USD/week), if you use only OpenAI Codex or Google Gemini:
+
+```text
+210 ÷ 0.6 = 350
+```
+
+You can use up to approximately **350 USD** of official Codex / Gemini quota per week.
+
+If you use only Anthropic Claude:
+
+```text
+210 ÷ 1 = 210
+```
+
+You can use up to approximately **210 USD** of official Claude quota per week.
+
+If you mix models, the system calculates each separately and sums them. For example, 100 USD of Codex and 50 USD of Claude:
+
+```text
+100 × 0.6 + 50 × 1 = 110
+```
+
+This deducts 110 USD from the 210 USD weekly quota.
+
+## What Is the Effective Exchange Rate?
+
+When your plan quota is fully used, the effective exchange rate shows how many CNY you pay per 1 USD of official model quota consumed.
+
+For the Max plan:
+
+| Model Family | Effective Rate | Meaning |
+|---|---|---|
+| OpenAI Codex / Google Gemini | 0.53 CNY/USD | 1 USD of Codex/Gemini costs ~0.53 CNY |
+| Anthropic Claude | 0.88 CNY/USD | 1 USD of Claude costs ~0.88 CNY |
+
+<Callout type="info">
+The effective exchange rate is not the live USD/CNY forex rate. It is a derived cost reference calculated from plan price, weekly quota, and model multiplier.
+</Callout>
+
+## Multiplier Adjustment Notice
+
+<Callout type="warning">
+Model multipliers and effective exchange rates may be adjusted as market conditions change. Users will be notified at least 3 days in advance of any adjustment.
+</Callout>
+
+## What Is the Session Window Limit?
+
+The session window limit caps how much quota can be consumed within a fixed time window. For example, the Max plan's 35 USD / 5-hour limit means at most 35 USD of weekly quota can be consumed in any 5-hour period.
+
+- **Window limit**: controls short-term usage intensity
+- **Weekly quota**: controls total usage over a week
+
+## What Is the Weekly Quota?
+
+The weekly quota is the total quota available per week.
+
+<WeeklyQuotaTable />
+
+Using the Max plan's 210 USD weekly quota as an example:
+
+- All OpenAI Codex / Google Gemini: up to approximately **350 USD** official quota
+- All Anthropic Claude: up to approximately **210 USD** official quota
+
+## FAQ
+
+### Does a lower multiplier mean better value?
+
+Yes. A lower multiplier means the same 1 USD of official model usage consumes less weekly quota. For example, 0.6× means 1 USD of model quota only consumes 0.6 USD of weekly quota.
+
+### Is the effective exchange rate the same as the forex rate?
+
+No. It is a derived cost reference showing how much CNY you pay per 1 USD of official quota when your plan is fully utilized.
+
+### How is quota calculated when mixing models?
+
+The system calculates each model's consumption separately and sums the total.
+
+### Will multipliers change?
+
+Possibly. Users will be notified at least 3 days before any adjustment.
+
+## Related Resources
+
+- [Get API Key](/en/getting-started/claude-code/get-api-key)
+- [Installation](/en/getting-started/claude-code/installation)
+- [FAQ](/en/getting-started/claude-code/faq)

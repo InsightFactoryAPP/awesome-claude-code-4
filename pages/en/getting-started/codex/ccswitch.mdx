@@ -1,0 +1,263 @@
+---
+title: Configuring OpenAI Codex in CC Switch
+description: A visual guide to configuring OpenAI Codex via the CC Switch desktop app to connect to the CC Club API — covering auth.json, config.toml, and environment variables all in one place.
+---
+
+import { Callout, Cards, Steps, Tabs } from 'nextra/components'
+
+# Configuring OpenAI Codex in CC Switch
+
+[CC Switch](https://github.com/farion1231/cc-switch/releases) is a cross-platform desktop app that provides a unified graphical interface for managing multiple API configurations for Claude Code, Codex, OpenCode, and Gemini CLI. This page is a **companion guide** to [Codex Installation and Configuration](/getting-started/codex-installation) — it explains exactly what to fill in for each field in CC Switch's "Add Provider" form for the **Codex section**.
+
+<Callout type="warning">
+  **Configuring Codex requires one extra step compared to Claude** — after CC Switch writes `auth.json` and `config.toml`, **you must still manually `export OPENAI_API_KEY` in your shell**, otherwise Codex will fail to authenticate at launch because it cannot read the environment variable. This is the most commonly missed step in Codex configuration. See [Step 5: Configure Environment Variables](#step-5-configure-environment-variables-the-most-overlooked-step) below.
+</Callout>
+
+## Before You Begin
+
+<Cards>
+  <Cards.Card icon="🔑" title="Get an API Key" href="/getting-started/get-api-key">
+    You cannot fill in item 3 without a CC Club Key. Get one for free first.
+  </Cards.Card>
+  <Cards.Card icon="📦" title="Install CC Switch" href="/getting-started/opencode-installation#方法二使用-cc-switch-配置">
+    Download and installation steps for Windows / macOS / Linux.
+  </Cards.Card>
+  <Cards.Card icon="🧰" title="Install the Codex CLI" href="/getting-started/codex-installation#1-安装-codex-cli">
+    You need the `codex` command installed first — CC Switch needs something to configure.
+  </Cards.Card>
+</Cards>
+
+<Callout type="info">
+  Open CC Switch → switch to the **Codex** group on the left → click **+ Add Provider**,
+  then follow the 4 GUI fields + 2 config blocks + 1 environment variable step below.
+</Callout>
+
+## Quick Reference Table
+
+If you just want a quick reference without reading the full tutorial, this table covers everything:
+
+| # | Field / Section        | What to enter                                                                                  |
+|---|------------------------|-----------------------------------------------------------------------------------------------|
+| 1 | Provider name / Note   | Anything you like, e.g. `CC Club / Codex`, `Codex (gpt-5.4)`                                 |
+| 2 | Website URL            | **Leave blank**                                                                                |
+| 3 | API                    | Your CC Club API Key — see [Get API Key](/getting-started/get-api-key)                         |
+| 4 | Base URL               | `https://claude-code.club/openai/v1` (**the trailing `/v1` is required** — omitting it causes stream disconnection) |
+| 5 | `auth.json`            | See [auth.json configuration](#auth-json-configuration) — 4 lines of JSON                     |
+| 6 | `config.toml`          | See [config.toml configuration](#config-toml-configuration) — includes `[model_providers.club]` and `[features]` |
+| 7 | System environment var | `export OPENAI_API_KEY=your-key` — see [Step 5](#step-5-configure-environment-variables-the-most-overlooked-step) |
+
+## Field Details
+
+<Steps>
+
+### Provider Name / Note
+
+Choose any name that lets you identify this entry at a glance in the CC Switch list. Including "CC Club" and a model identifier is recommended, for example `CC Club / Codex gpt-5.4`.
+
+<Callout type="info">
+  This field **only affects the list display** — it is not included in actual requests, so using any language is fine.
+</Callout>
+
+### Website URL
+
+**Leave blank.** CC Club does not use this field, and leaving it empty will not trigger any validation errors.
+
+### API (i.e. the API Key)
+
+Paste the key you obtained from the [Get API Key](/getting-started/get-api-key) page.
+
+<Callout type="warning">
+  The key looks like `cr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` — **do not include leading or trailing spaces**. This key is used in **three places**: the GUI form's API field, `auth.json`'s `OPENAI_API_KEY`, and the `OPENAI_API_KEY` environment variable in Step 5. **All three must use the same key** — do not mix them up.
+</Callout>
+
+### Base URL
+
+```
+https://claude-code.club/openai/v1
+```
+
+Two things to note:
+
+1. Codex uses the **`/openai`** path, not the `/api` path used by Claude — this is because CC Club uses different sub-paths to distinguish between the two upstream protocols.
+2. **The trailing `/v1` cannot be omitted.** Starting with Codex CLI v0.130, the final URL is constructed as `{base_url}/responses`. Without `/v1`, the request goes to `/openai/responses`, and the gateway returns an empty SSE stream that closes immediately, resulting in `stream disconnected before completion: stream closed before response.completed`.
+
+If the default endpoint has high latency, you can switch to a geographically closer node (**remember to update `base_url` in `[model_providers.club]` inside `config.toml` as well**):
+
+| Address | When to use |
+|---|---|
+| `https://claude-code.club/openai/v1`    | Default (fastest with direct connection)            |
+| `https://jp.claude-code.club/openai/v1` | Japan node (Alibaba Cloud, optimized for China)     |
+| `https://hk.claude-code.club/openai/v1` | Hong Kong node (Alibaba Cloud, optimized for China) |
+| `https://sz.ai-code.club/openai/v1`     | Shenzhen node (domestic relay, exits abroad)        |
+
+### auth.json Configuration
+
+**Copy the entire block below** into CC Switch's `auth.json` input field, replacing the empty string for `OPENAI_API_KEY` with your own key:
+
+```json
+{
+  "OPENAI_API_KEY": "",
+  "auth_mode": "apikey"
+}
+```
+
+| Field | Meaning | Edit recommendation |
+|---|---|---|
+| `OPENAI_API_KEY` | The persisted copy of the key stored by Codex CLI | **Required**: paste your CC Club key |
+| `auth_mode`      | Authentication mode (`apikey` / `oauth`)          | Keep as `apikey` — CC Club uses the API key path |
+
+<Callout type="warning">
+  Even if you fill in the key here, **Codex will still prioritize reading the environment variable at startup** — do not skip the environment variable step below.
+</Callout>
+
+### config.toml Configuration
+
+**Copy the entire block below** into CC Switch's `config.toml` input field:
+
+```toml
+model_provider = "club"
+model = "gpt-5.4"
+model_reasoning_effort = "medium"
+disable_response_storage = true
+preferred_auth_method = "apikey"
+
+[model_providers.club]
+name = "ai code club"
+base_url = "https://claude-code.club/openai/v1"
+wire_api = "responses"
+requires_openai_auth = true
+env_key = "OPENAI_API_KEY"
+
+[features]
+shell_snapshot = true
+multi_agent = true
+unified_exec = true
+```
+
+This TOML is divided into three blocks:
+
+**① Top-level runtime parameters**
+
+| Field | Meaning | Edit recommendation |
+|---|---|---|
+| `model_provider` | Which provider to use (points to `[model_providers.club]` below) | Keep as `"club"` |
+| `model` | Default model | `gpt-5.4` offers the best price-to-performance; switch manually for complex tasks |
+| `model_reasoning_effort` | Reasoning intensity (`low` / `medium` / `high`) | Usually keep as `medium` |
+| `disable_response_storage` | Whether to disable response caching | Keep as `true` to always get fresh results |
+| `preferred_auth_method`    | Preferred authentication method | Keep as `apikey` to match `auth.json` |
+
+**② `[model_providers.club]` provider definition**
+
+| Field | Meaning | Edit recommendation |
+|---|---|---|
+| `name`                  | Display name for this provider entry   | Anything you like |
+| `base_url`              | API entry point URL                    | **If switching to a different node, update this too** |
+| `wire_api`              | Protocol spec (`responses` / `chat`)   | Keep as `"responses"` — CC Club uses the Responses API |
+| `requires_openai_auth`  | Whether to use OpenAI-compatible auth  | Keep as `true` |
+| `env_key`               | Which environment variable to read the key from | **Keep as `"OPENAI_API_KEY"`** — must exactly match the variable name set in Step 5 |
+
+**③ `[features]` feature toggles**
+
+| Field | Meaning |
+|---|---|
+| `shell_snapshot` | Enable shell session snapshots (for playback when errors occur) |
+| `multi_agent`    | Enable multi-agent collaboration                                 |
+| `unified_exec`   | Enable unified executor (improves tool call stability)           |
+
+All three features can be set to `false` if needed, but **leaving them all enabled** by default gives you the most complete Codex capabilities.
+
+</Steps>
+
+## Step 5: Configure Environment Variables (The Most Overlooked Step)
+
+The `auth.json` written by CC Switch is Codex's "fallback key" — at startup, Codex **prioritizes** reading the **OS environment variable** specified by `env_key` (`OPENAI_API_KEY`). If this variable is not present in the shell, even if the previous four steps are configured correctly, running `codex` will still exit immediately with an authentication failure.
+
+<Callout type="warning">
+  This is the **only** step that causes "looks configured in the GUI but errors at runtime." It is **strongly recommended to add it to your shell startup file** (`.zshrc` / `.bashrc` / system environment variables) rather than `export`-ing it temporarily each time you open a terminal.
+</Callout>
+
+For detailed cross-platform commands, refer to [Codex Installation → Section 3: Configure Environment Variables](/getting-started/codex-installation#3-配置环境变量). Here is a quick-reference summary:
+
+<Tabs items={['macOS (zsh)', 'Linux (bash)', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    ```bash
+    echo 'export OPENAI_API_KEY="cr_paste-your-key-here"' >> ~/.zshrc
+    source ~/.zshrc
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    echo 'export OPENAI_API_KEY="cr_paste-your-key-here"' >> ~/.bashrc
+    source ~/.bashrc
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```powershell
+    [System.Environment]::SetEnvironmentVariable('OPENAI_API_KEY', 'cr_paste-your-key-here', 'User')
+    ```
+    After setting this, **close and reopen** your PowerShell window for it to take effect.
+  </Tabs.Tab>
+</Tabs>
+
+After writing this, don't forget to **restart your terminal** (or `source` the startup file) to activate the variable.
+
+## Save and Verify
+
+<Steps>
+
+### Click "Save" in CC Switch
+
+CC Switch will validate both `auth.json` (JSON syntax) and `config.toml` (TOML syntax). If both pass, this provider entry will appear in the Codex group on the left.
+
+### Click on the provider card to activate it
+
+CC Switch uses an "active selection" model — once the card has a checkmark, CC Switch writes the corresponding content to `~/.codex/auth.json` and `~/.codex/config.toml`.
+
+### Run Codex once in your terminal
+
+```bash
+echo $OPENAI_API_KEY     # First confirm the environment variable is actually set — should output a string starting with cr_...
+codex --version          # Then check the CLI is on PATH
+codex                    # Launch and type something to test, e.g. "explain what vibe coding is in one sentence"
+```
+
+If you get a response within seconds, it means `auth.json` / `config.toml` / the environment variable are all set correctly.
+
+</Steps>
+
+<Callout type="success">
+  Once this step passes, the entire **CC Switch + Codex CLI + CC Club** chain is working. To switch between providers (CC Club ⇄ official ⇄ self-hosted gateway) in the future, just click the corresponding card in CC Switch — no need to manually edit any files under `~/.codex/`.
+</Callout>
+
+## Frequently Asked Questions
+
+### Q: Getting a TOML validation failure when saving?
+
+The most common causes:
+
+- **Incorrect section header** — the brackets and dot in `[model_providers.club]` are all required
+- **Using single quotes for strings** — TOML requires strings to use double quotes `"..."`
+- **Extra keys from another section mixed in** during copy-paste inside the `[model_providers.club]` block, causing the parser to misidentify section boundaries
+
+Comparing character by character against the [config.toml configuration](#config-toml-configuration) on this page and retyping is the safest approach.
+
+### Q: Getting "Authentication failed" when running `codex` after saving?
+
+Self-diagnose in order of likelihood:
+
+1. **Environment variable not set**: run `echo $OPENAI_API_KEY` — if empty, that's the cause → go back to [Step 5](#step-5-configure-environment-variables-the-most-overlooked-step)
+2. **Environment variable set but terminal not restarted**: open a new terminal window and try again
+3. **Key inconsistent across three locations**: the GUI form / `auth.json` / environment variable must all use the **same** CC Club key — don't leave a stale key in any of them
+4. **Provider card not activated**: the card in the CC Switch list must have a checkmark
+
+### Q: Is the `model = "gpt-5.4"` model name fixed?
+
+`gpt-5.4` is CC Club's current recommended default Codex model. To switch to another model, **just change the string on the `model =` line** — the `[model_providers.club]` block does not need to change. Check the [CC Club official documentation](https://claude-code.club) for available model names.
+
+### Q: Can I have multiple Codex providers enabled at the same time?
+
+No. The Codex CLI reads only **the single currently active** configuration at any time — CC Switch switches which one is active, not which ones run in parallel. To use different models/gateways in parallel, open multiple terminals with separate `~/.codex/` configuration directories.
+
+### Q: How does this relate to the CC Switch configuration for Claude?
+
+**Completely independent.** Claude uses `https://claude-code.club/api` with the Anthropic Messages protocol; Codex uses `https://claude-code.club/openai` with the OpenAI Responses protocol. The two providers belong to **separate Claude/Codex groups** in CC Switch and can coexist without interfering with each other. If you also use Claude Code, see [Configuring Claude Code in CC Switch](/getting-started/installation/ccswitch).

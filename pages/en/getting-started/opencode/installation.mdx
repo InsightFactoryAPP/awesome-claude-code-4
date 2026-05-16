@@ -1,0 +1,428 @@
+---
+title: Installation and Configuration
+description: Installation and configuration guide for OpenCode using CC Club's Claude models
+---
+
+import { Callout, Tabs, Steps } from 'nextra/components'
+
+export const toc = {
+  float: true,
+  headingComponent: null,
+  extraContent: null
+}
+
+export const tocDepth = 2
+
+# OpenCode Installation and Configuration Guide
+
+This guide will help you install OpenCode and configure it to use CC Club's Claude models.
+
+## Why Is Special Configuration Needed?
+
+<Callout type="info">
+  **Compatibility Notes**
+
+  1. **Different model ID formats**: OpenCode defaults to using Anthropic model IDs without dates (e.g. `claude-sonnet-4-5`), while CC Club uses model IDs with dates (e.g. `claude-sonnet-4-5-20250929`).
+  2. **Model mapping required**: To allow OpenCode to correctly call CC Club's models, you need to resolve this compatibility issue through configuration tools or a proxy service.
+  3. **Avoiding client restrictions**: Proper configuration can help avoid restrictions that warn against using OpenCode clients.
+</Callout>
+
+We offer three configuration methods:
+
+- **Method 1 (Recommended)**: Edit the configuration file directly — the simplest and fastest approach
+- **Method 2**: Use the CC Switch desktop app for visual configuration management with one-click switching
+- **Method 3 (Advanced)**: Use the New API proxy service — suitable for scenarios requiring more custom configuration
+
+## Method 1: Direct Configuration (Recommended)
+
+This is the simplest configuration method — just edit OpenCode's configuration file.
+
+<Steps>
+  ### Install OpenCode
+
+  <Tabs items={['Go install', 'Homebrew (macOS)', 'Manual download']}>
+    <Tabs.Tab>
+      ```bash
+      go install github.com/anomalyco/opencode@latest
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash
+      brew install opencode
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      Download the binary for your platform from [GitHub Releases](https://github.com/anomalyco/opencode/releases).
+    </Tabs.Tab>
+  </Tabs>
+
+  ### Get Your CC Club API Key
+
+  Visit the [Get API Key](/getting-started/get-api-key) page to learn how to obtain a CC Club API key.
+
+  ### Edit the Configuration File
+
+  Edit `~/.config/opencode/opencode.json` (create it if it does not exist):
+
+  ```bash
+  cat ~/.config/opencode/opencode.json
+  ```
+
+  ```json
+  {
+    "provider": {
+      "anthropic": {
+        "options": {
+          "baseURL": "https://claude-code.club/api/v1",
+          "apiKey": "cr_your-api-key-here"
+        },
+        "npm": "@ai-sdk/anthropic",
+        "name": "cc-club(Claude)"
+      }
+    },
+    "$schema": "https://opencode.ai/config.json"
+  }
+  ```
+
+  <Callout type="warning">
+    **Note**: Replace `cr_your-api-key-here` with your actual CC Club API key.
+  </Callout>
+
+  ### CC Club API Addresses
+
+  Based on your network environment, you can choose from different API addresses:
+
+  | Address | Description |
+  |-----|-----|
+  | `https://claude-code.club/api/v1` | Default address (fastest when direct connection latency < 100ms) |
+  | `https://jp.claude-code.club/api/v1` | Japan node (Alibaba Cloud, optimized for China) |
+  | `https://hk.claude-code.club/api/v1` | Hong Kong node (Alibaba Cloud, optimized for China) |
+
+  ### Verify the Configuration
+
+  Launch OpenCode to verify the configuration is working:
+
+  ```bash
+  opencode
+  ```
+
+  <Callout type="success">
+    **Verification success indicator**: OpenCode starts normally and you can have a conversation
+  </Callout>
+</Steps>
+
+---
+
+## Method 2: Configure Using CC Switch
+
+CC Switch is an open-source cross-platform desktop app designed specifically for unified visual configuration management of AI coding assistant tools. It supports visual configuration management for Claude Code, Codex, OpenCode, and Gemini CLI.
+
+<Callout type="success">
+  **Why use CC Switch**
+  - Visual interface — no need to manually edit configuration files
+  - One-click switching between multiple API providers
+  - Built-in latency testing to select the fastest node
+  - Automatically handles model ID mapping issues
+  - Supports configuration backup and cloud sync
+</Callout>
+
+<Steps>
+  ### Install CC Switch
+
+  Choose the installation method for your operating system:
+
+  <Tabs items={['Windows', 'macOS', 'Linux']}>
+    <Tabs.Tab>
+      **Option 1: MSI installer (recommended)**
+
+      1. Visit [CC Switch Releases](https://github.com/farion1231/cc-switch/releases)
+      2. Download the latest `.msi` file
+      3. Double-click the installer and follow the prompts to complete installation
+
+      **Option 2: Portable version**
+
+      1. Download the `.zip` portable version
+      2. Extract to any directory
+      3. Run `cc-switch.exe` directly
+    </Tabs.Tab>
+    <Tabs.Tab>
+      **Option 1: Homebrew (recommended)**
+
+      ```bash
+      brew install --cask cc-switch
+      ```
+
+      **Option 2: Manual installation**
+
+      1. Visit [CC Switch Releases](https://github.com/farion1231/cc-switch/releases)
+      2. Download the `.dmg` or `.zip` file
+      3. Drag it into the Applications folder
+
+      <Callout type="warning">
+        On first launch you may encounter a Gatekeeper warning — go to System Preferences → Security & Privacy to allow it to run.
+      </Callout>
+    </Tabs.Tab>
+    <Tabs.Tab>
+      Choose based on your distribution:
+
+      **Ubuntu/Debian**
+      ```bash
+      # After downloading the .deb package
+      sudo dpkg -i cc-switch.deb
+      ```
+
+      **Fedora/RHEL**
+      ```bash
+      # After downloading the .rpm package
+      sudo rpm -i cc-switch.rpm
+      ```
+
+      **Arch Linux**
+      ```bash
+      paru -S cc-switch-bin
+      ```
+
+      **Universal method (AppImage)**
+      ```bash
+      # After downloading the AppImage
+      chmod +x cc-switch.AppImage
+      ./cc-switch.AppImage
+      ```
+    </Tabs.Tab>
+  </Tabs>
+
+  ### Install OpenCode
+
+  <Tabs items={['Go install', 'Homebrew (macOS)', 'Manual download']}>
+    <Tabs.Tab>
+      ```bash
+      go install github.com/anomalyco/opencode@latest
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash
+      brew install opencode
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      Download the binary for your platform from [GitHub Releases](https://github.com/anomalyco/opencode/releases).
+    </Tabs.Tab>
+  </Tabs>
+
+  ### Get Your CC Club API Key
+
+  Visit the [Get API Key](/getting-started/get-api-key) page to learn how to obtain a CC Club API key.
+
+  ### Configure CC Switch
+
+  After launching the CC Switch app, follow these steps to add a CC Club provider:
+
+  1. **Click the "Add Provider" button**
+
+  2. **Select "Custom" for custom configuration**
+
+  3. **Fill in the configuration details**:
+     - **Name**: CC Club (or a custom name)
+     - **Base URL**: select the appropriate API address (see the address table below)
+     - **API Key**: enter your CC Club API key
+     - **Model mapping** (important): configure model ID mapping
+
+  4. **Example model mapping configuration**:
+     ```json
+     {
+       "claude-opus-4-5": "claude-opus-4-5-20251101",
+       "claude-sonnet-4-5": "claude-sonnet-4-5-20250929",
+       "claude-opus-4-5-20251101": "claude-opus-4-5-20251101",
+       "claude-sonnet-4-5-20250929": "claude-sonnet-4-5-20250929"
+     }
+     ```
+
+  <Callout type="info">
+    **About model mapping**: The left side is the model ID used by OpenCode (without a date), and the right side is the actual model ID in CC Club (with a date). With this configuration, OpenCode can correctly call CC Club's models.
+  </Callout>
+
+  ### CC Club API Addresses
+
+  Choose the appropriate address based on your network environment:
+
+  | Address | Description |
+  |-----|-----|
+  | `https://claude-code.club/api` | Default address (fastest when direct connection latency < 100ms) |
+  | `https://jp.claude-code.club/api` | Japan node (Alibaba Cloud, optimized for China) |
+  | `https://hk.claude-code.club/api` | Hong Kong node (Alibaba Cloud, optimized for China) |
+
+  ### Switch to the CC Club Provider
+
+  After saving the configuration:
+
+  1. Find "CC Club" in the provider list on the CC Switch main screen
+  2. Click the "Switch" button or click directly on that provider
+  3. CC Switch will automatically update OpenCode's configuration file
+
+  ### Test the Connection
+
+  1. **Use CC Switch's speed test feature**:
+     - Click the "Test" button next to the provider
+     - Wait for the latency test to complete
+     - Check the response time and status indicator
+
+  2. **Launch OpenCode to verify**:
+     ```bash
+     opencode
+     ```
+
+  <Callout type="success">
+    **Verification success indicator**: OpenCode starts normally and you can have a conversation
+  </Callout>
+</Steps>
+
+<Callout type="info">
+  **Detailed tutorial**: [CC Switch Complete Guide](https://help.apiyi.com/cc-switch-beginner-guide.html)
+</Callout>
+
+---
+
+## Method 3: Use New API Proxy (Advanced)
+
+If you need more custom configuration or the first two methods do not meet your needs, you can use a New API proxy service.
+
+<Callout type="info">
+  **Why use a proxy?**
+
+  1. OpenCode's default Anthropic model IDs use a format without dates (e.g. `claude-sonnet-4-5`), while CC Club uses model IDs with dates (e.g. `claude-sonnet-4-5-20250929`). A New API proxy can resolve this compatibility issue.
+  2. Using a proxy can also help avoid restrictions that warn against using OpenCode clients.
+</Callout>
+
+<Steps>
+  ### Deploy the New API Proxy Service
+
+  New API is an open-source API management and proxy service that supports unified management of multiple AI models.
+
+  <Callout type="info">
+    **Deployment reference**
+
+    New API supports Docker, 1Panel, and other deployment methods. For detailed deployment steps, refer to:
+    - **Official documentation**: [https://docs.newapi.pro/zh/docs](https://docs.newapi.pro/zh/docs)
+    - **GitHub repository**: [https://github.com/QuantumNous/new-api](https://github.com/QuantumNous/new-api)
+  </Callout>
+
+  ### Configure the New API Channel
+
+  After deployment, configure the CC Club channel in New API.
+
+  **Add a channel**
+
+  Go to the New API admin interface, click "Channel Management" → "Add Channel."
+
+  **Fill in the channel information**
+
+  Enter the following:
+  - **Channel type**: select Anthropic Claude
+  - **Channel name**: CC Club (or a custom name)
+  - **Proxy address**: enter the CC Club API address (refer to [CC Club API Address](/getting-started/get-api-key))
+  - **Key**: enter your CC Club API key
+
+  **Test the channel**
+
+  Click the "Test" button to confirm the channel is configured correctly. A success message will appear when the test passes.
+
+  ### Install OpenCode
+
+  <Tabs items={['Go install', 'Homebrew (macOS)', 'Manual download']}>
+    <Tabs.Tab>
+      ```bash
+      go install github.com/anomalyco/opencode@latest
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash
+      brew install opencode
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      Download the binary for your platform from [GitHub Releases](https://github.com/anomalyco/opencode/releases).
+    </Tabs.Tab>
+  </Tabs>
+
+  ### Configure OpenCode
+
+  Locate OpenCode's configuration file and edit it. The configuration file is typically at `~/.config/opencode/config.json`.
+
+  <Callout type="warning">
+    **Important notes**:
+    - The API address suffix must include `/v1`
+    - You must add a `models` parameter for model renaming, because OpenCode defaults to using model IDs without dates
+  </Callout>
+
+  **Configuration example**
+
+  ```json
+  {
+    "anthropic": {
+      "options": {
+        "baseURL": "http://your-newapi-address/v1"
+      },
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "name": "claude-opus-4-5-20251101"
+        },
+        "claude-sonnet-4-5-20250929": {
+          "name": "claude-sonnet-4-5-20250929"
+        }
+      }
+    }
+  }
+  ```
+
+  **Configuration notes**
+
+  | Config key | Description |
+  |--------|------|
+  | `options.baseURL` | New API address — **must end with `/v1`** |
+  | `models` | Model configuration — defines the available models and their names |
+
+  ### Verify the Configuration
+
+  After completing the configuration, launch OpenCode to verify:
+
+  ```bash
+  opencode
+  ```
+
+  <Callout type="success">
+    **Verification success indicators**:
+    - OpenCode starts normally and you can have a conversation
+    - Call records are visible in New API's logs
+  </Callout>
+
+  **View call logs**
+
+  In the "Logs" page of the New API admin interface, you can view OpenCode's call records and confirm that requests are being correctly forwarded to CC Club.
+</Steps>
+
+---
+
+## Frequently Asked Questions
+
+**Q: Which method should I choose?**
+
+A: It is recommended to start with Method 1 (direct configuration) — it is the simplest and fastest. If you need visual management of multiple providers, use Method 2 (CC Switch). Only consider Method 3 (New API) if you need more custom configuration.
+
+**Q: Getting a "model not found" error?**
+
+A:
+- **Method 1**: Check that `baseURL` in the configuration file is correct and ends with `/v1`
+- **Method 2**: Check that the Base URL configured in CC Switch is correct
+- **Method 3**: Check that the `models` configuration is correct and the model IDs are configured properly
+
+**Q: Request failing or timing out?**
+
+A: Check the following:
+1. Is the network connection working?
+2. Is the API key correct?
+3. Is the Base URL correct (must end with `/v1`)?
+4. If using Method 3, is the New API service running properly?
+
+**Q: How do I get a CC Club API key?**
+
+A: Visit the [Get API Key](/getting-started/get-api-key) page to learn how to obtain a key.

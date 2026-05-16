@@ -1,7 +1,152 @@
 ---
-title: Vibe Coding 入门指南：从设计到生产代码
+title: "Vibe Coding Starter Guide: From Design to Production Code"
+description: Learn how to use a three-step workflow to turn any design into production-ready code
 ---
 
-# Vibe Coding 入门指南：从设计到生产代码
+import { Callout, Steps } from 'nextra/components'
 
-> 🚧 English translation coming soon.
+# Vibe Coding Starter Guide: From Design to Production Code
+
+<Callout type="info">
+This article is adapted from [PageAI's Vibe Coding Starter Guide](https://pageai.pro/blog/vibe-coding-starter-guide), introducing a three-step workflow for converting designs into production-ready code using AI tools like Cursor.
+</Callout>
+
+## What is Vibe Coding?
+
+Vibe Coding is a development approach that uses AI agent tools (such as Cursor, Claude Code, etc.) to rapidly turn designs into code. The core philosophy is:
+
+> **"Better context = better output."**
+
+The keys to success are:
+- Detailed design specifications
+- Solid project scaffolding
+- Clear requirements (responsive, dark mode, design-token-based styling)
+- Modular components
+
+## The Three-Step Core Workflow
+
+<Steps>
+
+### Step 1: Generate a Design Brief
+
+Convert your design into a structured JSONC format. The purpose of this step is to help the AI understand every detail of the design.
+
+**Use the following prompt to analyze a UI design screenshot:**
+
+```markdown
+Thoroughly analyze this UI screenshot and describe it in as much detail as possible,
+as if handing it off from a UI designer to a developer.
+
+The design brief should include:
+- Both light and dark modes
+- Responsive breakpoints matching Tailwind CSS defaults
+
+Output the characteristics in structured JSONC format, including:
+- Colors (use only 2 palettes: primary and secondary, similar to Tailwind colors)
+- Accent colors
+- Typography (fonts, sizes, weights)
+- Layout structure
+- Component details
+
+Output as a Markdown code block.
+```
+
+**Key output:** Two code blocks (design brief + JSONC specification)
+
+### Step 2: Initialize the Codebase
+
+<Callout type="warning">
+This is "the part nobody tells you" — don't ask the AI to generate all the code from scratch!
+</Callout>
+
+Use a pre-configured starter kit instead of having the AI generate the entire codebase. This:
+- Avoids burning excessive tokens
+- Ensures code maintainability
+- Establishes a consistent code style
+
+**A starter kit should include:**
+
+| Component | Description |
+|------|------|
+| Next.js + Tailwind CSS | Modern frontend framework foundation |
+| Design system & configurable tokens | Unified design variables |
+| SEO infrastructure | Search engine optimization config |
+| Brand assets | Logo, icons, etc. |
+| AI rules document | Code guidelines for the AI |
+
+**Recommended resource:** [vibe-coding-starter](https://github.com/nicholasoxford/vibe-coding-starter) — a free starter kit
+
+### Step 3: Generate Code in Cursor
+
+Use the following implementation prompt to generate code:
+
+```markdown
+Your task is to implement a new page at the /dashboard route,
+following the design and development brief below.
+
+Requirements:
+- Implement thoroughly, step by step
+- Use built-in standard Tailwind CSS design tokens instead of hardcoded values
+- Responsive design (full-width background with centered content on large screens)
+- Theme-aware components supporting both light and dark mode
+- No magic strings, hex values, or px values
+- Extract reusable parts into separate components
+
+[Paste the design brief from Step 1 here]
+```
+
+</Steps>
+
+## Common Mistakes to Avoid
+
+When using Vibe Coding, watch out for these common pitfalls:
+
+| Wrong approach | Right approach |
+|----------|----------|
+| Skipping the JSONC design brief from Step 1 | Always generate a detailed design spec first |
+| Asking the AI to generate the entire codebase | Use a pre-configured starter kit |
+| Allowing hardcoded values (hex colors, px values) | Use design tokens and Tailwind classes |
+| Treating responsive design / dark mode as optional | Require them from the very beginning |
+| Creating monolithic files instead of modular components | Split early; avoid mixing data and UI |
+
+## AI Design Prompt Template
+
+If you need the AI to help generate a design, use this prompt:
+
+```markdown
+You are an experienced UI designer with a flair for modern, minimalist design
+that makes great use of shadows, glass effects, and soft colors.
+
+Please design a [describe your needs], with the following requirements:
+- Follow modern design trends
+- Support light and dark mode
+- Responsive layout
+- Clear visual hierarchy
+```
+
+## Design Style Reference
+
+The article provides several visual styles for reference:
+
+| Style | Characteristics |
+|------|------|
+| Minimalism | Clean, whitespace-focused, content-first |
+| Glassmorphism | Frosted glass effects, transparency, blur |
+| Neumorphism | Soft shadows, raised/pressed effects |
+| Dark mode | Dark backgrounds, high contrast |
+| Cyberpunk | Neon colors, tech aesthetic, futuristic feel |
+
+## Why This Approach Works
+
+This three-step workflow produces **genuinely usable, maintainable code** — not "throwaway code" — because of:
+
+1. **Structured input** — The JSONC design brief ensures the AI understands every detail
+2. **Professional scaffolding** — The starter kit establishes the correct code structure
+3. **Explicit constraints** — The implementation prompt sets clear code quality standards
+4. **Modular design** — Component splitting is emphasized from the very start
+
+## Further Reading
+
+- [Vibe Coding Starter Guide (original)](https://pageai.pro/blog/vibe-coding-starter-guide)
+- [vibe-coding-starter GitHub repository](https://github.com/nicholasoxford/vibe-coding-starter)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)

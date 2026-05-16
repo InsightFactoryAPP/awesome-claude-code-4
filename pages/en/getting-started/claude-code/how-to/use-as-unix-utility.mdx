@@ -1,0 +1,91 @@
+---
+title: Use Claude as a Unix Utility
+description: Learn how to integrate Claude Code into scripts and Unix pipelines
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Use Claude as a Unix Utility
+
+## Add Claude to a Validation Workflow
+
+Suppose you want to use Claude Code as a linter or code reviewer.
+
+**Add Claude to your build scripts:**
+
+```json
+// package.json
+{
+    ...
+    "scripts": {
+        ...
+        "lint:claude": "claude -p 'you are a linter. please look at the changes vs. main and report any issues related to typos. report the filename and line number on one line, and a description of the issue on the second line. do not return any other text.'"
+    }
+}
+```
+
+<Callout type="info">
+**Tips:**
+
+* Use Claude in your CI/CD pipeline for automated code review
+* Customize prompts to check for project-specific issues
+* Consider creating multiple scripts for different types of validation
+</Callout>
+
+## Pipe Input, Pipe Output
+
+Suppose you want to pipe data through Claude and get it back in a structured format.
+
+**Pipe data through Claude:**
+
+```bash
+cat build-error.txt | claude -p 'concisely explain the root cause of this build error' > output.txt
+```
+
+<Callout type="info">
+**Tips:**
+
+* Use pipes to integrate Claude into existing shell scripts
+* Combine with other Unix tools for powerful workflows
+* Consider using `--output-format` for structured output
+</Callout>
+
+## Control Output Format
+
+Suppose you need Claude to output in a specific format, especially when integrating Claude Code into scripts or other tools.
+
+<Steps>
+
+### Use Text Format (Default)
+
+```bash
+cat data.txt | claude -p 'summarize this data' --output-format text > summary.txt
+```
+
+This outputs only Claude's plain text response (the default behavior).
+
+### Use JSON Format
+
+```bash
+cat code.py | claude -p 'analyze this code for bugs' --output-format json > analysis.json
+```
+
+This outputs a JSON array of messages including metadata such as cost and duration.
+
+### Use Stream-JSON Format
+
+```bash
+cat log.txt | claude -p 'parse this log file for errors' --output-format stream-json
+```
+
+This outputs a series of JSON objects in real time as Claude processes the request. Each message is valid JSON, but the complete output is not valid JSON if concatenated.
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* Use `--output-format text` for simple integrations that only need Claude's response
+* Use `--output-format json` when you need the full conversation log
+* Use `--output-format stream-json` for real-time output of each conversation turn
+</Callout>

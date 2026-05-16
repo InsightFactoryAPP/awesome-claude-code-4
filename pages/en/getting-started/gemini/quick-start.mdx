@@ -1,0 +1,235 @@
+---
+title: Quick Start with Gemini CLI
+description: Learn how to use Gemini CLI for project initialization, sessions, code changes, Git operations, and common workflows.
+---
+
+import { Cards, Card, Callout } from 'nextra/components'
+
+# Quick Start with Gemini CLI
+
+## Step 1: Start Your First Session
+
+Open a terminal in any project directory and launch Gemini CLI:
+
+```bash
+cd /path/to/your/project
+gemini
+```
+
+You will see the Gemini CLI welcome screen, which shows session information, recent conversations, and the latest updates. Type `/help` to see available commands, or `/resume` to continue a previous conversation.
+
+<Callout type="info">
+Your credentials come from the API information configured in your environment variables.
+</Callout>
+
+## Step 2: Ask Your First Question
+
+Let's start by understanding your codebase. Try these commands:
+
+```
+> what does this project do?
+```
+
+Gemini will analyze your files and provide a summary. You can also ask more specific questions:
+
+```
+> what technologies does this project use?
+```
+
+```
+> where is the main entry point?
+```
+
+```
+> explain the folder structure
+```
+
+You can also ask Gemini about its own capabilities:
+
+```
+> what can Gemini CLI do?
+```
+
+```
+> how do I use slash commands in Gemini CLI?
+```
+
+```
+> can Gemini CLI work with Docker?
+```
+
+<Callout type="info">
+Gemini CLI reads your files as needed — you do not need to manually add context. Gemini also has access to its own documentation and can answer questions about its features and capabilities.
+</Callout>
+
+## Step 3: Make Your First Code Change
+
+Now let Gemini CLI do some actual coding. Try a simple task:
+
+```
+> add a hello world function to the main file
+```
+
+Gemini CLI will:
+
+1. Find the right file
+2. Show you the suggested changes
+3. Ask for your approval
+4. Execute the edits
+
+<Callout type="info">
+Gemini CLI always asks for permission before modifying files. You can approve individual changes, or enable "Accept all" mode for the session.
+</Callout>
+
+## Step 4: Use Git with Gemini CLI
+
+Gemini CLI makes Git operations conversational:
+
+```
+> what files have I changed?
+```
+
+```
+> commit my changes with a descriptive message
+```
+
+You can also perform more complex Git operations:
+
+```
+> create a new branch called feature/quickstart
+```
+
+```
+> show me the last 5 commits
+```
+
+```
+> help me resolve merge conflicts
+```
+
+## Step 5: Fix a Bug or Add a Feature
+
+Gemini excels at debugging and feature implementation.
+
+Describe what you want in natural language:
+
+```
+> add input validation to the user registration form
+```
+
+Or fix an existing issue:
+
+```
+> there's a bug where users can submit empty forms - fix it
+```
+
+Gemini CLI will:
+
+* Locate the relevant code
+* Understand the context
+* Implement the solution
+* Run tests if available
+
+## Step 6: Try Other Common Workflows
+
+There are many ways to collaborate with Gemini:
+
+**Refactor code**
+
+```
+> refactor the authentication module to use async/await instead of callbacks
+```
+
+**Write tests**
+
+```
+> write unit tests for the calculator functions
+```
+
+**Update documentation**
+
+```
+> update the README with installation instructions
+```
+
+**Code review**
+
+```
+> review my changes and suggest improvements
+```
+
+<Callout type="info">
+**Remember**: Gemini CLI is your AI pair programming partner. Interact with it like a helpful colleague — describe what you want to achieve, and it will help you get there.
+</Callout>
+
+## Essential Commands
+
+Here are the most important commands for everyday use:
+
+| Command             | What it does                        | Example                             |
+| ------------------- | ----------------------------------- | ----------------------------------- |
+| `gemini`            | Start interactive mode              | `gemini`                            |
+| `gemini "task"`     | Run a one-off task                  | `gemini "fix the build error"`      |
+| `gemini -p "query"` | Run a one-off query then exit       | `gemini -p "explain this function"` |
+| `gemini -c`         | Continue the most recent session    | `gemini -c`                         |
+| `gemini -r`         | Resume a previous session           | `gemini -r`                         |
+| `gemini commit`     | Create a Git commit                 | `gemini commit`                     |
+| `/clear`            | Clear conversation history          | `> /clear`                          |
+| `/help`             | Show available commands             | `> /help`                           |
+| `exit` or Ctrl+C    | Exit Gemini CLI                     | `> exit`                            |
+
+## Tips for Beginners
+
+### Be Specific with Requests
+
+Instead of: "fix the bug"
+
+Say: "fix the login bug where users see a blank screen after entering wrong credentials"
+
+### Use Step-by-Step Instructions
+
+Break complex tasks into steps:
+
+```
+> 1. create a new database table for user profiles
+```
+
+```
+> 2. create an API endpoint to get and update user profiles
+```
+
+```
+> 3. build a webpage that allows users to see and edit their information
+```
+
+### Let Gemini Explore First
+
+Let Gemini understand your code before making changes:
+
+```
+> analyze the database schema
+```
+
+```
+> build a dashboard showing products that are most frequently returned by our UK customers
+```
+
+### Use Shortcuts to Save Time
+
+* Use Tab for command completion
+* Press ↑ to scroll through command history
+* Type `/` to see all slash commands
+
+
+## Getting Help
+
+* **Inside Gemini CLI**: type `/help` or ask "how do I..."
+
+## Next Steps
+
+Once you have mastered these basics, you can start exploring Gemini CLI's applications in real-world development scenarios.
+
+<Cards>
+  <Cards.Card title="Common Features Guide" href="/getting-started/how-to" />
+  <Cards.Card title="Common Errors" href="/getting-started/gemini-common-errors" />
+</Cards>

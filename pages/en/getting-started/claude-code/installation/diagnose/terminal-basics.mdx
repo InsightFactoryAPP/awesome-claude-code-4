@@ -1,0 +1,103 @@
+# Terminal Basics Tutorial
+
+Many technical guides and troubleshooting steps require executing commands in a "terminal" or "command line." For beginners, this might look intimidating (like something out of a hacker movie), but it is really just another way to control your computer — through text instructions instead of mouse clicks.
+
+This guide will help you quickly get acquainted with and open the terminal tools available on Windows and macOS.
+
+## 🍎 macOS User Guide
+
+On macOS (Apple computers), we primarily use the **Terminal** application. The default command language is called **Zsh** (on older versions of macOS it was Bash).
+
+**1. How do I open Terminal?**
+
+**Method 1: Use Spotlight Search — the fastest way!**
+1.  Press `Command (⌘)` + `Space` on your keyboard.
+2.  Type `Terminal` in the search box.
+3.  Press Enter to open it.
+
+**Method 2: Through Finder**
+1.  Open **Finder**.
+2.  Go to the **Applications** folder.
+3.  Find and open the **Utilities** folder.
+4.  Double-click the **Terminal** icon.
+
+**2. How do I know it opened?**
+You will see a window with white text on a dark background (or dark text on a white background).
+It usually displays your computer name and username followed by a cursor.
+For example:
+```
+MyMacBook:~ username$ 
+```
+or
+```
+MyMacBook:~ username%
+```
+
+**3. How do I know whether I'm using Zsh or Bash?**
+*   **Zsh** (recommended/default): The prompt usually ends with `%`.
+*   **Bash** (older): The prompt usually ends with `$`.
+*   **Confirm with a command**: Type `echo $SHELL` in the terminal and press Enter.
+    *   If it shows `/bin/zsh`, you are using Zsh.
+    *   If it shows `/bin/bash`, you are using Bash.
+
+## 🪟 Windows User Guide
+
+Windows has two main command-line tools:
+1.  **PowerShell** (blue background): More powerful — **recommended**.
+2.  **CMD / Command Prompt** (black background): Older and more limited.
+
+**1. How do I open PowerShell (recommended)?**
+
+**Method 1: Search from the Start menu**
+1.  Click the **Start** button at the bottom of the screen (or press the Windows logo key on your keyboard).
+2.  Type `PowerShell`.
+3.  Click **Windows PowerShell** to open it.
+
+**Method 2: Right-click the Start menu (Win 10/11)**
+1.  Right-click the **Start** button.
+2.  Select **Windows PowerShell** or **Terminal**.
+
+**2. How do I open CMD (Command Prompt)?**
+
+**Method 1: Run command**
+1.  Press `Win + R` on your keyboard to open the **Run** dialog.
+2.  Type `cmd`.
+3.  Press Enter.
+
+**3. How do I tell PowerShell and CMD apart?**
+
+| Feature | PowerShell | CMD (Command Prompt) |
+| :--- | :--- | :--- |
+| **Default background** | 🟦 **Dark blue** | ⬛ **Black** |
+| **Prompt prefix** | `PS C:\Users\Name>` | `C:\Users\Name>` |
+| **Window title** | Windows PowerShell | Command Prompt |
+| **Recommended level** | ⭐⭐⭐⭐⭐ (first choice) | ⭐⭐ (use only in specific legacy scenarios) |
+
+## 🎓 Essential Reading for Beginners: Basic Concepts and Operations
+
+Whether you are on a Mac or Windows, the following tips will help you avoid 90% of common confusions:
+
+**1. What does "execute a command" mean?**
+When a guide says "execute `curl --version`", it means:
+1.  **Copy** the line of code.
+2.  **Paste** it at the cursor in your terminal window.
+3.  **Press the Enter (Return) key**.
+4.  Wait for text feedback to appear on screen.
+
+**2. Copy and Paste**
+*   **macOS**: Use `Command (⌘) + C` to copy, `Command (⌘) + V` to paste.
+*   **Windows**: 
+    *   In newer versions of PowerShell/CMD, you can usually use `Ctrl + C` / `Ctrl + V`.
+    *   **Note**: In some older CMD versions, `Ctrl + C` means "stop running." If you cannot paste, try **right-clicking** your mouse, or click the icon in the top-left corner of the window → Edit → Paste.
+
+**3. Path Separator Differences**
+If you are typing file paths manually:
+*   **Windows** uses backslash `\` (e.g. `C:\Users\Name\Desktop`).
+*   **macOS** uses forward slash `/` (e.g. `/Users/Name/Desktop`).
+*   *Tip*: When typing a path in the terminal, press the **Tab key** to auto-complete the filename — it's fast and accurate!
+
+**4. What to do when something goes wrong?**
+*   **Permission denied**: Usually means insufficient permissions.
+    *   Windows: Try right-clicking PowerShell and selecting "Run as administrator."
+    *   macOS: Prefix the command with `sudo ` (you will be prompted to enter your login password; the password will not be displayed on screen as you type).
+*   **Command not found**: The tool is not installed, or it is not in your system PATH. Refer to our troubleshooting documentation for guidance.

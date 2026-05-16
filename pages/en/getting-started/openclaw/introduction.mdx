@@ -1,0 +1,110 @@
+---
+title: OpenClaw Introduction
+description: Learn about the core features and unique strengths of OpenClaw
+---
+
+import { Callout } from 'nextra/components'
+
+# OpenClaw
+
+OpenClaw (formerly Clawdbot / Moltbot) is a **multi-channel AI gateway** that runs on your own device. It can reply to you across all the messaging platforms you already use — including Telegram, WhatsApp, Slack, Discord, iMessage, Signal, and more — putting your AI assistant everywhere you are.
+
+<Callout type="info">
+  **Open-source project**: OpenClaw is fully open-source. You can view the source code, file issues, or contribute on [GitHub](https://github.com/openclaw/openclaw).
+</Callout>
+
+## Core Strengths
+
+### 1. Local-First, Privacy-Controlled
+OpenClaw runs on your own device and processes all data locally:
+- **Full control**: your conversation data is not uploaded to third-party servers
+- **Local gateway**: a single control plane manages all sessions, channels, and tools
+- **Custom proxy**: supports configuring third-party API proxies (such as CC Club) — no VPN required
+
+### 2. Multi-Channel Messaging Support
+OpenClaw supports 20+ mainstream messaging platforms:
+- **Instant messaging**: WhatsApp, Telegram, Signal, iMessage
+- **Team collaboration**: Slack, Discord, Microsoft Teams, Google Chat
+- **Extended support**: Matrix, Zalo, WebChat, and more
+- **Unified experience**: consistent AI assistant experience across any platform
+
+### 3. Multi-Model Support
+Supports multiple AI model backends:
+- **Anthropic Claude**: via CC Club proxy or the official API
+- **OpenAI**: GPT series models
+- **Google**: Gemini series
+- **Local models**: run local models via Ollama
+- **Model switching**: flexibly switch models based on task requirements
+
+### 4. Voice Interaction
+Supports voice interaction across multiple platforms:
+- **Voice Wake**: always-on voice wake-up functionality
+- **Talk Mode**: continuous conversation mode for a natural voice interaction experience
+- **Cross-platform support**: voice support on macOS, iOS, and Android
+
+### 5. Extensible Skills System
+Extend functionality through custom skills:
+- **Prompt templates**: reusable custom prompts
+- **Scheduled tasks**: manage recurring reminders via Cron
+- **Tool ecosystem**: rich tools including browser control, Canvas, and scheduled tasks
+
+## Feature Comparison: Claude Code vs OpenClaw
+
+| Feature | Claude Code | OpenClaw |
+|--------|-------------|---------|
+| **How it runs** | Terminal CLI | Multi-channel message gateway |
+| **Messaging platforms** | Terminal | Telegram, WhatsApp, Slack, Discord, and 20+ more |
+| **Voice interaction** | No | Yes (macOS/iOS/Android) |
+| **Runs locally** | Yes | Yes |
+| **Open-source** | No | Yes |
+| **Multi-device support** | No | Yes |
+| **Web interface** | No | Dashboard console |
+
+## Typical Use Cases
+
+### Using AI Assistant on Telegram
+With OpenClaw, you can chat with Claude directly on Telegram without switching apps, integrating AI assistance seamlessly into your daily communication workflow.
+
+### AI Assistant for Team Collaboration
+Deploy OpenClaw in a Slack or Discord team channel so all team members can easily use AI assistance, improving team collaboration efficiency.
+
+### Voice Interaction Scenarios
+When driving, cooking, or in other situations where typing is inconvenient, use voice wake-up to have natural conversations with your AI assistant.
+
+### Server Deployment
+Deploy OpenClaw on a remote Ubuntu server for 24/7 continuous availability, accessible at any time via a Telegram Bot.
+
+## Security and Privacy
+
+OpenClaw provides multi-layer security:
+
+- **Pairing mechanism**: unknown senders must verify via a pairing code
+- **Local data storage**: all conversation data is stored on the local device
+- **Token authentication**: Dashboard access requires Gateway Token verification
+- **Permission control**: fine-grained tool and command permission management
+
+<Callout type="warning">
+  **Security notice**: OpenClaw connects to real messaging platforms. Treat inbound messages as untrusted input and configure appropriate security policies.
+</Callout>
+
+## Technical Architecture
+
+```
+Chat channels (Telegram/WhatsApp/...)
+         ↕
+  Gateway (:18789)
+         ↕
+   AI models (Anthropic/OpenAI/...)
+```
+
+- **Gateway WebSocket**: single WS control plane managing clients, tools, and events
+- **Multi-agent routing**: routes inbound channels/accounts to isolated agents
+- **Plugin system**: supports various channels and tools through plugins
+- **Background service**: supports launchd (macOS) / systemd (Linux) / scheduled tasks (Windows)
+
+## Next Steps
+
+- [Installation and Configuration](/getting-started/clawdbot-installation) — Learn how to install OpenClaw and configure CC Club's Claude models
+- [Get API Key](/getting-started/get-api-key) — Obtain a CC Club API key
+- [GitHub Repository](https://github.com/openclaw/openclaw) — View source code and documentation
+- [Official Documentation](https://docs.openclaw.ai) — Complete usage documentation

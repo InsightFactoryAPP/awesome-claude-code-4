@@ -1,0 +1,52 @@
+# Common Errors
+
+## Error retrieving user info: TypeError: Connect Timeout Error
+
+**Problem description:**
+
+When trying to retrieve user information, the CLI shows `TypeError: Connect Timeout Error` along with the following stack trace:
+
+```
+Error retrieving user info: TypeError:
+at node:internal/deps/undici/undici: 13510:13
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+at async fetchAndCacheUserInfo (file:///usr/local/lib/node_modules/@google/gemini-cli/node_modules/@google/gemini-cli-core/dist/src/code_assist/oauth2.js:409:26) at async initOauthClient (file:///usr/local/lib/node_modules/@google/gemini-cli/node_modules/@google/gemini-cli-core/dist/src/code_assist/oauth2.js:76:9) at async createCodeAssistContentGenerator (file:///usr/local/lib/node_modules/@google/gemini-cli/node_modules/@google/gemini-cli-core/dist/src/code_assist/codeAssist.js:14:28) at async file:///usr/local/lib/node_modules/@google/gemini-cli/node_modules/@google/gemini-cli-core/dist/src/core/contentGenerator.js:63:48
+at async createContentGenerator (file:///usr/local/lib/node_modules/@google/gemini-cli/node_modules/@google/gemini-cli-core/dist/src/core/contentGenerator.js:51:23) at async Config.refreshAuth (file:///usr/local/lib/node_modules/@google/gemini-cli/node_modules/@google/gemini-cli-core/dist/src/config/config.js:435:33)
+at async performInitialAuth (file:///usr/local/lib/node_modules/@google/gemini-cli/dist/src/core/auth.js:18:9)
+at async initializeApp (file:///usr/local/lib/node_modules/@google/gemini-cli/dist/src/core/initializer.js:18:23) {
+[cause]: ConnectTimeoutError:
+Connect Timeout Error (attempted addresses: 142.250.73.106:443, 142.250.73.138:443, 142.250.69.170:443, timeout: 10000ms)
+code: 'UND_ERR_CONNECT_TIMEOUT'
+}
+```
+
+**Solution:**
+
+This error typically indicates that Gemini CLI encountered a network problem while attempting to connect to Google's authentication servers, causing the connection to time out. A common solution is to configure a local active Google account entry, so the CLI does not need to fetch it online every time.
+
+Create a file named `google_accounts.json` in the `~/.gemini/` directory with the following content:
+
+```json
+{
+  "active": "dummy@example.com",
+  "old": []
+}
+```
+
+Replace `"dummy@example.com"` with the actual Google account email you use for Gemini. This way, the CLI can use the locally stored account information without attempting to connect to remote servers again, avoiding the connection timeout error.
+
+**Note:** Make sure the `~/.gemini/` directory exists. If it does not, create it first.
+
+## Failed to fetch user info: 401 Unauthorized
+
+**Problem description:**
+
+If the terminal running Gemini CLI cannot reach Google's servers, you may see the error message: `Failed to fetch user info: 401 Unauthorized`.
+
+**Solution:**
+
+This is a network issue, typically indicating that the CLI cannot communicate normally with Google's authentication servers. If you can reach Google's servers, this error will not occur.
+
+**Important note:** Even if this error appears, it does not affect Gemini CLI's functionality. You can safely ignore this error message.
+
+
