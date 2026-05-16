@@ -267,3 +267,46 @@ nav a[aria-current="true"] {
 html.dark nav a[aria-current="true"] {
   color: hsl(var(--nextra-primary-hue), var(--nextra-primary-saturation), 60%) !important;
 }
+
+/* TOC (本页目录) 修复
+ * 默认 Nextra 的 TOC 内层是 sticky 容器，max-height = 视口高度 - navbar，
+ * 但 overflow-y 是 visible：只有内部的 <ul> 自己 overflow:auto。
+ * 当 TOC 标题/footer 太多导致整体超出 max-height 时，溢出的部分既不可见也无法滚动。
+ * 修复：让整个 TOC sticky 容器都可滚动，并隐藏滚动条避免视觉干扰。
+ */
+nav.nextra-toc > div {
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+nav.nextra-toc > div::-webkit-scrollbar {
+  width: 6px;
+}
+
+nav.nextra-toc > div::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+html.dark nav.nextra-toc > div::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* 内层 ul 已经被外层接管滚动，避免双重滚动条 */
+nav.nextra-toc > div > ul {
+  overflow-y: visible !important;
+  max-height: none !important;
+}
+
+/* 给 TOC 一个不透明背景，避免代码块/长行从 main 视觉上"穿透"到 TOC 区域，
+ * 同时增加左侧 padding 让 main 与 TOC 之间有视觉间距。
+ */
+nav.nextra-toc {
+  padding-left: 1rem;
+  background-color: rgb(var(--nextra-bg, 255 255 255));
+}
+
+html.dark nav.nextra-toc {
+  background-color: rgb(var(--nextra-bg, 17 17 17));
+}
