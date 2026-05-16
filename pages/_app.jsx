@@ -23,6 +23,22 @@ export default function App({ Component, pageProps }) {
     }
   }, [router.asPath])
 
+  // Fix Nextra's home-link highlight: Nextra marks the home link (/zh, /en)
+  // as aria-current="true" on every page because it prefix-matches.
+  // We override it: the home link is "current" only when the path equals /<locale>.
+  useEffect(() => {
+    const path = router.asPath.split(/[?#]/)[0]
+    const homePaths = SUPPORTED_LOCALES.map((l) => `/${l}`)
+    const isHomePage = homePaths.includes(path) || path === '/'
+
+    document.querySelectorAll('nav a').forEach((a) => {
+      const href = a.getAttribute('href')
+      if (homePaths.includes(href) && !isHomePage) {
+        a.setAttribute('aria-current', 'false')
+      }
+    })
+  }, [router.asPath])
+
   return (
     <>
       <Component {...pageProps} />
