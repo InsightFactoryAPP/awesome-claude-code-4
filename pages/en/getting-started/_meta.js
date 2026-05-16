@@ -22,6 +22,9 @@ export default {
     title: 'OpenAI Codex'
   },
   'codex-installation': 'Installation',
+  'codex-ccswitch': 'CC Switch Configuration',
+  'codex-bootstrap-error': 'Startup Errors & Fixes',
+  'codex-desktop': 'Desktop Client Setup',
   'gemini-core': {
     type: 'separator',
     title: 'Google Gemini CLI'

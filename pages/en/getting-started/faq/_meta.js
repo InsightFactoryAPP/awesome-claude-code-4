@@ -7,5 +7,6 @@ export default {
   'network-diagnosis': 'Network Diagnosis',
   'fetch-websearch-alternatives': 'fetch/web_search Alternatives',
   'use-in-ide': 'Use Claude Code in IDE',
-  'connect-openai-model': 'Connect GPT Models'
+  'connect-openai-model': 'Connect GPT Models',
+  'claude-desktop-gateway': 'Claude Desktop Third-party Gateway'
 }

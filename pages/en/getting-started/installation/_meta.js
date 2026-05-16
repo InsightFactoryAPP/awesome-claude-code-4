@@ -3,5 +3,6 @@ export default {
   windows: 'Windows',
   macos: 'macOS',
   linux: 'Linux / WSL2',
+  ccswitch: 'CC Switch Configuration',
   diagnose: 'Diagnostics'
 }
