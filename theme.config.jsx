@@ -103,6 +103,60 @@ export default {
     next: true
   },
   darkMode: false,
+  navbar: {
+    extraContent: function LocaleSwitcher() {
+      const router = useRouter()
+      const { locale, asPath } = router
+
+      function switchLocale(newLocale) {
+        if (newLocale === locale) return
+        const ONE_YEAR = 60 * 60 * 24 * 365
+        document.cookie = `preferred-locale=${newLocale}; path=/; max-age=${ONE_YEAR}; SameSite=Lax`
+        const pathWithoutLocale = asPath.replace(/^\/(zh|en)(?=\/|$)/, '') || '/'
+        window.location.href = `/${newLocale}${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
+      }
+
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginLeft: '0.5rem' }}>
+          <button
+            onClick={() => switchLocale('zh')}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '0.25rem 0.5rem',
+              borderRadius: '4px',
+              fontSize: '0.875rem',
+              color: locale === 'zh' ? 'var(--nextra-primary-hue)' : 'inherit',
+              fontWeight: locale === 'zh' ? 600 : 400,
+              opacity: locale === 'zh' ? 1 : 0.7
+            }}
+            aria-label="切换到中文"
+          >
+            中文
+          </button>
+          <span style={{ opacity: 0.4 }}>|</span>
+          <button
+            onClick={() => switchLocale('en')}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '0.25rem 0.5rem',
+              borderRadius: '4px',
+              fontSize: '0.875rem',
+              color: locale === 'en' ? 'var(--nextra-primary-hue)' : 'inherit',
+              fontWeight: locale === 'en' ? 600 : 400,
+              opacity: locale === 'en' ? 1 : 0.7
+            }}
+            aria-label="Switch to English"
+          >
+            EN
+          </button>
+        </div>
+      )
+    }
+  },
   search: {
     placeholder: () => {
       const { locale } = useRouter()
