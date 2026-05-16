@@ -107,8 +107,26 @@ export default {
     extraContent: function LocaleSwitcher() {
       const router = useRouter()
       const { locale, asPath } = router
+      const [open, setOpen] = React.useState(false)
+      const containerRef = React.useRef(null)
+
+      const LOCALES = [
+        { code: 'zh', label: '中文' },
+        { code: 'en', label: 'English' }
+      ]
+
+      React.useEffect(() => {
+        function handleClickOutside(e) {
+          if (containerRef.current && !containerRef.current.contains(e.target)) {
+            setOpen(false)
+          }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+      }, [])
 
       function switchLocale(newLocale) {
+        setOpen(false)
         if (newLocale === locale) return
         const ONE_YEAR = 60 * 60 * 24 * 365
         document.cookie = `preferred-locale=${newLocale}; path=/; max-age=${ONE_YEAR}; SameSite=Lax`
@@ -116,43 +134,79 @@ export default {
         window.location.href = `/${newLocale}${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
       }
 
+      const current = LOCALES.find((l) => l.code === locale) || LOCALES[0]
+
       return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginLeft: '0.5rem' }}>
+        <div ref={containerRef} style={{ position: 'relative', marginLeft: '0.5rem' }}>
           <button
-            onClick={() => switchLocale('zh')}
+            onClick={() => setOpen(!open)}
             style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.375rem',
               background: 'none',
-              border: 'none',
+              border: '1px solid var(--nextra-border, rgba(0,0,0,0.1))',
+              borderRadius: '6px',
               cursor: 'pointer',
-              padding: '0.25rem 0.5rem',
-              borderRadius: '4px',
+              padding: '0.3rem 0.6rem',
               fontSize: '0.875rem',
-              color: locale === 'zh' ? 'var(--nextra-primary-hue)' : 'inherit',
-              fontWeight: locale === 'zh' ? 600 : 400,
-              opacity: locale === 'zh' ? 1 : 0.7
+              color: 'inherit',
+              lineHeight: 1
             }}
-            aria-label="切换到中文"
+            aria-haspopup="listbox"
+            aria-expanded={open}
+            title="Language"
           >
-            中文
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M2 12h20"></path>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <span>{current.label}</span>
           </button>
-          <span style={{ opacity: 0.4 }}>|</span>
-          <button
-            onClick={() => switchLocale('en')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '0.25rem 0.5rem',
-              borderRadius: '4px',
-              fontSize: '0.875rem',
-              color: locale === 'en' ? 'var(--nextra-primary-hue)' : 'inherit',
-              fontWeight: locale === 'en' ? 600 : 400,
-              opacity: locale === 'en' ? 1 : 0.7
-            }}
-            aria-label="Switch to English"
-          >
-            EN
-          </button>
+          {open && (
+            <ul
+              role="listbox"
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 4px)',
+                right: 0,
+                minWidth: '8rem',
+                margin: 0,
+                padding: '0.25rem',
+                listStyle: 'none',
+                background: 'var(--nextra-bg, #fff)',
+                border: '1px solid var(--nextra-border, rgba(0,0,0,0.1))',
+                borderRadius: '6px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                zIndex: 50
+              }}
+            >
+              {LOCALES.map((l) => (
+                <li key={l.code}>
+                  <button
+                    onClick={() => switchLocale(l.code)}
+                    role="option"
+                    aria-selected={l.code === locale}
+                    style={{
+                      width: '100%',
+                      textAlign: 'left',
+                      background: l.code === locale ? 'rgba(0, 0, 0, 0.05)' : 'none',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      padding: '0.4rem 0.6rem',
+                      fontSize: '0.875rem',
+                      color: 'inherit',
+                      fontWeight: l.code === locale ? 600 : 400
+                    }}
+                  >
+                    {l.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )
     }
