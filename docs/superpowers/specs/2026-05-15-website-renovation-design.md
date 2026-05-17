@@ -61,7 +61,7 @@ Create `public/icons/discord.svg` with the official Discord brand icon path.
 - QR code src: `/images/cc-club-group-qrcode.png` → `/images/discord-group-qrcode.svg`
 - QR code alt: `微信群二维码` → `Discord 群二维码`
 - Description: `与 3000+ 名 Vibe Coding 先行者一起进步` → `加入我们，与全球开发者一起进步`
-- Add a direct link button below QR code: `https://discord.gg/VCdTwvYBJd`
+- Add a direct link button below QR code: `https://discord.gg/TaeaUp3cYv`
 
 ### 2d. Update MDX files with WeChat QR codes
 - `pages/getting-started/get-api-key.mdx` (2 occurrences): replace image src, alt text, and surrounding copy

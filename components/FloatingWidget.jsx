@@ -86,7 +86,7 @@ export default function FloatingWidget() {
               />
               <p className={styles.qrCodeDescription}>{t.description}</p>
               <a
-                href="https://discord.gg/VCdTwvYBJd"
+                href="https://discord.gg/TaeaUp3cYv"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ display: 'inline-block', marginTop: '0.75rem', padding: '0.5rem 1.25rem', background: '#5865F2', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}

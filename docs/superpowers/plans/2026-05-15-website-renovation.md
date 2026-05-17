@@ -61,12 +61,12 @@ Remove the "参与贡献" section's link to contributing page (change `[了解�
 
 Replace the GitHub Discussions reference with:
 ```mdx
-更多问题请访问 [Discord 社区](https://discord.gg/VCdTwvYBJd) 进行讨论。
+更多问题请访问 [Discord 社区](https://discord.gg/TaeaUp3cYv) 进行讨论。
 ```
 
 - [ ] **Step 3: Edit `pages/examples/index.mdx`**
 
-Find `href="https://github.com/zjh1943/awesome-claude-code/discussions"` and replace with `href="https://discord.gg/VCdTwvYBJd"`.
+Find `href="https://github.com/zjh1943/awesome-claude-code/discussions"` and replace with `href="https://discord.gg/TaeaUp3cYv"`.
 
 - [ ] **Step 4: Edit `pages/getting-started/common-errors/index.mdx`**
 
@@ -77,7 +77,7 @@ Replace:
 ```
 with:
 ```mdx
-- 加入 [Discord 社区](https://discord.gg/VCdTwvYBJd) 寻求帮助
+- 加入 [Discord 社区](https://discord.gg/TaeaUp3cYv) 寻求帮助
 ```
 
 - [ ] **Step 5: Commit**
@@ -303,7 +303,7 @@ export default function FloatingWidget() {
               />
               <p className={styles.qrCodeDescription}>加入我们，与全球开发者一起进步</p>
               <a
-                href="https://discord.gg/VCdTwvYBJd"
+                href="https://discord.gg/TaeaUp3cYv"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ display: 'inline-block', marginTop: '0.75rem', padding: '0.5rem 1.25rem', background: '#5865F2', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}
@@ -349,7 +349,7 @@ Find the "加入社群" step and replace with:
 
 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', margin: '2rem 0', gap: '1rem' }}>
   <Image src="/images/discord-group-qrcode.svg" alt="Discord 群二维码" width={300} height={300} />
-  <a href="https://discord.gg/VCdTwvYBJd" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', padding: '0.5rem 1.25rem', background: '#5865F2', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}>直接加入 Discord →</a>
+  <a href="https://discord.gg/TaeaUp3cYv" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', padding: '0.5rem 1.25rem', background: '#5865F2', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}>直接加入 Discord →</a>
 </div>
 ```
 
@@ -361,7 +361,7 @@ Replace with:
 🎉 准备好开启 AI 编程之旅了吗？立即加入 CC Club Discord，获取您的免费 API Key！
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', margin: '1rem 0', gap: '1rem' }}>
     <Image src="/images/discord-group-qrcode.svg" alt="Discord 群二维码" width={300} height={300} />
-    <a href="https://discord.gg/VCdTwvYBJd" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', padding: '0.5rem 1.25rem', background: '#5865F2', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}>直接加入 Discord →</a>
+    <a href="https://discord.gg/TaeaUp3cYv" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', padding: '0.5rem 1.25rem', background: '#5865F2', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}>直接加入 Discord →</a>
   </div>
 </Callout>
 ```
