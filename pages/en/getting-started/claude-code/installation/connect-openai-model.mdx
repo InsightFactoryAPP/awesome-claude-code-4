@@ -1,0 +1,210 @@
+---
+title: How to Connect Claude Code to GPT Models
+description: How to configure Claude Code as the front-end Agent paired with OpenAI GPT models as the back-end LLM
+---
+
+import { Callout, Tabs } from 'nextra/components'
+
+# How to Connect Claude Code to GPT Models
+
+## Why Would You Do This?
+
+The supply of Claude models is currently quite unstable, and Anthropic's account ban policy is fairly strict. If you want:
+
+- A **stable** user experience
+- An **excellent large language model**
+- To keep Claude Code's **best-in-class Agent ecosystem**
+
+Then you can use **Claude Code as the front-end Agent** paired with **OpenAI's GPT models as the back-end LLM**. This gives you a top-tier Coding Agent backed by a very capable GPT model — the experience is quite good.
+
+## Prerequisites
+
+1. Claude Code is already installed and configured
+2. Connected to the CC Club back-end API (see [Configure Base URL and Auth Token](/getting-started/faq/config-baseurl-authtoken))
+
+## Configure Environment Variables
+
+You need to configure the following environment variables to point Claude Code's models at the GPT series:
+
+| Environment Variable | Recommended Value | Description |
+|---------|--------|------|
+| `ANTHROPIC_DEFAULT_HAIKU_MODEL` | `gpt-5.4-mini` | Lightweight model, used for simple tasks |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL` | `gpt-5.4-max` | Advanced model, used for complex tasks |
+| `ANTHROPIC_DEFAULT_SONNET_MODEL` | `gpt-5.4` | Default model, balanced choice |
+| `ANTHROPIC_MODEL` | `gpt-5.4` | Primary model |
+| `ANTHROPIC_REASONING_MODEL` | `gpt-5.4` | Reasoning model |
+
+<Callout type="info">
+Only the GPT models listed above are currently supported. If you need additional models in the future, please contact us via the customer service agent in the bottom-right corner.
+</Callout>
+
+Choose the configuration method for your operating system:
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+### Method 1: Temporary (current terminal session only)
+
+Execute directly in the terminal:
+
+```bash
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="gpt-5.4-mini"
+export ANTHROPIC_DEFAULT_OPUS_MODEL="gpt-5.4-max"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="gpt-5.4"
+export ANTHROPIC_MODEL="gpt-5.4"
+export ANTHROPIC_REASONING_MODEL="gpt-5.4"
+```
+
+<Callout type="info">
+This method only takes effect in the current terminal session. It will expire when you exit the terminal. This is ideal for temporarily switching models.
+</Callout>
+
+#### Quick Alternative: Simpler Temporary Switch
+
+If you only want to temporarily switch the primary model, there is an even simpler way — specify the model directly when launching Claude Code:
+
+```bash
+claude --model gpt-5.4
+```
+
+You can copy the command above and run it directly — very convenient.
+
+<Callout type="warning">
+The `--model` flag only affects the primary model; it does not override the higher-tier (Opus) or lower-tier (Haiku) models. If you need to override all models, use the environment variable approach above.
+</Callout>
+
+### Method 2: Permanent (Recommended)
+
+Write the environment variables into your shell configuration file. Choose the file that matches your shell:
+
+- **zsh** (macOS default): edit `~/.zshrc`
+- **bash**: edit `~/.bashrc` or `~/.bash_profile`
+
+Add the following lines at the end of the file:
+
+```bash
+# Claude Code configuration for GPT models
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="gpt-5.4-mini"
+export ANTHROPIC_DEFAULT_OPUS_MODEL="gpt-5.4-max"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="gpt-5.4"
+export ANTHROPIC_MODEL="gpt-5.4"
+export ANTHROPIC_REASONING_MODEL="gpt-5.4"
+```
+
+After saving, execute the following command to apply the configuration immediately:
+
+```bash
+# zsh users
+source ~/.zshrc
+
+# bash users
+source ~/.bashrc
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+### Method 1: Temporary (current terminal session only)
+
+Execute in PowerShell:
+
+```powershell
+$env:ANTHROPIC_DEFAULT_HAIKU_MODEL = "gpt-5.4-mini"
+$env:ANTHROPIC_DEFAULT_OPUS_MODEL = "gpt-5.4-max"
+$env:ANTHROPIC_DEFAULT_SONNET_MODEL = "gpt-5.4"
+$env:ANTHROPIC_MODEL = "gpt-5.4"
+$env:ANTHROPIC_REASONING_MODEL = "gpt-5.4"
+```
+
+<Callout type="info">
+This method only takes effect in the current terminal session. It will expire when you exit the terminal. This is ideal for temporarily switching models.
+</Callout>
+
+#### Quick Alternative: Simpler Temporary Switch
+
+If you only want to temporarily switch the primary model, there is an even simpler way — specify the model directly when launching Claude Code:
+
+```powershell
+claude --model gpt-5.4
+```
+
+You can copy the command above and run it directly — very convenient.
+
+<Callout type="warning">
+The `--model` flag only affects the primary model; it does not override the higher-tier (Opus) or lower-tier (Haiku) models. If you need to override all models, use the environment variable approach above.
+</Callout>
+
+### Method 2: Permanent (Recommended)
+
+Execute the following commands in PowerShell to write the environment variables at the user level:
+
+```powershell
+[System.Environment]::SetEnvironmentVariable("ANTHROPIC_DEFAULT_HAIKU_MODEL", "gpt-5.4-mini", "User")
+[System.Environment]::SetEnvironmentVariable("ANTHROPIC_DEFAULT_OPUS_MODEL", "gpt-5.4-max", "User")
+[System.Environment]::SetEnvironmentVariable("ANTHROPIC_DEFAULT_SONNET_MODEL", "gpt-5.4", "User")
+[System.Environment]::SetEnvironmentVariable("ANTHROPIC_MODEL", "gpt-5.4", "User")
+[System.Environment]::SetEnvironmentVariable("ANTHROPIC_REASONING_MODEL", "gpt-5.4", "User")
+```
+
+You can also add them manually via **System Settings → System → Advanced System Settings → Environment Variables**.
+  </Tabs.Tab>
+</Tabs>
+
+## Restart the Terminal to Apply the Configuration
+
+<Callout type="warning">
+After configuration, **you must fully exit and reopen the terminal** for the environment variables to take effect.
+</Callout>
+
+- **Terminal users**: Close the current terminal window and open a new one
+- **Cursor users**: Fully quit Cursor (not just close the window — quit the application), then reopen Cursor
+- **VS Code users**: Fully quit VS Code, then reopen it
+
+## Verify the Configuration
+
+After reopening the terminal, run the following commands to verify the environment variables are set correctly:
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+```bash
+echo "ANTHROPIC_MODEL=$ANTHROPIC_MODEL"
+echo "ANTHROPIC_REASONING_MODEL=$ANTHROPIC_REASONING_MODEL"
+echo "ANTHROPIC_DEFAULT_SONNET_MODEL=$ANTHROPIC_DEFAULT_SONNET_MODEL"
+echo "ANTHROPIC_DEFAULT_OPUS_MODEL=$ANTHROPIC_DEFAULT_OPUS_MODEL"
+echo "ANTHROPIC_DEFAULT_HAIKU_MODEL=$ANTHROPIC_DEFAULT_HAIKU_MODEL"
+```
+
+If the configuration is correct, you should see output similar to:
+
+```
+ANTHROPIC_MODEL=gpt-5.4
+ANTHROPIC_REASONING_MODEL=gpt-5.4
+ANTHROPIC_DEFAULT_SONNET_MODEL=gpt-5.4
+ANTHROPIC_DEFAULT_OPUS_MODEL=gpt-5.4-max
+ANTHROPIC_DEFAULT_HAIKU_MODEL=gpt-5.4-mini
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+echo $env:ANTHROPIC_MODEL
+echo $env:ANTHROPIC_REASONING_MODEL
+echo $env:ANTHROPIC_DEFAULT_SONNET_MODEL
+echo $env:ANTHROPIC_DEFAULT_OPUS_MODEL
+echo $env:ANTHROPIC_DEFAULT_HAIKU_MODEL
+```
+
+If the configuration is correct, you should see output similar to:
+
+```
+gpt-5.4
+gpt-5.4
+gpt-5.4
+gpt-5.4-max
+gpt-5.4-mini
+```
+  </Tabs.Tab>
+</Tabs>
+
+If the output is empty or still shows the old value, please confirm:
+1. The environment variables were correctly written to the configuration file
+2. The terminal was fully restarted (not just opening a new tab)
+3. Cursor / VS Code users need to fully quit the application and reopen it
+
+Once verification passes, launch Claude Code to start developing with GPT models.

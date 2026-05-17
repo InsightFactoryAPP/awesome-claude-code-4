@@ -1,0 +1,62 @@
+import { Callout, Steps } from 'nextra/components'
+
+# Error 400 "context_management: Extra inputs are not permitted"
+
+Some users encounter the following error:
+
+```
+API Error: 400 {"type":"error","error":{"type":"invalid_request_error","message":"context_management: Extra inputs are not
+     permitted"},"request_id":"req_011CV5FefLSZ87MGpTyfrF5W"}
+```
+
+## Solution
+
+There are two ways to resolve this issue:
+
+### Method 1: Use the VS Code Extension
+
+Use the Claude Code extension inside VS Code.
+
+### Method 2: Downgrade the Claude Code Version
+
+<Callout type="warning">
+If you are using Claude Code CLI version 2.0.37, you may need to downgrade to version 2.0.32.
+</Callout>
+
+<Steps>
+
+### Check the current version
+
+Run the following command to see your current version:
+
+```bash
+claude -v
+```
+
+If the version shown is 2.0.37, you need to downgrade.
+
+### Uninstall the current version
+
+```bash
+npm uninstall -g @anthropic-ai/claude-code
+```
+
+### Install the older version
+
+```bash
+npm install -g @anthropic-ai/claude-code@2.0.32
+```
+
+### Confirm the version update
+
+Run the following command again to confirm the version has changed:
+
+```bash
+claude -v
+```
+
+### Note
+
+Before running the `claude` command in a new window, verify that the version number is correct.
+
+</Steps>

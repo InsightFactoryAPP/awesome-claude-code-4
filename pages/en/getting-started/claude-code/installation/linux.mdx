@@ -1,0 +1,301 @@
+---
+title: Linux / WSL2 Installation Guide
+description: Installing and configuring Claude Code on Linux and WSL2
+---
+
+import { Callout, Cards } from 'nextra/components'
+import Image from 'next/image'
+
+# Linux / WSL2 Installation Guide
+
+Follow this tutorial to easily install and use Claude Code on Linux or WSL2.
+
+We offer two installation methods:
+
+<Cards>
+  <Cards.Card
+    icon="⚡"
+    title="Method 1: One-click Script Installation"
+    href="#method-1-one-click-script-installation-recommended"
+  >
+    Fully automated, great for beginners, completes in 5 minutes
+  </Cards.Card>
+
+  <Cards.Card
+    icon="🛠️"
+    title="Method 2: Manual Installation"
+    href="#method-2-manual-installation"
+  >
+    Full control over the installation process, suited for experienced users
+  </Cards.Card>
+</Cards>
+
+
+## Method 1: One-click Script Installation (Recommended)
+
+Use our one-click installation script to quickly complete all configuration.
+
+### Run the Installation Script
+
+Open a terminal and execute the following command:
+
+```bash
+curl -fsSL https://academy.claude-code.club/assets/getting-started/installation/claude-code-installation-by-cc-club.sh | bash
+```
+
+<Callout type="info">
+  The script will automatically perform the following actions:
+  - Detect the Linux distribution and environment (including WSL2)
+  - Detect and install necessary system tools
+  - Detect and install Node.js (if not installed)
+  - Install Claude Code
+  - Configure environment variables and shell profile
+</Callout>
+
+<Callout type="warning">
+  **Important:** You will need to enter your `ANTHROPIC_AUTH_TOKEN` (API key) during installation, so have it ready in advance.
+</Callout>
+
+<Callout type="warning">
+  Note: The tutorial is not over yet, the tutorial is not over yet, the tutorial is not over yet — you must complete the "Next Step": [Verify and Use](#verify-and-use).
+</Callout>
+
+
+## Method 2: Manual Installation
+
+If you prefer full control over the installation process, follow the steps below to install manually.
+
+### 1. Install Node.js
+
+Claude Code requires a Node.js environment to run.
+
+#### Linux Installation Methods
+
+**Method 1: Using the official repository (Recommended)**
+
+```bash
+# Add the NodeSource repository
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+
+# Install Node.js
+sudo apt-get install -y nodejs
+```
+
+**Method 2: Using the system package manager**
+
+The version may not be the latest, but it is sufficient for basic use:
+
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install nodejs npm
+
+# CentOS/RHEL/Fedora
+sudo dnf install nodejs npm
+```
+
+<Callout type="warning">
+  **Linux Notes**
+  - Some distributions may require installing additional dependencies
+  - If you encounter permission issues, use sudo
+  - Make sure your user has write permission to npm's global directory
+</Callout>
+
+#### Verify the Installation
+
+After installation, open a terminal and enter the following commands:
+
+```bash
+node --version
+npm --version
+```
+
+If version numbers are displayed, the installation was successful!
+
+### 2. Install Claude Code
+
+#### Install Claude Code
+
+Open a terminal and run the following command:
+
+```bash
+# Install Claude Code globally
+npm install -g @anthropic-ai/claude-code
+```
+
+If you encounter permission issues, you can use sudo:
+
+```bash
+sudo npm install -g @anthropic-ai/claude-code
+```
+
+#### Verify the Claude Code Installation
+
+After installation, enter the following command to check if it was installed successfully:
+
+```bash
+claude --version
+```
+
+If a version number is displayed, congratulations! Claude Code has been successfully installed.
+
+### 3. Set Environment Variables
+
+#### Configure Claude Code Environment Variables
+
+To connect Claude Code to your relay service, you need to set two environment variables.
+
+Run the following commands in the terminal to set permanent environment variables (execute one at a time):
+
+```bash
+# For bash (default)
+echo 'export ANTHROPIC_BASE_URL="https://claude-code.club/api"' >> ~/.bashrc
+echo 'export ANTHROPIC_AUTH_TOKEN="your-api-key"' >> ~/.bashrc
+echo 'export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1' >> ~/.bashrc
+source ~/.bashrc
+
+# For zsh
+echo 'export ANTHROPIC_BASE_URL="https://claude-code.club/api"' >> ~/.zshrc
+echo 'export ANTHROPIC_AUTH_TOKEN="your-api-key"' >> ~/.zshrc
+echo 'export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1' >> ~/.zshrc
+source ~/.zshrc
+```
+
+<Callout type="warning">
+  Remember to replace "your-api-key" with the actual key you created in the "API Keys" tab above.
+  You need to reopen the terminal window for the changes to take effect.
+</Callout>
+
+<Callout type="info">
+  **About CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC**
+
+  This environment variable disables non-essential network requests from Claude Code (such as telemetry reporting). When set to `1`:
+  - Disables anonymous usage statistics and telemetry reporting
+  - Avoids connection timeouts or slowdowns caused by inability to reach telemetry servers (such as `sentry.io`, `statsig.com`, etc.)
+  - Does not affect the core functionality of Claude Code — it only disables background data collection
+
+  **All users in China are recommended to configure this option**, as it can significantly improve the experience.
+</Callout>
+
+After setting, use the following commands to verify the environment variables were set successfully:
+
+```bash
+echo $ANTHROPIC_BASE_URL
+echo $ANTHROPIC_AUTH_TOKEN
+echo $CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC
+```
+
+#### VSCode Claude Extension Configuration
+
+If you use the Claude extension for VSCode, you need to configure the settings file:
+
+**Config file location:** `~/.claude/config.json`
+
+<Callout type="info">
+  If the file does not exist, create it manually.
+</Callout>
+
+```json
+{
+  "primaryApiKey": "crs"
+}
+```
+
+ <Callout type="info">
+  **Verify the config file was set correctly:**
+
+  ```bash
+  cat ~/.claude/config.json
+  ```
+</Callout>
+
+
+
+## Verify and Use
+
+### Verify the Installation
+
+<Callout type="warning">
+  Important: You must close the terminal and reopen it!
+</Callout>
+
+After installation is complete, reopen the terminal or run `source ~/.bashrc`, then execute:
+
+```bash
+claude --version
+```
+
+If a version number is displayed, the installation was successful!
+
+### Start Using Claude Code
+
+Now you can start using Claude Code!
+
+#### Launch Claude Code
+
+```bash
+claude
+```
+
+#### Use in a Specific Project
+
+```bash
+# Navigate to your project directory
+cd /path/to/your/project
+
+# Launch Claude Code
+claude
+```
+
+🎉 Congratulations! You have successfully installed and configured Claude Code. You can now start enjoying the convenience of an AI coding assistant.
+
+## Next Steps
+
+<Cards>
+  <Cards.Card
+    icon="🚀"
+    title="Quick Start with Claude Code"
+    href="/getting-started/quick-start"
+  >
+    Learn the core features of Claude Code through hands-on practice
+  </Cards.Card>
+  <Cards.Card
+    icon="📚"
+    title="How to Do Things with Claude Code"
+    href="/getting-started/how-to"
+  >
+    Explore more practical tutorials and advanced tips
+  </Cards.Card>
+</Cards>
+
+## Linux FAQ
+
+### Permission Error During Installation
+
+Use the sudo command for installation.
+
+### Missing Dependency Libraries
+
+Install the corresponding dependency packages based on the error message.
+
+### Environment Variables Not Taking Effect
+
+Confirm that you modified the correct configuration file (bashrc or zshrc) and reloaded the configuration file.
+
+### WSL2 Special Cases
+
+In a WSL2 environment, make sure that:
+- The Windows firewall allows WSL2 network access
+- The package manager is updated: `sudo apt update`
+
+
+
+## Need Help?
+
+If you run into any tricky installation issues, scan the QR code below to join the Claude Code Club community group. There you can:
+- Exchange AI programming experience and get answers from 3000+ excellent developers
+- Get the latest Claude Code tips and tricks
+
+<div style={{ display: 'flex', justifyContent: 'top', margin: '2rem 0' }}>
+  <Image src="/images/discord-group-qrcode.svg" alt="Discord Group QR Code" width={300} height={300} />
+</div>

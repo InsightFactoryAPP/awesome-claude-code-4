@@ -1,0 +1,47 @@
+---
+title: Reference Files and Directories
+description: Learn how to use @ to quickly include files or directories without waiting for Claude to read them
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Reference Files and Directories
+
+Use `@` to quickly include files or directories without waiting for Claude to read them.
+
+<Steps>
+
+### Reference a Single File
+
+```
+> Explain the logic in @src/utils/auth.js
+```
+
+This includes the full content of the file in the conversation.
+
+### Reference a Directory
+
+```
+> What's the structure of @src/components?
+```
+
+This provides a directory listing with file information.
+
+### Reference MCP Resources
+
+```
+> Show me the data from @github:repos/owner/repo/issues
+```
+
+This fetches data from a connected MCP server using the `@server:resource` format. See [MCP Resources](https://docs.claude.com/en/docs/claude-code/mcp#use-mcp-resources) for details.
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* File paths can be relative or absolute
+* `@` file references also add CLAUDE.md files from the file's directory and parent directories to the context
+* Directory references show a file listing, not file contents
+* You can reference multiple files in a single message (e.g., "@file1.js and @file2.js")
+</Callout>

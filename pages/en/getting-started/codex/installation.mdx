@@ -1,0 +1,151 @@
+---
+title: Installation and Configuration
+description: Installation and configuration guide for OpenAI Codex
+---
+
+import { Callout, Tabs } from 'nextra/components'
+
+# OpenAI Codex Installation and Configuration Guide
+
+This guide will help you configure OpenAI Codex to use the claude-code.club AI API service.
+
+## 1. Install the Codex CLI
+
+Install the Codex CLI globally using one of the following methods:
+
+<Tabs items={['npm', 'Homebrew (macOS)']}>
+  <Tabs.Tab>
+    ```bash
+    npm install -g @openai/codex
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    brew install --cask codex
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+<Callout type="info">
+  For more installation options and detailed instructions, refer to the [OpenAI Codex official documentation](https://github.com/openai/codex).
+</Callout>
+
+## 2. Configure Codex
+
+Configuring Codex requires editing two files: `~/.codex/config.toml` and `~/.codex/auth.json`.
+
+### Configuration file: config.toml
+
+Add the following configuration to the **beginning** of your `~/.codex/config.toml` file:
+
+```toml
+model_provider = "club"
+model = "gpt-5.3-codex"
+model_reasoning_effort = "medium"
+disable_response_storage = true
+preferred_auth_method = "apikey"
+personality = "pragmatic"
+
+[model_providers.club]
+name = "ai code club"
+base_url = "https://claude-code.club/openai/v1"
+wire_api = "responses"
+requires_openai_auth = true
+env_key = "OPENAI_API_KEY"
+
+[features]
+shell_snapshot = true
+collaboration_modes = true
+multi_agent = true
+unified_exec = true
+```
+
+### Authentication file: auth.json
+
+Configure `~/.codex/auth.json` as follows:
+
+```json
+{
+  "OPENAI_API_KEY": <your-api-key>
+}
+```
+
+## 3. Configure Environment Variables
+
+Set the `OPENAI_API_KEY` environment variable to your API key (format: `cr_xxxxxxxxxx`).
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)', 'Windows (CMD)']}>
+  <Tabs.Tab>
+    **Temporary (current session only):**
+    ```bash
+    export OPENAI_API_KEY=cr_xxxxxxxxxx
+    ```
+
+    **Permanent (recommended):**
+
+    For zsh (macOS default):
+    ```bash
+    echo 'export OPENAI_API_KEY="cr_xxxxxxxxxx"' >> ~/.zshrc
+    source ~/.zshrc
+    ```
+
+    For bash:
+    ```bash
+    echo 'export OPENAI_API_KEY="cr_xxxxxxxxxx"' >> ~/.bashrc
+    source ~/.bashrc
+    ```
+
+    <Callout type="info">
+      **Note:** After setting this, you may need to reopen your terminal window, or manually run `source ~/.zshrc` (zsh) / `source ~/.bashrc` (bash) for the configuration to take effect.
+    </Callout>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Current session only:**
+    ```powershell
+    $env:OPENAI_API_KEY="cr_xxxxxxxxxx"
+    ```
+
+    **Permanent:**
+    ```powershell
+    [System.Environment]::SetEnvironmentVariable('OPENAI_API_KEY', 'cr_xxxxxxxxxx', 'User')
+    ```
+    *You need to restart your PowerShell window after setting this.*
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Current session only:**
+    ```cmd
+    set OPENAI_API_KEY=cr_xxxxxxxxxx
+    ```
+
+    **Permanent:**
+    ```cmd
+    setx OPENAI_API_KEY "cr_xxxxxxxxxx"
+    ```
+    *You need to restart your CMD window after setting this.*
+  </Tabs.Tab>
+</Tabs>
+
+<Callout type="warning">
+  Replace `cr_xxxxxxxxxx` with your actual API key obtained from claude-code.club.
+</Callout>
+
+## 4. Verify the Configuration
+
+Once configured, start Codex to verify everything is working:
+
+```bash
+codex
+```
+
+<Callout type="success">
+  **Congratulations!**
+  You have successfully configured OpenAI Codex. You can now start using AI-assisted coding.
+</Callout>
+
+## Frequently Asked Questions
+
+**Q: Getting an "Invalid API Key" error?**
+A: Check that your environment variable is configured correctly, and make sure `OPENAI_API_KEY` in `~/.codex/auth.json` is set to the correct API key.
+
+**Q: How do I get an API key?**
+A: Visit the [Get API Key](/getting-started/get-api-key) page to learn how to obtain a key.

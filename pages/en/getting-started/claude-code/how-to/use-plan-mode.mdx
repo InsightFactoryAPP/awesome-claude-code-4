@@ -1,0 +1,72 @@
+---
+title: Safely Analyze Code with Plan Mode
+description: Learn how to use plan mode to safely explore codebases and plan complex changes
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Safely Analyze Code with Plan Mode
+
+Plan mode instructs Claude to create a plan by analyzing the codebase using read-only operations. It is ideal for exploring codebases, planning complex changes, or safely reviewing code.
+
+## When to Use Plan Mode
+
+* **Multi-step implementation**: When your feature requires editing many files
+* **Code exploration**: When you want to thoroughly research the codebase before changing anything
+* **Interactive development**: When you want to iteratively discuss direction with Claude
+
+## How to Use Plan Mode
+
+### Toggle Plan Mode During a Session
+
+You can use **Shift+Tab** to cycle between permission modes during a session.
+
+If you are in normal mode, **Shift+Tab** will first switch to auto-accept mode, displaying `⏵⏵ accept edits on` at the bottom of the terminal. Press **Shift+Tab** again to switch to plan mode, displaying `⏸ plan mode on`.
+
+### Start a New Session in Plan Mode
+
+To start a new session in plan mode, use the `--permission-mode plan` flag:
+
+```bash
+claude --permission-mode plan
+```
+
+### Run a "Headless" Query in Plan Mode
+
+You can also run queries directly in plan mode using `-p` (i.e., ["headless mode"](https://docs.claude.com/en/docs/claude-code/sdk/sdk-headless)):
+
+```bash
+claude --permission-mode plan -p "Analyze the authentication system and suggest improvements"
+```
+
+<Callout type="info">
+Example: Planning a Complex Refactoring
+
+```bash
+claude --permission-mode plan
+```
+
+```
+> I need to refactor our authentication system to use OAuth2. Create a detailed migration plan.
+```
+
+Claude will analyze the current implementation and create a comprehensive plan. Refine it with follow-up questions:
+
+```
+> What about backward compatibility?
+> How should we handle database migration?
+```
+</Callout>
+
+## Configure Plan Mode as the Default
+
+```json
+// .claude/settings.json
+{
+  "permissions": {
+    "defaultMode": "plan"
+  }
+}
+```
+
+See the [settings documentation](https://docs.claude.com/en/docs/claude-code/settings#available-settings) for more configuration options.

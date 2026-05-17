@@ -1,7 +1,1277 @@
 ---
-title: 编码标准配置
+title: Coding Standards Configuration
+description: Get Claude to write Clean Code — naming conventions, function rules, and error handling
 ---
 
-# 编码标准配置
+import { Callout, Steps, Tabs } from 'nextra/components'
 
-> 🚧 English translation coming soon.
+# Coding Standards Configuration
+
+Coding standards are the key configuration for ensuring Claude Code produces high-quality, maintainable code. This guide covers best practices for TypeScript, Python, and PHP.
+
+## 1. Why Coding Standards Matter
+
+### 1.1 Problems Without Coding Standards
+
+Without explicit coding standards, Claude's output often suffers from:
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', margin: '16px 0' }}>
+  <div style={{ padding: '12px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#c53030' }}>Mixed naming styles</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>camelCase and snake_case mixed together — inconsistent style across the project</div>
+  </div>
+  <div style={{ padding: '12px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#c53030' }}>Runaway function length</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Functions ballooning to hundreds of lines — hard to understand and test</div>
+  </div>
+  <div style={{ padding: '12px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#c53030' }}>Code duplication</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Similar logic scattered throughout — easy to miss when making changes</div>
+  </div>
+  <div style={{ padding: '12px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#c53030' }}>Difficult to maintain</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Handed-off code is unreadable — extremely high maintenance cost</div>
+  </div>
+</div>
+
+### 1.2 The Value of Coding Standards
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', margin: '16px 0' }}>
+  <div style={{ padding: '12px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '2px solid #86efac' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#15803d' }}>Improved readability</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Consistent style makes code immediately understandable</div>
+  </div>
+  <div style={{ padding: '12px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '2px solid #86efac' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#15803d' }}>Better collaboration</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Team members can quickly understand each other's code</div>
+  </div>
+  <div style={{ padding: '12px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '2px solid #86efac' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#15803d' }}>Faster code review</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>No more arguing about style — focus on business logic</div>
+  </div>
+  <div style={{ padding: '12px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '2px solid #86efac' }}>
+    <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#15803d' }}>Lower maintenance cost</div>
+    <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Well-structured code is easier to modify and extend</div>
+  </div>
+</div>
+
+<Callout type="info">
+**Core principle**: Coding standards are not a constraint — they make code easier for people (including future you) to understand.
+</Callout>
+
+---
+
+## 2. Naming Convention Configuration
+
+Naming is the most fundamental and important part of coding standards. Good naming makes code self-documenting.
+
+### 2.1 File Naming
+
+<div style={{ maxWidth: '700px' }}>
+
+| Language | Regular files | Class/Component files | Test files |
+|:------|:---------|:------------|:---------|
+| TypeScript | `kebab-case.ts` | `PascalCase.tsx` | `*.test.ts` / `*.spec.ts` |
+| Python | `snake_case.py` | `snake_case.py` | `test_*.py` / `*_test.py` |
+| PHP | `snake_case.php` | `PascalCase.php` | `*Test.php` |
+
+</div>
+
+### 2.2 Variables and Functions
+
+<Tabs items={['TypeScript', 'Python', 'PHP']}>
+  <Tabs.Tab>
+```typescript
+// Variables: camelCase, noun-form
+const userName = 'john';
+const itemCount = 10;
+const isActive = true;
+
+// Functions: camelCase, verb-first
+function getUserById(id: string) { }
+function calculateTotal(items: Item[]) { }
+function validateEmail(email: string) { }
+
+// Constants: SCREAMING_SNAKE_CASE
+const MAX_RETRY_COUNT = 3;
+const API_BASE_URL = 'https://api.example.com';
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```python
+# Variables: snake_case, noun-form
+user_name = 'john'
+item_count = 10
+is_active = True
+
+# Functions: snake_case, verb-first
+def get_user_by_id(user_id: str) -> User:
+    pass
+
+def calculate_total(items: list[Item]) -> float:
+    pass
+
+def validate_email(email: str) -> bool:
+    pass
+
+# Constants: SCREAMING_SNAKE_CASE
+MAX_RETRY_COUNT = 3
+API_BASE_URL = 'https://api.example.com'
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```php
+// Variables: camelCase, noun-form
+$userName = 'john';
+$itemCount = 10;
+$isActive = true;
+
+// Methods: camelCase, verb-first
+public function getUserById(string $id): User { }
+public function calculateTotal(array $items): float { }
+public function validateEmail(string $email): bool { }
+
+// Constants: SCREAMING_SNAKE_CASE
+const MAX_RETRY_COUNT = 3;
+const API_BASE_URL = 'https://api.example.com';
+```
+  </Tabs.Tab>
+</Tabs>
+
+### 2.3 Classes and Interfaces
+
+All languages use **PascalCase** consistently:
+
+<Tabs items={['TypeScript', 'Python', 'PHP']}>
+  <Tabs.Tab>
+```typescript
+// Classes: PascalCase, noun
+class UserService { }
+class OrderRepository { }
+
+// Interfaces: PascalCase, optional I prefix (per team convention)
+interface User { }
+interface IUserService { }  // optional style
+
+// Types: PascalCase
+type UserRole = 'admin' | 'user' | 'guest';
+type ApiResponse<T> = { data: T; error?: string };
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```python
+# Classes: PascalCase, noun
+class UserService:
+    pass
+
+class OrderRepository:
+    pass
+
+# Protocols / Abstract classes: PascalCase
+from typing import Protocol
+
+class UserRepositoryProtocol(Protocol):
+    def get_by_id(self, user_id: str) -> User: ...
+
+# Type aliases: PascalCase
+UserRole = Literal['admin', 'user', 'guest']
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```php
+// Classes: PascalCase, noun
+class UserService { }
+class OrderRepository { }
+
+// Interfaces: PascalCase, optional Interface suffix
+interface UserRepositoryInterface { }
+interface Authenticatable { }
+
+// Traits: PascalCase
+trait HasTimestamps { }
+trait Notifiable { }
+```
+  </Tabs.Tab>
+</Tabs>
+
+### 2.4 Boolean Naming
+
+Booleans should use `is`/`has`/`can`/`should` prefixes to make their meaning immediately clear:
+
+```
+✅ Good naming          ❌ Bad naming
+isActive            active
+hasPermission       permission
+canEdit             editable
+shouldUpdate        update
+isValid             valid
+```
+
+### 2.5 Naming Convention Configuration Examples
+
+<Tabs items={['TypeScript', 'Python', 'PHP']}>
+  <Tabs.Tab>
+```markdown
+## Naming Conventions (TypeScript)
+
+### File Naming
+- Regular files: kebab-case.ts (e.g. user-service.ts)
+- React components: PascalCase.tsx (e.g. UserProfile.tsx)
+- Test files: *.test.ts or *.spec.ts
+
+### Identifier Naming
+- Variables/functions: camelCase (e.g. getUserById)
+- Classes/interfaces/types: PascalCase (e.g. UserService)
+- Constants: SCREAMING_SNAKE_CASE (e.g. MAX_RETRY)
+- Booleans: is/has/can/should prefix (e.g. isActive)
+
+### Naming Principles
+- Variables are nouns, functions are verbs
+- Names must be meaningful — avoid a, b, x, temp
+- No abbreviations unless widely recognized (e.g. id, url)
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```markdown
+## Naming Conventions (Python)
+
+### File Naming
+- Module files: snake_case.py (e.g. user_service.py)
+- Test files: test_*.py or *_test.py
+
+### Identifier Naming
+- Variables/functions: snake_case (e.g. get_user_by_id)
+- Classes: PascalCase (e.g. UserService)
+- Constants: SCREAMING_SNAKE_CASE (e.g. MAX_RETRY)
+- Private members: _leading_underscore (e.g. _internal_method)
+- Booleans: is/has/can/should prefix (e.g. is_active)
+
+### Naming Principles
+- Follow PEP 8
+- Variables are nouns, functions are verbs
+- Avoid single-character names (except loop variables)
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```markdown
+## Naming Conventions (PHP)
+
+### File Naming
+- Class files: PascalCase.php (e.g. UserService.php)
+- Regular files: snake_case.php (e.g. helpers.php)
+- Test files: *Test.php (e.g. UserServiceTest.php)
+
+### Identifier Naming
+- Variables: camelCase (e.g. $userName)
+- Methods: camelCase (e.g. getUserById)
+- Classes/interfaces/traits: PascalCase (e.g. UserService)
+- Constants: SCREAMING_SNAKE_CASE (e.g. MAX_RETRY)
+- Booleans: is/has/can/should prefix (e.g. $isActive)
+
+### Naming Principles
+- Follow PSR-12
+- Class name must match file name
+- Namespace must match directory structure
+```
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## 3. Function Rules Configuration
+
+Functions are the basic unit of code. Good function design is the foundation of high-quality code.
+
+### 3.1 Function Length Limits
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '16px 0' }}>
+  <div style={{ padding: '16px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '2px solid #86efac' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#15803d' }}>Recommended Standards</h4>
+    <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#2d3748' }}>
+      <p><strong>Under 30 lines</strong>: ideal length</p>
+      <p><strong>Under 50 lines</strong>: acceptable upper limit</p>
+      <p><strong>Over 50 lines</strong>: must be split</p>
+    </div>
+  </div>
+  <div style={{ padding: '16px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#c53030' }}>Why Limit Length</h4>
+    <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#2d3748' }}>
+      <p>• Long functions are hard to understand</p>
+      <p>• Long functions are hard to test</p>
+      <p>• Long functions often violate single responsibility</p>
+    </div>
+  </div>
+</div>
+
+### 3.2 Single Responsibility Principle
+
+A function does one thing, and its name accurately describes that one thing.
+
+<Tabs items={['TypeScript', 'Python', 'PHP']}>
+  <Tabs.Tab>
+```typescript
+// ❌ Bad: one function doing multiple things
+function processUser(user: User) {
+  // validate
+  if (!user.email) throw new Error('Invalid email');
+  // save to database
+  db.save(user);
+  // send welcome email
+  sendEmail(user.email, 'Welcome!');
+  // log
+  logger.info('User created');
+}
+
+// ✅ Good: each function does one thing
+function validateUser(user: User): void {
+  if (!user.email) throw new Error('Invalid email');
+}
+
+function saveUser(user: User): void {
+  db.save(user);
+}
+
+function sendWelcomeEmail(email: string): void {
+  sendEmail(email, 'Welcome!');
+}
+
+function createUser(user: User): void {
+  validateUser(user);
+  saveUser(user);
+  sendWelcomeEmail(user.email);
+  logger.info('User created');
+}
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```python
+# ❌ Bad: one function doing multiple things
+def process_user(user: User) -> None:
+    # validate
+    if not user.email:
+        raise ValueError('Invalid email')
+    # save to database
+    db.save(user)
+    # send welcome email
+    send_email(user.email, 'Welcome!')
+    # log
+    logger.info('User created')
+
+# ✅ Good: each function does one thing
+def validate_user(user: User) -> None:
+    if not user.email:
+        raise ValueError('Invalid email')
+
+def save_user(user: User) -> None:
+    db.save(user)
+
+def send_welcome_email(email: str) -> None:
+    send_email(email, 'Welcome!')
+
+def create_user(user: User) -> None:
+    validate_user(user)
+    save_user(user)
+    send_welcome_email(user.email)
+    logger.info('User created')
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```php
+// ❌ Bad: one function doing multiple things
+public function processUser(User $user): void {
+    // validate
+    if (!$user->email) throw new Exception('Invalid email');
+    // save to database
+    $this->db->save($user);
+    // send welcome email
+    $this->sendEmail($user->email, 'Welcome!');
+    // log
+    $this->logger->info('User created');
+}
+
+// ✅ Good: each function does one thing
+public function validateUser(User $user): void {
+    if (!$user->email) throw new InvalidArgumentException('Invalid email');
+}
+
+public function saveUser(User $user): void {
+    $this->db->save($user);
+}
+
+public function sendWelcomeEmail(string $email): void {
+    $this->sendEmail($email, 'Welcome!');
+}
+
+public function createUser(User $user): void {
+    $this->validateUser($user);
+    $this->saveUser($user);
+    $this->sendWelcomeEmail($user->email);
+    $this->logger->info('User created');
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+### 3.3 Parameter Count Limits
+
+<div style={{ padding: '16px', backgroundColor: '#f9fafb', borderRadius: '8px', margin: '16px 0', border: '1px solid #e5e7eb' }}>
+  <div style={{ fontWeight: 'bold', marginBottom: '12px', color: '#2d3748' }}>Parameter Count Guidelines</div>
+  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+    <div style={{ padding: '8px 16px', backgroundColor: '#d1fae5', borderRadius: '4px', border: '1px solid #86efac' }}>
+      <span style={{ fontWeight: 'bold', color: '#15803d' }}>0–2</span><span style={{ color: '#2d3748' }}>: ideal</span>
+    </div>
+    <div style={{ padding: '8px 16px', backgroundColor: '#fef3c7', borderRadius: '4px', border: '1px solid #fbbf24' }}>
+      <span style={{ fontWeight: 'bold', color: '#92400e' }}>3–4</span><span style={{ color: '#2d3748' }}>: acceptable</span>
+    </div>
+    <div style={{ padding: '8px 16px', backgroundColor: '#fee2e2', borderRadius: '4px', border: '1px solid #fc8181' }}>
+      <span style={{ fontWeight: 'bold', color: '#c53030' }}>5+</span><span style={{ color: '#2d3748' }}>: must refactor</span>
+    </div>
+  </div>
+</div>
+
+When more than 3–4 parameters are needed, use an object/DTO:
+
+<Tabs items={['TypeScript', 'Python', 'PHP']}>
+  <Tabs.Tab>
+```typescript
+// ❌ Bad: too many parameters
+function createUser(
+  name: string,
+  email: string,
+  age: number,
+  address: string,
+  phone: string,
+  role: string
+) { }
+
+// ✅ Good: use object parameter
+interface CreateUserParams {
+  name: string;
+  email: string;
+  age: number;
+  address: string;
+  phone: string;
+  role: string;
+}
+
+function createUser(params: CreateUserParams) { }
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```python
+# ❌ Bad: too many parameters
+def create_user(
+    name: str,
+    email: str,
+    age: int,
+    address: str,
+    phone: str,
+    role: str
+) -> User:
+    pass
+
+# ✅ Good: use dataclass
+@dataclass
+class CreateUserParams:
+    name: str
+    email: str
+    age: int
+    address: str
+    phone: str
+    role: str
+
+def create_user(params: CreateUserParams) -> User:
+    pass
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```php
+// ❌ Bad: too many parameters
+public function createUser(
+    string $name,
+    string $email,
+    int $age,
+    string $address,
+    string $phone,
+    string $role
+): User { }
+
+// ✅ Good: use DTO
+class CreateUserDto {
+    public function __construct(
+        public string $name,
+        public string $email,
+        public int $age,
+        public string $address,
+        public string $phone,
+        public string $role,
+    ) {}
+}
+
+public function createUser(CreateUserDto $dto): User { }
+```
+  </Tabs.Tab>
+</Tabs>
+
+### 3.4 Return Value Standards
+
+<Tabs items={['TypeScript', 'Python', 'PHP']}>
+  <Tabs.Tab>
+```typescript
+// ✅ Explicit return type
+function getUserById(id: string): User | null {
+  const user = db.find(id);
+  return user ?? null;
+}
+
+// ✅ Result pattern for error handling
+type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
+
+function parseJson(str: string): Result<unknown, Error> {
+  try {
+    return { ok: true, value: JSON.parse(str) };
+  } catch (e) {
+    return { ok: false, error: e as Error };
+  }
+}
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```python
+from typing import Optional
+
+# ✅ Explicit return type
+def get_user_by_id(user_id: str) -> Optional[User]:
+    user = db.find(user_id)
+    return user if user else None
+
+# ✅ Result pattern (or return tuple)
+from dataclasses import dataclass
+from typing import Generic, TypeVar, Union
+
+T = TypeVar('T')
+E = TypeVar('E')
+
+@dataclass
+class Ok(Generic[T]):
+    value: T
+
+@dataclass
+class Err(Generic[E]):
+    error: E
+
+Result = Union[Ok[T], Err[E]]
+
+def parse_json(s: str) -> Result[dict, str]:
+    try:
+        return Ok(json.loads(s))
+    except json.JSONDecodeError as e:
+        return Err(str(e))
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```php
+// ✅ Explicit return type (PHP 8+)
+public function getUserById(string $id): ?User {
+    $user = $this->db->find($id);
+    return $user ?? null;
+}
+
+// ✅ Result pattern
+class Result {
+    private function __construct(
+        public readonly bool $ok,
+        public readonly mixed $value = null,
+        public readonly ?string $error = null,
+    ) {}
+
+    public static function ok(mixed $value): self {
+        return new self(true, $value);
+    }
+
+    public static function err(string $error): self {
+        return new self(false, error: $error);
+    }
+}
+
+public function parseJson(string $str): Result {
+    try {
+        return Result::ok(json_decode($str, true, flags: JSON_THROW_ON_ERROR));
+    } catch (JsonException $e) {
+        return Result::err($e->getMessage());
+    }
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+### 3.5 Function Rules Configuration Example
+
+```markdown
+## Function Rules
+
+### Length Limits
+- Single function no more than 30 lines (recommended)
+- Absolute maximum 50 lines — must split if exceeded
+- Nesting depth no more than 3 levels
+
+### Single Responsibility
+- A function does one thing
+- Function name must accurately describe its purpose
+- If the function name needs "and", it should be split
+
+### Parameter Limits
+- No more than 4 parameters
+- Use object/DTO when exceeded
+- Avoid boolean parameters (use enums or split into two functions)
+
+### Return Values
+- Must declare return type
+- Avoid returning null (use Optional/Result pattern)
+- A function returns one type only
+```
+
+---
+
+## 4. Error Handling Configuration
+
+Error handling is the key to code robustness. Different languages have different best practices.
+
+### 4.1 TypeScript Error Handling
+
+```typescript
+// ❌ Bad: using any
+try {
+  await fetchData();
+} catch (error: any) {
+  console.log(error.message);  // may crash
+}
+
+// ✅ Good: use unknown + type guard
+try {
+  await fetchData();
+} catch (error: unknown) {
+  if (error instanceof Error) {
+    console.log(error.message);
+  } else {
+    console.log('Unknown error:', String(error));
+  }
+}
+
+// ✅ Better: custom error class
+class ApiError extends Error {
+  constructor(
+    message: string,
+    public statusCode: number,
+    public context?: Record<string, unknown>
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+function handleError(error: unknown): void {
+  if (error instanceof ApiError) {
+    logger.error(`API Error ${error.statusCode}: ${error.message}`, error.context);
+  } else if (error instanceof Error) {
+    logger.error(`Error: ${error.message}`);
+  } else {
+    logger.error('Unknown error', { error });
+  }
+}
+```
+
+### 4.2 Python Error Handling
+
+```python
+# ❌ Bad: bare except
+try:
+    fetch_data()
+except:  # catches everything, including KeyboardInterrupt
+    print('Error')
+
+# ❌ Bad: overly broad
+try:
+    fetch_data()
+except Exception as e:
+    pass  # swallowed exception
+
+# ✅ Good: catch specific exceptions
+try:
+    fetch_data()
+except ConnectionError as e:
+    logger.error(f'Connection failed: {e}')
+    raise
+except TimeoutError as e:
+    logger.error(f'Request timed out: {e}')
+    raise
+
+# ✅ Better: custom exception class
+class ApiError(Exception):
+    def __init__(self, message: str, status_code: int, context: dict = None):
+        super().__init__(message)
+        self.status_code = status_code
+        self.context = context or {}
+
+def handle_error(error: Exception) -> None:
+    if isinstance(error, ApiError):
+        logger.error(f'API Error {error.status_code}: {error}', extra=error.context)
+    else:
+        logger.error(f'Error: {error}')
+```
+
+### 4.3 PHP Error Handling
+
+```php
+// ❌ Bad: using @ to suppress errors
+$data = @file_get_contents($url);
+
+// ❌ Bad: catch Exception but do nothing
+try {
+    $this->fetchData();
+} catch (Exception $e) {
+    // empty catch block
+}
+
+// ✅ Good: catch specific exceptions
+try {
+    $this->fetchData();
+} catch (ConnectionException $e) {
+    $this->logger->error('Connection failed: ' . $e->getMessage());
+    throw $e;
+} catch (TimeoutException $e) {
+    $this->logger->error('Request timed out: ' . $e->getMessage());
+    throw $e;
+}
+
+// ✅ Better: custom exception hierarchy
+class ApiException extends Exception {
+    public function __construct(
+        string $message,
+        public readonly int $statusCode,
+        public readonly array $context = [],
+        ?Throwable $previous = null
+    ) {
+        parent::__construct($message, $statusCode, $previous);
+    }
+}
+
+class ValidationException extends ApiException {}
+class AuthenticationException extends ApiException {}
+```
+
+### 4.4 Null Value Handling
+
+<Tabs items={['TypeScript', 'Python', 'PHP']}>
+  <Tabs.Tab>
+```typescript
+// ✅ Optional chaining
+const userName = user?.profile?.name;
+
+// ✅ Nullish coalescing
+const displayName = userName ?? 'Anonymous';
+
+// ✅ Early return to avoid deep nesting
+function getDisplayName(user: User | null): string {
+  if (!user) return 'Anonymous';
+  if (!user.profile) return user.email;
+  return user.profile.name ?? user.email;
+}
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```python
+from typing import Optional
+
+# ✅ Use Optional type annotation
+def get_user_name(user: Optional[User]) -> str:
+    if user is None:
+        return 'Anonymous'
+    return user.name or 'Anonymous'
+
+# ✅ Use or to provide a default
+display_name = user_name or 'Anonymous'
+
+# ✅ getattr with default
+name = getattr(user, 'name', 'Anonymous')
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```php
+// ✅ Nullsafe operator
+$userName = $user?->profile?->name;
+
+// ✅ Null coalescing assignment
+$displayName = $userName ?? 'Anonymous';
+
+// ✅ Early return
+public function getDisplayName(?User $user): string {
+    if ($user === null) return 'Anonymous';
+    if ($user->profile === null) return $user->email;
+    return $user->profile->name ?? $user->email;
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+### 4.5 Error Handling Configuration Examples
+
+<Tabs items={['TypeScript', 'Python', 'PHP']}>
+  <Tabs.Tab>
+```markdown
+## Error Handling (TypeScript)
+
+### Type Safety
+- Never use any — use unknown in catch blocks
+- Use type guards to validate error types
+- Custom error classes extend Error
+
+### Error Handling Principles
+- Never swallow exceptions (empty catch blocks)
+- Caught exceptions must be logged or re-thrown
+- Error messages must include context
+
+### Null Handling
+- Use optional chaining (?.) for potentially null properties
+- Use nullish coalescing (??) to provide defaults
+- Explicitly check null/undefined — don't rely on implicit coercion
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```markdown
+## Error Handling (Python)
+
+### Exception Handling
+- Never use bare except
+- Catch specific exception types
+- Use raise from to preserve exception chains
+
+### Custom Exceptions
+- Inherit from the appropriate built-in exception
+- Include meaningful error messages and context
+- Follow exception naming conventions (*Error or *Exception)
+
+### Null Handling
+- Use Optional type annotations
+- Use `is None` not `== None`
+- Use the or operator to provide defaults
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```markdown
+## Error Handling (PHP)
+
+### Exception Handling
+- Never use the @ error suppressor
+- Catch specific exception types
+- Use the previous parameter to preserve exception chains
+
+### Custom Exceptions
+- Build a project exception hierarchy
+- Exceptions include error codes and context
+- Follow PSR conventions
+
+### Null Handling
+- Use the ?-> nullsafe operator (PHP 8+)
+- Use the ?? null coalescing operator
+- Use nullable types for parameters and return values
+```
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## 5. Code Organization Standards
+
+### 5.1 DRY Principle (Don't Repeat Yourself)
+
+When the same logic appears more than twice, extract it into a standalone function or module.
+
+```
+Rule:
+- Same code appears 2 times → consider extracting
+- Same code appears 3 times → must extract
+- Similar code → extract into a parameterized general function
+```
+
+### 5.2 File Structure and Import Order
+
+<Tabs items={['TypeScript', 'Python', 'PHP']}>
+  <Tabs.Tab>
+```typescript
+// 1. External packages (node_modules)
+import express from 'express';
+import { z } from 'zod';
+
+// 2. Internal modules (absolute paths)
+import { UserService } from '@/services/user';
+import { logger } from '@/utils/logger';
+
+// 3. Relative paths
+import { validateUser } from './validators';
+import type { User } from './types';
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```python
+# 1. Standard library
+import os
+import sys
+from datetime import datetime
+
+# 2. Third-party packages
+import requests
+from pydantic import BaseModel
+
+# 3. Local modules
+from app.services.user import UserService
+from app.utils.logger import logger
+
+from .validators import validate_user
+from .types import User
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```php
+<?php
+
+// Strict type declaration
+declare(strict_types=1);
+
+namespace App\Services;
+
+// use statements sorted alphabetically
+use App\Exceptions\ApiException;
+use App\Models\User;
+use App\Repositories\UserRepository;
+use Psr\Log\LoggerInterface;
+
+class UserService
+{
+    // ...
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+### 5.3 Comment Standards
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '16px 0' }}>
+  <div style={{ padding: '16px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '2px solid #86efac' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#15803d' }}>When to write comments</h4>
+    <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#2d3748' }}>
+      <p>• Complex business logic</p>
+      <p>• Non-obvious design decisions</p>
+      <p>• Public API usage documentation</p>
+      <p>• Temporary workarounds (with issue link)</p>
+    </div>
+  </div>
+  <div style={{ padding: '16px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#c53030' }}>When NOT to write comments</h4>
+    <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#2d3748' }}>
+      <p>• When the code itself is already clear</p>
+      <p>• When the comment just repeats the code</p>
+      <p>• When comments compensate for bad naming</p>
+      <p>• Commented-out code (should be deleted)</p>
+    </div>
+  </div>
+</div>
+
+<Tabs items={['TypeScript (TSDoc)', 'Python (Docstring)', 'PHP (PHPDoc)']}>
+  <Tabs.Tab>
+```typescript
+/**
+ * Retrieve a user by their ID
+ *
+ * @param id - The unique user identifier
+ * @returns The user object, or null if not found
+ * @throws {ApiError} When the database connection fails
+ *
+ * @example
+ * ```ts
+ * const user = await getUserById('123');
+ * if (user) {
+ *   console.log(user.name);
+ * }
+ * ```
+ */
+async function getUserById(id: string): Promise<User | null> {
+  // ...
+}
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```python
+def get_user_by_id(user_id: str) -> Optional[User]:
+    """Retrieve a user by their ID
+
+    Args:
+        user_id: The unique user identifier
+
+    Returns:
+        The user object, or None if not found
+
+    Raises:
+        ApiError: When the database connection fails
+
+    Example:
+        >>> user = get_user_by_id('123')
+        >>> if user:
+        ...     print(user.name)
+    """
+    # ...
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```php
+/**
+ * Retrieve a user by their ID
+ *
+ * @param string $id The unique user identifier
+ * @return User|null The user object, or null if not found
+ * @throws ApiException When the database connection fails
+ *
+ * @example
+ * $user = $this->getUserById('123');
+ * if ($user !== null) {
+ *     echo $user->getName();
+ * }
+ */
+public function getUserById(string $id): ?User
+{
+    // ...
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## 6. Complete Configuration Templates
+
+### 6.1 TypeScript Project Template
+
+```markdown
+## Coding Standards (TypeScript)
+
+### Naming Conventions
+- Files: kebab-case.ts, components PascalCase.tsx
+- Variables/functions: camelCase
+- Classes/interfaces/types: PascalCase
+- Constants: SCREAMING_SNAKE_CASE
+- Booleans: is/has/can/should prefix
+
+### Function Rules
+- Single function no more than 30 lines
+- No more than 4 parameters — use object when exceeded
+- Must declare return type
+- A function does one thing only
+
+### Error Handling
+- catch blocks use unknown, not any
+- Never swallow exceptions
+- Use optional chaining (?.) and nullish coalescing (??)
+
+### Code Organization
+- Import order: external packages → internal modules → relative paths
+- Public APIs must have TSDoc comments
+- Same code appearing 3 times must be extracted
+```
+
+### 6.2 Python Project Template
+
+```markdown
+## Coding Standards (Python)
+
+### Naming Conventions
+- Files/variables/functions: snake_case
+- Classes: PascalCase
+- Constants: SCREAMING_SNAKE_CASE
+- Private members: _leading_underscore
+- Booleans: is/has/can/should prefix
+
+### Function Rules
+- Single function no more than 30 lines
+- No more than 4 parameters — use dataclass when exceeded
+- Must add type annotations
+- A function does one thing only
+
+### Error Handling
+- Never use bare except
+- Catch specific exception types
+- Use Optional to handle values that may be None
+
+### Code Organization
+- Import order: standard library → third-party → local
+- Public functions must have Docstrings
+- Follow PEP 8
+```
+
+### 6.3 PHP Project Template
+
+```markdown
+## Coding Standards (PHP)
+
+### Naming Conventions
+- Class files: PascalCase.php
+- Variables/methods: camelCase
+- Classes/interfaces/traits: PascalCase
+- Constants: SCREAMING_SNAKE_CASE
+- Booleans: is/has/can/should prefix
+
+### Function Rules
+- Single method no more than 30 lines
+- No more than 4 parameters — use DTO when exceeded
+- Must declare parameter types and return types
+- A method does one thing only
+
+### Error Handling
+- Never use the @ error suppressor
+- Catch specific exception types
+- Use nullable types and the ?? operator
+
+### Code Organization
+- Follow PSR-12
+- use statements sorted alphabetically
+- Public methods must have PHPDoc comments
+```
+
+### 6.4 Multi-Language Project Template
+
+```markdown
+## Coding Standards (Multi-Language Project)
+
+### General Principles
+- Follow each language's official style guide
+- Maintain internal consistency within the project
+- New code follows the existing code style
+
+### Language-Specific Standards
+See individual language configurations:
+- TypeScript: see 6.1 above
+- Python: see 6.2 above
+- PHP: see 6.3 above
+
+### Cross-Language Consistency
+- Constants: SCREAMING_SNAKE_CASE universally
+- Class names: PascalCase universally
+- Booleans: is/has/can/should prefix universally
+- API naming style: consistent (REST/GraphQL)
+```
+
+---
+
+## 7. FAQ
+
+### Q: What if Claude doesn't follow naming conventions?
+
+<Callout type="warning">
+**Solution**: Add concrete examples to your configuration and emphasize "must" rather than "suggested."
+</Callout>
+
+```markdown
+## Naming Conventions (Enforced)
+
+**Must strictly follow — no exceptions:**
+
+### Variable Naming
+- ✅ Correct: `userName`, `orderCount`, `isActive`
+- ❌ Wrong: `user_name`, `OrderCount`, `active`
+
+### Function Naming
+- ✅ Correct: `getUserById`, `calculateTotal`
+- ❌ Wrong: `get_user_by_id`, `GetUserById`
+
+**Code output that does not conform to the above is considered non-compliant**
+```
+
+### Q: How do I get Claude to automatically split long functions?
+
+<Callout type="info">
+**Solution**: State the length limit explicitly and require Claude to explain the split rationale.
+</Callout>
+
+```markdown
+## Function Length Limit
+
+**Functions over 50 lines are absolutely prohibited**
+
+When a function exceeds 30 lines, you must:
+1. Identify sub-tasks that can stand alone
+2. Extract each sub-task into its own function
+3. Use a meaningful name to describe each sub-task
+4. Call the sub-functions from the main function
+
+**Every extracted function should be describable in one sentence**
+```
+
+### Q: The existing codebase has mixed styles — how do I unify them progressively?
+
+<Callout type="info">
+**Solution**: Add a "follow existing style" principle and set a long-term goal.
+</Callout>
+
+```markdown
+## Code Style Principles
+
+### Short-term (existing code)
+- When modifying an existing file, follow that file's current style
+- Never mix feature changes and style changes in one PR
+- Style unification should be an independent refactoring task
+
+### Long-term goal (new code)
+- New files must follow the coding standards in this document
+- New modules should serve as style-unified examples
+- Gradually unify old code style during refactoring
+```
+
+### Q: How do I configure standards for a multi-language project?
+
+<Callout type="info">
+**Solution**: Extract universal principles while retaining language-specific standards.
+</Callout>
+
+```markdown
+## Multi-Language Project Configuration
+
+### Universal Principles (all languages)
+- Class names: PascalCase
+- Constants: SCREAMING_SNAKE_CASE
+- Booleans: is/has/can/should prefix
+- Function length: no more than 30 lines
+
+### Language-Specific (choose as needed)
+Based on the current file's language, follow the corresponding detailed standards:
+- .ts/.tsx files → TypeScript standards
+- .py files → Python standards
+- .php files → PHP standards
+```
+
+---
+
+## 8. Summary
+
+Coding standards configuration is the foundation for improving code quality:
+
+<div style={{ maxWidth: '600px' }}>
+
+| Module | Core Points |
+|:------|:---------|
+| Naming conventions | Consistent style, names that mean what they say |
+| Function rules | Small and focused, single responsibility |
+| Error handling | Type-safe, never swallow exceptions |
+| Code organization | DRY principle, clear structure |
+
+</div>
+
+<Callout type="info">
+**Working with other configurations**:
+- Pair with [Quality Gates](/practical-skills/config/quality-gates): promote key standards to hard gates
+- Pair with [Three-Phase Workflow](/practical-skills/config/workflow): follow coding standards during the implementation phase
+</Callout>
+
+## Next Steps
+
+- [Quality Gates Configuration](/practical-skills/config/quality-gates) — set non-negotiable floors
+- [Three-Phase Workflow Configuration](/practical-skills/config/workflow) — ensure standards are followed
+- [Back to Configuration Guide Home](/practical-skills/config)

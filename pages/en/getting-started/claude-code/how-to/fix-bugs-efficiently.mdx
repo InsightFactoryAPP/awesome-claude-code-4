@@ -1,0 +1,40 @@
+---
+title: Fix Bugs Efficiently
+description: Learn how to use Claude Code to quickly locate and fix errors in your code
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Fix Bugs Efficiently
+
+Suppose you encounter an error message and need to find and fix its root cause.
+
+<Steps>
+
+### Share the Error with Claude
+
+```
+> I'm seeing an error when I run npm test
+```
+
+### Request Fix Suggestions
+
+```
+> suggest a few ways to fix the @ts-ignore in user.ts
+```
+
+### Apply the Fix
+
+```
+> update user.ts to add the null check you suggested
+```
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* Tell Claude the command to reproduce the issue and get the stack trace
+* Mention any steps needed to reproduce the error
+* Let Claude know whether the error is intermittent or consistent
+</Callout>

@@ -1,0 +1,67 @@
+---
+title: Google Gemini CLI
+description: Learn about the core features and unique strengths of Google Gemini CLI
+---
+
+# Google Gemini CLI
+
+Google Gemini CLI is a powerful command-line AI assistant built on Google's most advanced Gemini models, designed specifically for developers. It combines strong code understanding and generation capabilities with seamless integration into your terminal workflow.
+
+## Core Strengths
+
+### 1. Extra-Long Context Window
+Gemini CLI supports an extremely large context window (up to 1M+ tokens), which means it can:
+- Read and understand an entire large codebase in a single pass
+- Maintain conversation memory over long sessions without needing to repeat background information repeatedly
+- Handle highly complex dependency relationship analysis
+
+### 2. Multimodal Capabilities
+Gemini natively supports multimodal interaction:
+- **Image understanding**: directly analyze UI design mockups and generate frontend code
+- **Document analysis**: process technical documents in formats such as PDF and image files
+- **Audio/video processing**: (depending on the specific version) may support extracting information from multimedia content
+
+### 3. Fast Response and Reasoning
+Thanks to architectural optimizations in the Gemini model, Gemini CLI delivers extremely fast performance when handling complex logical reasoning and code generation, significantly reducing wait times.
+
+## Feature Comparison: Claude Code vs Gemini CLI
+
+Both are top-tier AI CLI tools, but each has its strengths:
+
+| Feature | Claude Code | Gemini CLI |
+|--------|-------------|------------|
+| **Best at** | Complex logical reasoning, highly human-centered interaction | Massive context handling, multimodal input, response speed |
+| **Ecosystem integration** | Strong MCP protocol support | Deep integration with Google Cloud ecosystem |
+| **Context** | Excellent | Extreme (1M+ Tokens) |
+
+## Typical Use Cases
+
+### Legacy Code Refactoring
+Use Gemini CLI's extra-long context to load an entire legacy project's codebase in one pass for comprehensive dependency analysis and refactoring suggestions, without needing to process it in batches.
+
+### UI/UX Development
+Upload a design sketch or screenshot and let Gemini CLI generate the corresponding React/Vue component code directly.
+
+```bash
+# Example: generate code based on an image
+$ gemini "Implement this login page using Tailwind CSS. Reference image: ./design-mockup.png"
+```
+
+### Cross-Language Migration
+When performing large-scale migrations between programming languages, Gemini CLI's multilingual understanding and long context window ensure consistency and accuracy throughout the migration.
+
+## Installation and Configuration
+
+*(Add specific installation steps here, e.g. npm or pip commands)*
+
+```bash
+# Example installation command
+npm install -g @google/gemini-cli
+# or
+pip install google-gemini-cli
+```
+
+## Next Steps
+
+- [Get API Key](/getting-started/get-api-key) (if applicable)
+- [View FAQs](/getting-started/faq)

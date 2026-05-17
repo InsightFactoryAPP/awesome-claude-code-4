@@ -1,0 +1,56 @@
+import { Callout, Steps } from 'nextra/components'
+
+# Get Claude Code Local Session Files
+
+When you encounter issues while using Claude Code, you can export the conversation log file (in `.jsonl` format) for the current session. You can analyze the conversation yourself or send the file to a support technician to help diagnose the problem.
+
+## Steps
+
+<Steps>
+
+### Get the Session ID
+
+Run the `/status` command in Claude Code and find the **Session ID** in the output:
+
+```
+> /status
+
+Session ID: abc123def456...
+```
+
+### Find the Session File Using the Session ID
+
+Copy the Session ID, then run the following command in your terminal:
+
+```bash
+find ~/.claude/projects/ -name "<YourSessionID>.jsonl"
+```
+
+For example, if your Session ID is `abc123def456`, run:
+
+```bash
+find ~/.claude/projects/ -name "abc123def456.jsonl"
+```
+
+The command will output the full path to the session file, similar to:
+
+```
+/Users/yourname/.claude/projects/.../abc123def456.jsonl
+```
+
+### Use the Session File
+
+Once you have found the file, you can:
+
+- **Analyze it yourself**: Use a text editor or tools like `jq` to view the `.jsonl` file contents. Each line is a JSON-formatted conversation record.
+- **Send to support**: Send the file to our technical support team to help diagnose and analyze the issue.
+
+</Steps>
+
+<Callout type="info">
+Session files are stored in `.jsonl` (JSON Lines) format, with one record per line, containing the complete conversation context.
+</Callout>
+
+<Callout type="warning">
+Session files may contain your complete conversation with Claude Code, including code snippets and other sensitive information. Before sharing with others, make sure the file does not contain passwords, keys, or other confidential data.
+</Callout>

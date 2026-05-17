@@ -1,0 +1,469 @@
+---
+title: Claude Code Diagnostic Tool
+description: Cross-platform diagnostic tool for troubleshooting Claude Code connectivity, authentication, and installation issues.
+---
+
+# Claude Code Diagnostic Tool
+
+A cross-platform diagnostic tool for troubleshooting Claude Code connectivity, authentication, and installation issues.
+
+## Overview
+
+This tool helps diagnose common problems when connecting to the Claude Code API server (`claude-code.club`). It performs comprehensive checks across the following areas:
+
+- **Authentication**: Validates API tokens and configuration
+- **Network**: Tests DNS resolution, TLS handshake, and API connectivity
+- **Installation**: Locates the Claude Code binary and verifies its version
+- **Configuration**: Checks environment variables and configuration files
+- **Proxy and VPN**: Detects proxy settings and VPN connections that may interfere with connectivity
+
+> **📖 For Claude Code Runtime Issues**: If Claude Code itself is freezing, slow, or unresponsive (rather than a network connectivity issue), see **[DEBUG_CN.md](/assets/getting-started/installation/DEBUG_CN.md)** for detailed debugging instructions, including the `--verbose` flag, log analysis, and performance optimization.
+
+## Supported Platforms
+
+- **macOS/Linux**: `diagnose.sh` (zsh/bash)
+- **Windows**: `diagnose.ps1` (PowerShell)
+
+## Quick Start
+
+### Run Directly (No Download Required)
+
+Run the diagnostic tool directly from GitHub without cloning the repository:
+
+#### macOS/Linux
+
+```bash
+# Basic diagnostics
+curl -fsSL https://academy.claude-code.club/assets/getting-started/installation/diagnose.sh | zsh
+
+# With verbose output
+curl -fsSL https://academy.claude-code.club/assets/getting-started/installation/diagnose.sh | zsh -s -- --verbose
+
+# Save output to file
+curl -fsSL https://academy.claude-code.club/assets/getting-started/installation/diagnose.sh | zsh -s -- --output diagnostic-report.txt
+
+# With verbose output and save to file
+curl -fsSL https://academy.claude-code.club/assets/getting-started/installation/diagnose.sh | zsh -s -- --verbose --output report.txt
+```
+
+#### Windows
+
+```powershell
+# Basic diagnostics
+irm https://academy.claude-code.club/assets/getting-started/installation/diagnose.ps1 | iex
+
+# With verbose output
+irm https://academy.claude-code.club/assets/getting-started/installation/diagnose.ps1 | iex; .\diagnose.ps1 -Verbose
+
+# Alternative: download and run with parameters
+$script = irm https://academy.claude-code.club/assets/getting-started/installation/diagnose.ps1
+Invoke-Expression $script -Verbose -Output report.txt
+```
+
+> **Security Note**: Before executing scripts directly from the internet, always review the script content first:
+> ```bash
+> # macOS/Linux: view script content
+> curl -fsSL https://academy.claude-code.club/assets/getting-started/installation/diagnose.sh | less
+> 
+> # Windows: view script content
+> irm https://academy.claude-code.club/assets/getting-started/installation/diagnose.ps1
+> ```
+
+---
+
+### Run Locally (After Downloading the Script)
+
+If you prefer to download the script to your machine first via a browser or HTTP tool:
+
+#### macOS/Linux
+
+```bash
+# Add execute permission on first use
+chmod +x diagnose.sh
+
+# Run basic diagnostics
+./diagnose.sh
+
+# With verbose logging
+./diagnose.sh --verbose
+
+# Save diagnostic report to file
+./diagnose.sh --output diagnostic-report.txt
+
+# Enable auto-fix
+./diagnose.sh --fix
+```
+
+#### Windows
+
+```powershell
+# Run basic diagnostics
+.\diagnose.ps1
+
+# With verbose logging
+.\diagnose.ps1 -Verbose
+
+# Save diagnostic report to file
+.\diagnose.ps1 -Output diagnostic-report.txt
+
+# Enable auto-fix
+.\diagnose.ps1 -Fix
+```
+
+## Manual Troubleshooting Guides
+
+If you prefer not to run the automated script, or want to understand what each step does in detail, we provide detailed manual troubleshooting guides:
+
+- **🍎 macOS**: [macOS Manual Troubleshooting Guide](/getting-started/installation/diagnose/macos)
+- **🪟 Windows**: [Windows Manual Troubleshooting Guide](/getting-started/installation/diagnose/windows)
+
+### 🎓 Not Familiar with the Terminal?
+
+If you are not comfortable using the command line (terminal or PowerShell), check out our beginner's guide:
+
+- **[Terminal Basics Tutorial](/getting-started/installation/diagnose/terminal-basics)**: Learn how to open and use the terminal on macOS and Windows.
+
+## Command-line Options
+
+| Option | Description |
+|------|------|
+| `--verbose` / `-Verbose` | Enable verbose log output, including curl responses and intermediate steps |
+| `--fix` / `-Fix` | Attempt to auto-fix common configuration issues |
+| `--output <file>` / `-Output <file>` | Save the diagnostic report to the specified file |
+| `--help` / `-Help` | Display usage information |
+
+## What Gets Checked
+
+#### 1. Environment Check
+
+- Verify required tools (`curl`, optional `jq`) are present
+- Report shell/PowerShell version information
+
+#### 2. Authentication Diagnostics
+
+- **ANTHROPIC_AUTH_TOKEN**: Confirms the token is set (required)
+- **ANTHROPIC_API_KEY**: Issues a warning if detected (should not be used)
+- **ANTHROPIC_BASE_URL**: Validates correct configuration
+- **Console cache**: Detects potential conflicts from the official Anthropic Console
+
+#### 3. Network Diagnostics
+
+- **DNS resolution**: Tests domain lookup for `claude-code.club`
+- **TLS handshake**: Validates SSL/TLS certificate verification
+- **API connectivity**: Performs an actual API call with authentication headers
+- **Error detection**: Identifies specific failure patterns (timeouts, certificate errors, etc.)
+
+#### 3.5. Proxy and VPN Diagnostics
+
+- **Proxy environment variables**: Checks http_proxy, https_proxy, all_proxy, no_proxy settings
+- **System proxy settings**: Validates macOS/Windows system-level proxy configuration
+- **Proxy bypass list**: Ensures claude-code.club is in the bypass/no_proxy list when a proxy is configured
+- **VPN detection**: Identifies active VPN connections (Cisco AnyConnect, OpenVPN, WireGuard, NordVPN, etc.)
+- **VPN interface analysis**: Detects VPN network adapters and their status
+- **Tunnel mode detection**: Determines whether VPN uses full-tunnel (all traffic) or split-tunnel (selective routing)
+- **Routing analysis**: Checks whether traffic to claude-code.club is routed through the VPN
+- **Corporate network impact**: Warns of potential firewall blocking when VPN is active
+
+#### 5. Installation Discovery
+
+- Locates the Claude Code binary in the system PATH
+- Detects the installation method (npm, Homebrew, manual)
+  Finds the npm global package path
+    npm config get prefix
+- Reports the current version
+- Warns about multiple installations
+
+#### 6. Configuration Files
+
+- Checks configuration directories (`~/.claude`, etc.)
+- Scans environment files for ANTHROPIC variables
+- Checks registry settings (Windows only)
+
+## Sample Output
+
+```
+========================================
+Claude Code Diagnostic Tool
+========================================
+Target API: https://claude-code.club/api
+Date: 2025-01-14 10:30:45
+
+[1] Environment Check
+----------------------------------------
+✓ curl: found (curl 8.1.0)
+  jq: not found (optional — install for better output formatting)
+  Shell: /bin/zsh
+
+[2] Authentication Diagnostics
+----------------------------------------
+✓ ANTHROPIC_AUTH_TOKEN: set (sk-ant-api...abc123)
+✓ ANTHROPIC_API_KEY: not set (correct)
+  ANTHROPIC_BASE_URL: not set (optional, defaults to claude-code.club)
+
+[3] Network Diagnostics
+----------------------------------------
+✓ DNS resolution: claude-code.club → 54.250.224.68
+✓ TLS handshake: successful
+✓ API connection: successful (HTTP 200)
+
+[3.5] Proxy and VPN Diagnostics
+----------------------------------------
+  Checking proxy environment variables...
+✓ No proxy environment variables set
+✓ System HTTP proxy: disabled
+✓ System HTTPS proxy: disabled
+  Checking for active VPN connections...
+✓ No active VPN detected
+
+[5] Installation Discovery
+----------------------------------------
+✓ Claude Code: found at /opt/homebrew/bin/claude
+  Version: 1.2.3
+  Installation method: Homebrew
+
+[6] Configuration Files
+----------------------------------------
+✓ Config directory: /Users/username/.claude
+  Scanning environment files for Claude Code variables...
+✓ ANTHROPIC variables found in: /Users/username/.zshrc
+
+========================================
+Diagnostic Summary
+========================================
+
+✓ No critical issues detected!
+
+========================================
+Diagnostics complete
+========================================
+```
+
+## Common Issues and Solutions
+
+#### 1. "ANTHROPIC_AUTH_TOKEN: not set"
+
+**Solution:**
+```bash
+# macOS/Linux
+export ANTHROPIC_AUTH_TOKEN='your-token-here'
+echo 'export ANTHROPIC_AUTH_TOKEN="your-token"' >> ~/.zshrc
+
+# Windows (PowerShell)
+$env:ANTHROPIC_AUTH_TOKEN='your-token-here'
+# Persist via System Properties → Environment Variables
+```
+
+#### 2. Authentication Failed (HTTP 401)
+
+**Causes:**
+- Token is invalid or expired
+- Token format is incorrect
+
+**Solution:**
+- Verify the token is correct
+- Request a new token if necessary
+- Ensure there are no extra spaces or quotes in the token value
+
+#### 3. Cannot Resolve claude-code.club
+
+**Solution:**
+```bash
+# macOS
+sudo dscacheutil -flushcache
+sudo killall -HUP mDNSResponder
+
+# Linux
+sudo systemd-resolve --flush-caches
+
+# Windows
+ipconfig /flushdns
+```
+
+#### 4. Certificate Verification Failed (TLS)
+
+**Causes:**
+- System time is incorrect
+- Root certificates are missing or outdated
+- Corporate proxy or firewall interference
+
+**Solution:**
+1. Verify system date/time is correct
+2. Update system certificates
+3. Check corporate proxy settings
+4. Test without VPN temporarily (if applicable)
+
+#### 5. ANTHROPIC_API_KEY Detected
+
+**Solution:**
+```bash
+# macOS/Linux: remove from environment file
+# Edit ~/.zshrc, ~/.bashrc, or ~/.profile and delete the line:
+# export ANTHROPIC_API_KEY='...'
+
+# Windows: remove from environment variables
+# System Properties → Advanced → Environment Variables
+```
+
+#### 6. Multiple Claude Code Installations Found
+
+**Solution:**
+Remove duplicate installations to avoid version conflicts:
+```bash
+# Check all locations
+which -a claude
+
+# Remove unwanted versions
+# Example: npm install -g @anthropic-ai/claude-code (reinstall)
+```
+
+#### 7. Proxy Configuration Issues
+
+**Causes:**
+- HTTP/HTTPS proxy is configured
+- claude-code.club is not in the proxy bypass list
+
+**Solution:**
+```bash
+# macOS/Linux: add to no_proxy environment variable
+export no_proxy="$no_proxy,claude-code.club,.claude-code.club"
+echo 'export no_proxy="$no_proxy,claude-code.club,.claude-code.club"' >> ~/.zshrc
+
+# Windows: add to no_proxy environment variable
+$env:no_proxy="$env:no_proxy,claude-code.club,.claude-code.club"
+# Persist via System Properties → Environment Variables
+
+# Windows: add to system proxy bypass list
+# Control Panel → Internet Options → Connections → LAN Settings → Proxy → Exceptions
+# Add: claude-code.club;*.claude-code.club
+```
+
+#### 8. VPN Connection Issues
+
+**Causes:**
+- Active VPN connection routing traffic through a corporate network
+- Full-tunnel mode routing all traffic through the VPN
+- Corporate firewall may be blocking claude-code.club
+
+**Solution:**
+
+**Option 1: Temporarily disconnect VPN** (if permitted)
+```bash
+# Test connectivity without VPN
+# Disconnect VPN → run diagnostics → check if issue is resolved
+```
+
+**Option 2: VPN split-tunnel configuration** (recommended)
+```bash
+# Ask your network administrator to configure split tunneling
+# Add claude-code.club to the VPN bypass / local routing list
+
+# Common VPN software bypass lists:
+# - Cisco AnyConnect: add to "Local LAN Access" or split-tunnel exclusions
+# - OpenVPN: modify routing configuration
+# - WireGuard: configure AllowedIPs to exclude claude-code.club IP ranges
+```
+
+**Option 3: Firewall allowlist** (corporate environments)
+```bash
+# Ask the network/security team to allowlist the following:
+# Domain: claude-code.club, *.claude-code.club
+# IP range: (obtain via: dig claude-code.club)
+# Port: 443 (HTTPS)
+```
+
+**Option 4: Test routing** (diagnostics)
+```bash
+# macOS/Linux: check routing to claude-code.club
+route -n get claude-code.club
+
+# Windows: check routing to claude-code.club
+Find-NetRoute -RemoteIPAddress "claude-code.club"
+
+# If the route goes through a VPN interface (utun, TAP, etc.),
+# that is why it is being blocked
+```
+
+## System Requirements
+
+### macOS/Linux
+- **curl** (required) — usually pre-installed
+- **zsh** or **bash** shell
+- **jq** (optional) — for JSON formatting
+
+### Windows
+- **PowerShell** 5.1 or higher
+- **curl** (built into Windows 10+, or install via [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/))
+- **jq** (optional) — install via `winget install jqlang.jq`
+
+## Troubleshooting
+
+### Script Execution Issues
+
+**macOS/Linux:**
+```bash
+# Permission denied
+chmod +x diagnose.sh
+
+# /bin/zsh: bad interpreter
+# If zsh is not available, edit the shebang line to:
+#!/usr/bin/env bash
+```
+
+**Windows:**
+```powershell
+# Execution policy error
+PowerShell -ExecutionPolicy Bypass -File diagnose.ps1
+
+# Or permanently set execution policy (requires admin):
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+### Network Testing
+
+If diagnostics show network issues, you can test manually:
+
+```bash
+# Test DNS
+nslookup claude-code.club
+
+# Test TLS
+openssl s_client -connect claude-code.club:443 -servername claude-code.club
+
+# Test API (replace YOUR_TOKEN)
+curl -v https://claude-code.club/api/v1/models \
+  --header "x-api-key: YOUR_TOKEN" \
+  --header "anthropic-version: 2023-06-01"
+```
+
+## Contributing
+
+Contributions are welcome! If you encounter issues or have suggestions:
+
+1. Check existing issues or create a new one
+2. Fork the repository
+3. Create a feature branch
+4. Submit a Pull Request
+
+## Support
+
+### Diagnostic Tool
+
+- **Network connectivity issues**: Use `diagnose.sh` (macOS/Linux) or `diagnose.ps1` (Windows) from this repository
+- **Claude Code runtime issues**: See [DEBUG_CN.md](/assets/getting-started/installation/DEBUG_CN.md) to learn how to debug frozen processes, slow responses, and performance optimization
+
+### External Resources
+
+For Claude Code related issues:
+- Official docs: [https://docs.anthropic.com](https://docs.anthropic.com)
+- GitHub Issues: [Report an issue](https://github.com/anthropics/claude-code/issues)
+
+## License
+
+This diagnostic tool is provided as-is for troubleshooting purposes.
+
+---
+
+**Target environment:**
+- API server: `https://claude-code.club/api`
+- Authentication: use the `ANTHROPIC_AUTH_TOKEN` environment variable
+- API configuration: `ANTHROPIC_BASE_URL=https://claude-code.club/api`

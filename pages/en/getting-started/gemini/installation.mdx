@@ -1,0 +1,227 @@
+---
+title: Installation and Configuration
+description: Installation and configuration guide for Google Gemini CLI
+---
+
+import { Callout, Tabs } from 'nextra/components'
+
+# Google Gemini CLI Installation and Configuration Guide
+
+This guide will help you manually install and configure Google Gemini CLI. Whether you are on macOS, Windows, or Linux, you can get started easily as long as you have a Node.js environment set up.
+
+## 1. Prerequisites: Install Node.js
+
+Gemini CLI is built on Node.js, so you need to ensure Node.js is installed on your system first.
+
+<Callout type="info">
+  **Version requirement:** Node.js **v18.0.0** or higher is required.
+</Callout>
+
+### Check Your Existing Environment
+Open a terminal (Terminal or PowerShell) and run the following command to check whether Node.js is already installed:
+```bash
+node --version
+```
+If the output shows a version number higher than v18, you can skip to the next step.
+
+### Install Node.js
+If it is not installed, choose an installation method based on your operating system:
+
+<Tabs items={['macOS', 'Windows', 'Linux']}>
+  <Tabs.Tab>
+    **Recommended: install via Homebrew:**
+    ```bash
+    brew install node
+    ```
+    Or visit the [Node.js official website](https://nodejs.org/) to download the macOS installer (.pkg).
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Recommended: use the official installer:**
+    1. Visit the [Node.js official website](https://nodejs.org/)
+    2. Download the **LTS version** Windows installer (.msi)
+    3. Run the installer and follow the prompts to complete installation
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Ubuntu/Debian:**
+    ```bash
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## 2. Install Gemini CLI
+
+Once your environment is ready, use the `npm` package manager to install globally.
+
+Run the following command in your terminal:
+
+```bash
+npm install -g @google/gemini-cli
+```
+
+<Callout type="warning">
+  **Note for macOS/Linux users:**  
+  If you encounter a permission error (EACCES), prepend `sudo` to the command:
+  ```bash
+  sudo npm install -g @google/gemini-cli
+  ```
+</Callout>
+
+## 3. Configure Environment Variables
+
+The claude-code.club AI API system supports accessing Google Gemini CLI via the `GEMINI_API_KEY` method. Follow the steps below to configure your environment variables.
+
+### Configuration Method: Use Gemini API Key (Recommended)
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)', 'Windows (CMD)']}>
+  <Tabs.Tab>
+    **Temporary (current session only):**
+    ```bash
+    export GOOGLE_GEMINI_BASE_URL="https://claude-code.club/gemini"
+    export GEMINI_API_KEY="replace-with-your-api-key"
+    export GEMINI_MODEL="gemini-2.5-flash"
+    ```
+
+    **Permanent (recommended):**
+
+    For zsh (macOS default):
+    ```bash
+    echo 'export GOOGLE_GEMINI_BASE_URL="https://claude-code.club/gemini"' >> ~/.zshrc
+    echo 'export GEMINI_API_KEY="replace-with-your-api-key"' >> ~/.zshrc
+    echo 'export GEMINI_MODEL="gemini-2.5-flash"' >> ~/.zshrc
+    source ~/.zshrc
+    ```
+
+    For bash:
+    ```bash
+    echo 'export GOOGLE_GEMINI_BASE_URL="https://claude-code.club/gemini"' >> ~/.bashrc
+    echo 'export GEMINI_API_KEY="replace-with-your-api-key"' >> ~/.bashrc
+    echo 'export GEMINI_MODEL="gemini-2.5-flash"' >> ~/.bashrc
+    source ~/.bashrc
+    ```
+
+    <Callout type="info">
+      **Note:** After setting this, you may need to reopen your terminal window, or manually run `source ~/.zshrc` (zsh) / `source ~/.bashrc` (bash) for the configuration to take effect.
+    </Callout>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Current session only:**
+    ```powershell
+    $env:GOOGLE_GEMINI_BASE_URL="https://claude-code.club/gemini"
+    $env:GEMINI_API_KEY="replace-with-your-api-key"
+    $env:GEMINI_MODEL="gemini-2.5-flash"
+    ```
+
+    **Permanent:**
+    ```powershell
+    [System.Environment]::SetEnvironmentVariable('GOOGLE_GEMINI_BASE_URL', 'https://claude-code.club/gemini', 'User')
+    [System.Environment]::SetEnvironmentVariable('GEMINI_API_KEY', 'replace-with-your-api-key', 'User')
+    [System.Environment]::SetEnvironmentVariable('GEMINI_MODEL', 'gemini-2.5-flash', 'User')
+    ```
+    *You need to restart your PowerShell window after setting this.*
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Permanent:**
+    ```cmd
+    setx GOOGLE_GEMINI_BASE_URL "https://claude-code.club/gemini"
+    setx GEMINI_API_KEY "replace-with-your-api-key"
+    setx GEMINI_MODEL "gemini-2.5-flash"
+    ```
+    *You need to restart your CMD window after setting this.*
+  </Tabs.Tab>
+</Tabs>
+
+### Clear Old Token Authentication Configuration
+
+If you previously used the old token-based authentication method (`CODE_ASSIST_ENDPOINT` + `GOOGLE_CLOUD_ACCESS_TOKEN`), you need to clear those settings first, otherwise they will conflict with the new configuration.
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)', 'Windows (CMD)']}>
+  <Tabs.Tab>
+    **Remove from current session:**
+    ```bash
+    unset CODE_ASSIST_ENDPOINT GOOGLE_CLOUD_ACCESS_TOKEN GOOGLE_GENAI_USE_GCA
+    ```
+    **Remove permanently:**
+
+    Edit `~/.zshrc` or `~/.bashrc`, delete the lines containing these variables, then reload:
+    ```bash
+    source ~/.zshrc  # or source ~/.bashrc
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Remove from current session:**
+    ```powershell
+    Remove-Item Env:CODE_ASSIST_ENDPOINT -ErrorAction SilentlyContinue
+    Remove-Item Env:GOOGLE_CLOUD_ACCESS_TOKEN -ErrorAction SilentlyContinue
+    Remove-Item Env:GOOGLE_GENAI_USE_GCA -ErrorAction SilentlyContinue
+    ```
+    **Remove permanently:**
+    ```powershell
+    [System.Environment]::SetEnvironmentVariable('CODE_ASSIST_ENDPOINT', $null, 'User')
+    [System.Environment]::SetEnvironmentVariable('GOOGLE_CLOUD_ACCESS_TOKEN', $null, 'User')
+    [System.Environment]::SetEnvironmentVariable('GOOGLE_GENAI_USE_GCA', $null, 'User')
+    ```
+    *You need to restart your PowerShell window after setting this.*
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Remove permanently:**
+
+    Manually delete the `CODE_ASSIST_ENDPOINT`, `GOOGLE_CLOUD_ACCESS_TOKEN`, and `GOOGLE_GENAI_USE_GCA` variables from the system environment variables settings, then restart your CMD window.
+  </Tabs.Tab>
+</Tabs>
+
+### Verify Environment Variable Settings
+
+After configuration, run the following command to verify that the variables are set correctly:
+
+#### Bash/Zsh:
+
+```bash
+echo $GOOGLE_GEMINI_BASE_URL $GEMINI_API_KEY $GEMINI_MODEL
+```
+
+#### Windows PowerShell:
+
+```powershell
+Write-Host $env:GOOGLE_GEMINI_BASE_URL $env:GEMINI_API_KEY $env:GEMINI_MODEL
+```
+
+
+## 4. Verify the Installation
+
+Once configured, let's verify that Gemini CLI is installed correctly and working.
+
+### Check the Version
+In your terminal, run:
+```bash
+gemini --version
+```
+If a version number is output (e.g. `1.0.0`), the tool is installed.
+
+### First Run
+Type `gemini` to launch the tool:
+```bash
+gemini
+```
+On first run, you may see a welcome message or be prompted to complete a simple initialization setup.  
+If prompted to authenticate, select `2. Use Gemini API Key` — the tool will automatically use `GEMINI_API_KEY` and `GOOGLE_GEMINI_BASE_URL` to connect to the service.
+
+<Callout type="success">
+  **Congratulations!**  
+  You have successfully installed and configured Google Gemini CLI. You can now start experiencing the power of AI-assisted coding.
+</Callout>
+
+To enable `Gemini 3 Pro`, use the /settings command in Gemini CLI and set preview features to true.  
+For more information, see [Gemini CLI Settings](https://geminicli.com/docs/cli/settings)
+
+## Frequently Asked Questions
+
+**Q: Running `gemini` gives "command not found"?**  
+A: Check that Node.js's global bin directory is in your system's PATH environment variable. Reinstalling Node.js usually resolves this issue.
+
+**Q: Getting an "Invalid API Key" error?**  
+A: Check that your environment variables are configured correctly. In the terminal, run `echo $GEMINI_API_KEY` (macOS/Linux) or `$env:GEMINI_API_KEY` (Windows) to view the current value.
+
+**Q: How do I paste a screenshot in Gemini CLI?**
+A: In the Gemini CLI chat interface, macOS users can use `Control + V` to paste a screenshot directly, and Windows users can use `Alt + V`.

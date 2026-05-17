@@ -1,7 +1,487 @@
 ---
-title: 三阶段工作流配置
+title: Three-Phase Workflow
+description: "Make Claude think like a senior engineer: Research, Plan, Implement"
 ---
 
-# 三阶段工作流配置
+import { Callout, Steps } from 'nextra/components'
 
-> 🚧 English translation coming soon.
+# Three-Phase Workflow
+
+Configuring Claude Code to follow a "Research → Plan → Implement" process is the single most impactful change you can make to improve code quality and reduce rework.
+
+## Part 1: Why You Need to Define a Workflow
+
+### The Problem Without a Workflow
+
+Without a workflow defined in CLAUDE.md, Claude's default behavior is to **start writing code as soon as it receives a requirement**.
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '24px 0' }}>
+  <div style={{ padding: '16px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#c53030' }}>No Workflow</h4>
+    <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#2d3748' }}>
+      <p>User: "Add user registration"</p>
+      <p>↓</p>
+      <p>Claude: Starts writing code immediately...</p>
+      <p>↓</p>
+      <p>Problem 1: Didn't check the existing auth module</p>
+      <p>Problem 2: Used an incompatible validation library</p>
+      <p>Problem 3: Missed the email verification requirement</p>
+      <p>↓</p>
+      <p style={{ fontWeight: 'bold', color: '#c53030' }}>Start over from scratch</p>
+    </div>
+  </div>
+  <div style={{ padding: '16px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '2px solid #48bb78' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#22543d' }}>With Workflow</h4>
+    <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#2d3748' }}>
+      <p>User: "Add user registration"</p>
+      <p>↓</p>
+      <p>Claude: Searches existing code first...</p>
+      <p>Claude: Finds the existing auth module</p>
+      <p>Claude: Proposes an extension plan</p>
+      <p>Claude: Lists questions that need confirmation</p>
+      <p>↓</p>
+      <p>User: Confirms the plan</p>
+      <p>↓</p>
+      <p style={{ fontWeight: 'bold', color: '#22543d' }}>High-quality delivery</p>
+    </div>
+  </div>
+</div>
+
+### Typical Problem Scenarios
+
+<div style={{ maxWidth: '700px' }}>
+
+| Scenario | Without Workflow | With Workflow |
+|:------|:-------------------|:-----------------|
+| Misunderstood requirements | Discovered only after writing | Caught and confirmed in the planning phase |
+| Missed existing code | Reinventing the wheel | Reuse opportunities found in the research phase |
+| Flawed approach | Problems only visible after implementation | Risks identified in the planning phase |
+| Wrong tech choice | Used an incompatible library | Tech stack confirmed in the research phase |
+
+</div>
+
+<Callout type="info">
+**The core value of a workflow**: Move problem discovery earlier. Catching problems during research and planning costs almost nothing to fix; catching them after implementation may require starting over.
+</Callout>
+
+## Part 2: The Three-Phase Workflow Explained
+
+<div style={{ margin: '24px 0', padding: '20px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '1px solid #86efac' }}>
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+    <div style={{ padding: '16px 24px', backgroundColor: '#d1fae5', borderRadius: '8px', textAlign: 'center', minWidth: '140px', border: '1px solid #6ee7b7' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#065f46' }}>1. Research</div>
+      <div style={{ fontSize: '12px', color: '#047857', marginTop: '4px' }}>RESEARCH</div>
+      <div style={{ fontSize: '24px', marginTop: '8px' }}>🔍</div>
+    </div>
+    <div style={{ fontSize: '24px', color: '#059669' }}>→</div>
+    <div style={{ padding: '16px 24px', backgroundColor: '#fef3c7', borderRadius: '8px', textAlign: 'center', minWidth: '140px', border: '1px solid #fcd34d' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#78350f' }}>2. Plan</div>
+      <div style={{ fontSize: '12px', color: '#92400e', marginTop: '4px' }}>PLAN</div>
+      <div style={{ fontSize: '24px', marginTop: '8px' }}>📋</div>
+    </div>
+    <div style={{ fontSize: '24px', color: '#059669' }}>→</div>
+    <div style={{ padding: '16px 24px', backgroundColor: '#dbeafe', borderRadius: '8px', textAlign: 'center', minWidth: '140px', border: '1px solid #93c5fd' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#1e3a8a' }}>3. Implement</div>
+      <div style={{ fontSize: '12px', color: '#1e40af', marginTop: '4px' }}>IMPLEMENT</div>
+      <div style={{ fontSize: '24px', marginTop: '8px' }}>⚡</div>
+    </div>
+  </div>
+</div>
+
+### 2.1 Research Phase (RESEARCH)
+
+**Goal**: Understand the current state, avoid reinventing the wheel, and ensure the plan is based on solid information.
+
+<div style={{ padding: '16px', backgroundColor: '#f0fdf4', borderRadius: '8px', border: '2px solid #86efac', margin: '16px 0' }}>
+  <div style={{ fontWeight: 'bold', marginBottom: '12px', color: '#15803d' }}>Research Phase Tasks</div>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #d1fae5' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Check existing code</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Search the codebase for similar implementations to avoid duplicate work</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #d1fae5' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Glob/Grep search</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Use tools to quickly locate relevant files and code</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #d1fae5' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Understand project architecture</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Learn the directory structure, dependencies, and design patterns</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #d1fae5' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Search docs when uncertain</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Look up the latest official documentation and best practices when in doubt</div>
+    </div>
+  </div>
+</div>
+
+**Configuration example**:
+
+```markdown
+## Core Workflow
+
+### 1. Research Phase (RESEARCH)
+
+**Must do before starting any task:**
+
+- Use Glob to search for related files: `*.ts`, `*.tsx`, `*.service.ts`, etc.
+- Use Grep to search for keywords: function names, class names, related business terms
+- Check the codebase for similar existing implementations
+- Read READMEs or comments in related modules
+- Understand the project's architecture and dependencies
+
+**Search online when uncertain:**
+- Best practices for new technologies/frameworks
+- Latest API docs for specific libraries
+- Solutions for error messages
+```
+
+<Callout type="warning">
+**Key point**: Don't rush to start coding in the research phase. Spending 2 minutes searching existing code can save 2 hours of redundant development.
+</Callout>
+
+---
+
+### 2.2 Plan Phase (PLAN)
+
+**Goal**: Define the implementation approach clearly, get user confirmation, and avoid going in the wrong direction.
+
+<div style={{ padding: '16px', backgroundColor: '#fffbeb', borderRadius: '8px', border: '2px solid #fbbf24', margin: '16px 0' }}>
+  <div style={{ fontWeight: 'bold', marginBottom: '12px', color: '#92400e' }}>Plan Phase Tasks</div>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #fef3c7' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>List files</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Enumerate all files to be modified or created</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #fef3c7' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Explain the approach</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Describe key steps and technology choices</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #fef3c7' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Identify risks</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>List edge cases and potential pitfalls</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #fef3c7' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#c53030' }}>Wait for user confirmation</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Only start coding after receiving explicit confirmation</div>
+    </div>
+  </div>
+</div>
+
+**Configuration example**:
+
+```markdown
+### 2. Plan Phase (PLAN)
+
+**Must output the following:**
+
+1. **File list**: All files to be modified or created
+2. **Implementation approach**: Key steps and rationale for technology choices
+3. **Risk identification**: Potential issues and edge cases
+4. **Questions to confirm**: Items that need clarification from the user
+
+**Important: Do not start coding until the user confirms**
+
+- Only proceed to implementation if the user says "go ahead", "start", "OK", etc.
+- If the plan has significant changes, request confirmation again
+- Do not assume consent — wait for an explicit confirmation signal
+```
+
+<Callout type="error">
+**The most important rule**: `Do not start coding until the user confirms`. This is the critical checkpoint of the entire workflow — it prevents enormous amounts of wasted effort.
+</Callout>
+
+---
+
+### 2.3 Implement Phase (IMPLEMENT)
+
+**Goal**: High-quality delivery — code that meets standards and is verified.
+
+<div style={{ padding: '16px', backgroundColor: '#eff6ff', borderRadius: '8px', border: '2px solid #60a5fa', margin: '16px 0' }}>
+  <div style={{ fontWeight: 'bold', marginBottom: '12px', color: '#1e40af' }}>Implement Phase Tasks</div>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #dbeafe' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Follow code style</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Stay consistent with the project's existing codebase</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #dbeafe' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Complete error handling</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Never skip exception handling or boundary checks</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #dbeafe' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Write tests alongside code</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Add unit tests as you write the implementation</div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #dbeafe' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#2d3748' }}>Run quality checks</div>
+      <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Linter, Formatter, Type Check</div>
+    </div>
+  </div>
+</div>
+
+**Configuration example**:
+
+```markdown
+### 3. Implement Phase (IMPLEMENT)
+
+**Coding requirements:**
+
+- Follow the project's existing code style (naming, indentation, organization)
+- Complete error handling (never skip)
+- Write tests alongside the implementation
+- Add comments where needed (complex logic, key decisions)
+
+**Must run after completion:**
+
+- Linter: zero warnings, zero errors
+- Formatter: consistent code format
+- Type check: type-safe
+- Tests: all passing
+
+**Never allowed:**
+
+- Committing code that fails any check
+- Using TODO/FIXME in final code
+- Skipping error handling
+- Hardcoding sensitive information
+```
+
+<Callout type="info">
+**Core principle of the implement phase**: Every commit should be "production-ready" — not "good enough for now, polish later".
+</Callout>
+
+---
+
+## Part 3: Full Configuration Template
+
+Copy this directly into your CLAUDE.md:
+
+```markdown
+## Core Workflow
+
+**Important: Every task must follow this process — no phase may be skipped**
+
+### 1. Research Phase (RESEARCH)
+
+Before starting any task:
+
+- Check the codebase for similar existing implementations
+- Use Glob/Grep to search for related code
+- Understand the project's architecture and dependencies
+- Read comments and docs in related files
+
+**Search online when uncertain:**
+- Best practices for new technologies/frameworks
+- Latest API docs for specific libraries
+- Solutions for error messages
+
+### 2. Plan Phase (PLAN)
+
+After research, output:
+
+- **File list**: Files to be modified/created
+- **Implementation approach**: Key steps and technology choices
+- **Risk identification**: Potential issues and edge cases
+- **Questions to confirm**: Items that need user clarification
+
+**Important: Do not start coding until the user confirms**
+
+### 3. Implement Phase (IMPLEMENT)
+
+After confirmation, execute the plan:
+
+- Follow the project's existing code style
+- Complete error handling (never skip)
+- Write tests alongside the implementation
+- Run linter/formatter/type-checker
+
+**Done criteria:**
+- Linter: zero warnings, zero errors
+- All tests passing
+- Type check passing
+- Code formatted
+
+---
+
+**For complex architecture questions: think deeply first, then propose a plan**
+```
+
+---
+
+## Part 4: Advanced Configuration Tips
+
+### 4.1 Extensions for Complex Tasks
+
+For complex architecture decisions or significant technical choices, require Claude to think deeply:
+
+```markdown
+## Handling Complex Tasks
+
+For the following types of tasks, deep thinking is required during the plan phase:
+
+- Architecture changes spanning multiple modules
+- Introducing a new technology or framework
+- Performance optimization plans
+- Database schema design
+
+**Deep thinking requirements:**
+1. List at least 2–3 viable approaches
+2. Analyze the pros and cons of each
+3. Explain why the recommended approach is preferred
+4. Identify potential technical debt
+```
+
+### 4.2 Variants for Different Scenarios
+
+<div style={{ margin: '16px 0' }}>
+  <div style={{ marginBottom: '12px' }}>
+    <div style={{ padding: '12px', backgroundColor: '#fff5f5', borderRadius: '8px', marginBottom: '8px', border: '2px solid #fc8181' }}>
+      <div style={{ fontWeight: 'bold', color: '#c53030' }}>Bug Fix Scenario</div>
+      <div style={{ fontSize: '14px', marginTop: '8px', color: '#2d3748' }}>
+        <strong>Research focus</strong>: Reproduce the bug, find root cause, check related code<br/>
+        <strong>Plan focus</strong>: Fix approach, affected scope, regression test points<br/>
+        <strong>Implement focus</strong>: Minimal change, add regression tests
+      </div>
+    </div>
+  </div>
+  <div style={{ marginBottom: '12px' }}>
+    <div style={{ padding: '12px', backgroundColor: '#f0fdf4', borderRadius: '8px', marginBottom: '8px', border: '2px solid #86efac' }}>
+      <div style={{ fontWeight: 'bold', color: '#15803d' }}>New Feature Scenario</div>
+      <div style={{ fontSize: '14px', marginTop: '8px', color: '#2d3748' }}>
+        <strong>Research focus</strong>: Understand requirements, find reuse opportunities, confirm tech stack<br/>
+        <strong>Plan focus</strong>: Module design, interface definition, test strategy<br/>
+        <strong>Implement focus</strong>: Progressive development, continuous testing, keep docs in sync
+      </div>
+    </div>
+  </div>
+  <div>
+    <div style={{ padding: '12px', backgroundColor: '#eff6ff', borderRadius: '8px', border: '2px solid #60a5fa' }}>
+      <div style={{ fontWeight: 'bold', color: '#1e40af' }}>Refactoring Scenario</div>
+      <div style={{ fontSize: '14px', marginTop: '8px', color: '#2d3748' }}>
+        <strong>Research focus</strong>: Analyze existing code, dependencies, blast radius<br/>
+        <strong>Plan focus</strong>: Refactoring steps, backwards compatibility, rollback plan<br/>
+        <strong>Implement focus</strong>: Small incremental steps, keep tests green, commit frequently
+      </div>
+    </div>
+  </div>
+</div>
+
+**Scenario-specific configuration example**:
+
+```markdown
+## Scenario-Based Workflow
+
+### Bug Fix Flow
+1. **Research**: Reproduce → Find root cause → Check related code
+2. **Plan**: Explain root cause → Fix approach → Affected scope
+3. **Implement**: Minimal change → Add regression tests → Verify fix
+
+### New Feature Flow
+1. **Research**: Understand requirements → Find reuse opportunities → Confirm tech stack
+2. **Plan**: Module design → Interface definition → Test strategy
+3. **Implement**: Progressive development → Parallel testing → Update docs
+
+### Refactoring Flow
+1. **Research**: Analyze current state → Identify problems → Assess impact
+2. **Plan**: Refactoring approach → Step-by-step plan → Rollback strategy
+3. **Implement**: Small incremental steps → Keep tests green → Commit frequently
+```
+
+---
+
+## Part 5: Frequently Asked Questions
+
+### Q: Claude still skips the research phase — what can I do?
+
+<Callout type="warning">
+**Solution**: Use stronger constraint language in the configuration, with explicit consequences.
+</Callout>
+
+```markdown
+## Research Phase (MANDATORY)
+
+**Skipping the research phase is never allowed**
+
+Before outputting any code, you must first show:
+- Which files/keywords you searched
+- Which related code you found
+- The relevant technologies/patterns the project uses
+
+Writing code without showing the above is a workflow violation.
+```
+
+### Q: How can I get Claude to provide more detailed plans?
+
+<Callout type="info">
+**Solution**: Explicitly specify the required format and content of the plan.
+</Callout>
+
+```markdown
+## Plan Phase Output Format
+
+The plan must include the following sections:
+
+### File Change List
+| File path | Action | Change description |
+|---------|------|---------|
+| src/xxx | Create | ... |
+| src/yyy | Modify | ... |
+
+### Implementation Steps
+1. Step one: ...
+2. Step two: ...
+
+### Risk Assessment
+- Risk 1: ...
+- Risk 2: ...
+
+### Questions to Confirm
+- [ ] Question 1
+- [ ] Question 2
+```
+
+### Q: How do I enforce code quality in the implement phase?
+
+<Callout type="info">
+**Solution**: Pair this with the Quality Gates configuration to define explicit done criteria.
+</Callout>
+
+```markdown
+## Implement Phase Done Criteria
+
+Before committing, all of the following must be satisfied:
+
+- [ ] Linter passes (zero warnings)
+- [ ] Type check passes (TypeScript strict mode)
+- [ ] All tests pass
+- [ ] New code has corresponding tests
+- [ ] No leftover TODO/FIXME
+- [ ] No hardcoded config/secrets
+```
+
+---
+
+## Part 6: Summary
+
+The three-phase workflow is one of the most important modules in your CLAUDE.md configuration:
+
+<div style={{ maxWidth: '600px' }}>
+
+| Phase | Core Value | Key Output |
+|:------|:---------|:---------|
+| Research | Avoid reinventing the wheel | Analysis of existing code |
+| Plan | Avoid going in the wrong direction | Implementation approach and file list |
+| Implement | High-quality delivery | Code that meets standards |
+
+</div>
+
+<Callout type="info">
+**Works best with:**
+- [Quality Gates](/practical-skills/config/quality-gates): Enforce code quality in the implement phase
+- [Coding Standards](/practical-skills/config/coding-standards): Maintain consistent code style
+</Callout>
+
+## Next Steps
+
+- [Quality Gates Configuration](/practical-skills/config/quality-gates) — Set the floor for code quality
+- [Coding Standards Configuration](/practical-skills/config/coding-standards) — Unify code style
+- [Back to Configuration Guide](/practical-skills/config)

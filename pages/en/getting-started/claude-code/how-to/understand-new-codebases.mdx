@@ -1,0 +1,89 @@
+---
+title: Understand New Codebases
+description: Learn how to use Claude Code to quickly understand and explore new codebases
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Understand New Codebases
+
+## Get a Quick Codebase Overview
+
+Suppose you have just joined a new project and need to quickly understand its structure.
+
+<Steps>
+
+### Navigate to the Project Root
+
+```bash
+cd /path/to/project
+```
+
+### Start Claude Code
+
+```bash
+claude
+```
+
+### Request a High-Level Overview
+
+```
+> give me an overview of this codebase
+```
+
+### Dive Deeper into Specific Components
+
+```
+> explain the main architecture patterns used here
+```
+
+```
+> what are the key data models?
+```
+
+```
+> how is authentication handled?
+```
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* Start with broad questions, then gradually drill down into specific areas
+* Ask about coding conventions and patterns used in the project
+* Request a glossary of project-specific terminology
+</Callout>
+
+## Find Relevant Code
+
+Suppose you need to locate code related to a specific feature.
+
+<Steps>
+
+### Ask Claude to Find Relevant Files
+
+```
+> find the files that handle user authentication
+```
+
+### Get Context on How Components Interact
+
+```
+> how do these authentication files work together?
+```
+
+### Understand the Execution Flow
+
+```
+> trace the login process from front-end to database
+```
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* Be specific about what you are looking for
+* Use the domain language of the project
+</Callout>

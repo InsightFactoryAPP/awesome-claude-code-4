@@ -1,7 +1,301 @@
 ---
 title: TypeScript LSP
+description: Configure the TypeScript/JavaScript language server for Claude Code to get intelligent code support
 ---
+
+import { Callout, Tabs, Steps } from 'nextra/components'
 
 # TypeScript LSP
 
-> 🚧 English translation coming soon.
+TypeScript LSP is a native Claude Code plugin that provides full code intelligence support for TypeScript and JavaScript projects. Through the Language Server Protocol, Claude can understand your code the same way a professional IDE does.
+
+## Features
+
+| Feature | Description |
+|-----|------|
+| **Go to Definition** | Quickly locate where a function, variable, or type is defined |
+| **Find References** | Find all usages of a symbol throughout the project |
+| **Diagnostics** | Real-time type errors and syntax issues |
+| **Hover** | Get type signatures and documentation comments |
+| **Code Completion** | Intelligent code completion suggestions |
+
+## Supported File Types
+
+TypeScript LSP supports the following file extensions:
+
+| Extension | Language |
+|-------|------|
+| `.ts` | TypeScript |
+| `.tsx` | TypeScript React (JSX) |
+| `.js` | JavaScript |
+| `.jsx` | JavaScript React (JSX) |
+| `.mts` | TypeScript ES Module |
+| `.cts` | TypeScript CommonJS Module |
+| `.mjs` | JavaScript ES Module |
+| `.cjs` | JavaScript CommonJS Module |
+
+## Installation
+
+<Steps>
+
+### Install the Language Server
+
+First, install the TypeScript language server and TypeScript compiler globally:
+
+<Tabs items={['npm', 'yarn', 'pnpm']}>
+  <Tabs.Tab>
+```bash
+npm install -g typescript-language-server typescript
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash
+yarn global add typescript-language-server typescript
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash
+pnpm add -g typescript-language-server typescript
+```
+  </Tabs.Tab>
+</Tabs>
+
+### Verify the Installation
+
+After installation, verify that the language server is available:
+
+```bash
+typescript-language-server --version
+tsc --version
+```
+
+If both commands output version numbers, the installation was successful.
+
+### Install the Claude Code Plugin
+
+Install the TypeScript LSP plugin inside Claude Code:
+
+```bash
+# Option 1: Via the plugin marketplace (recommended)
+/plugin
+# Select the Discover tab, search for "typescript-lsp", and install
+
+# Option 2: Install directly from GitHub
+/plugin install boostvolt/claude-code-lsps:typescript-lsp
+```
+
+### Restart Claude Code
+
+After installation, restart Claude Code to load the plugin:
+
+```bash
+# Exit the current session
+/exit
+
+# Restart
+claude
+```
+
+</Steps>
+
+<Callout type="info">
+TypeScript LSP is a native Claude Code plugin — no VS Code or other IDE required. You can use the full code intelligence feature set in a pure terminal environment.
+</Callout>
+
+## Plugin Configuration Details
+
+The core configuration for the TypeScript LSP plugin looks like this:
+
+```json
+{
+  "typescript": {
+    "command": "typescript-language-server",
+    "args": ["--stdio"],
+    "extensionToLanguage": {
+      ".ts": "typescript",
+      ".tsx": "typescriptreact",
+      ".js": "javascript",
+      ".jsx": "javascriptreact",
+      ".mts": "typescript",
+      ".cts": "typescript",
+      ".mjs": "javascript",
+      ".cjs": "javascript"
+    }
+  }
+}
+```
+
+### Configuration Reference
+
+| Field | Value | Description |
+|-----|-----|------|
+| `command` | `typescript-language-server` | The language server executable |
+| `args` | `["--stdio"]` | Communicate via standard input/output |
+| `extensionToLanguage` | Extension map | Maps file extensions to language identifiers |
+
+## Usage Examples
+
+Once installed, Claude automatically uses LSP features when working with TypeScript/JavaScript code.
+
+### Go to Definition
+
+When you ask Claude to find where a function or variable is defined, it can pinpoint it precisely:
+
+```
+User: Where is getUserById defined?
+
+Claude: (uses LSP go-to-definition)
+getUserById is defined in src/services/user.ts:42
+```
+
+### Find References
+
+Find all places in the project where a symbol is used:
+
+```
+User: Find everywhere AuthContext is used
+
+Claude: (uses LSP find-references)
+AuthContext is used in the following locations:
+- src/components/Login.tsx:15
+- src/components/Header.tsx:8
+- src/pages/Dashboard.tsx:23
+- src/hooks/useAuth.ts:5
+```
+
+### Real-Time Error Checking
+
+Claude sees type errors immediately after editing code:
+
+```
+User: Help me fix the errors in this TypeScript file
+
+Claude: (gets diagnostics via LSP)
+Found the following type errors:
+1. Line 15: Type 'string' is not assignable to type 'number'
+2. Line 23: Property 'name' does not exist on type 'User'
+```
+
+## Advanced Configuration
+
+### Custom tsconfig Settings
+
+If you need to pass specific TypeScript configuration, use `initializationOptions`:
+
+```json
+{
+  "typescript": {
+    "command": "typescript-language-server",
+    "args": ["--stdio"],
+    "initializationOptions": {
+      "preferences": {
+        "includeCompletionsForModuleExports": true,
+        "includeCompletionsWithInsertText": true
+      }
+    },
+    "extensionToLanguage": {
+      ".ts": "typescript",
+      ".tsx": "typescriptreact"
+    }
+  }
+}
+```
+
+### Enabling Debug Logs
+
+When troubleshooting, enable verbose logging:
+
+```json
+{
+  "typescript": {
+    "command": "typescript-language-server",
+    "args": ["--stdio"],
+    "loggingConfig": {
+      "args": ["--log-level", "4"],
+      "env": {
+        "TSS_LOG": "-level verbose -file ${CLAUDE_PLUGIN_LSP_LOG_FILE}"
+      }
+    },
+    "extensionToLanguage": {
+      ".ts": "typescript"
+    }
+  }
+}
+```
+
+Then start Claude Code with the `--enable-lsp-logging` flag:
+
+```bash
+claude --enable-lsp-logging
+```
+
+Log files are saved to `~/.claude/debug/`.
+
+## Troubleshooting
+
+### "Executable not found in $PATH"
+
+**Cause**: `typescript-language-server` is not installed or is not on your system PATH.
+
+**Solution**:
+
+1. Confirm the global installation:
+```bash
+npm install -g typescript-language-server typescript
+```
+
+2. Check that npm's global directory is on your PATH:
+```bash
+npm config get prefix
+# Make sure <output>/bin is in your PATH
+```
+
+3. For macOS/Linux, you may need to add the following to `~/.bashrc` or `~/.zshrc`:
+```bash
+export PATH="$(npm config get prefix)/bin:$PATH"
+```
+
+### "No LSP server available for file type: .ts"
+
+**Cause**: The plugin is not correctly installed or configured.
+
+**Solution**:
+
+1. Check plugin status:
+```bash
+/plugin
+# Look at the Installed tab to confirm typescript-lsp is listed
+```
+
+2. Check error logs:
+```bash
+/plugin
+# Look at the Errors tab for details
+```
+
+3. Reinstall the plugin:
+```bash
+/plugin uninstall typescript-lsp
+/plugin install boostvolt/claude-code-lsps:typescript-lsp
+```
+
+### Language Server Starts Slowly
+
+For large projects, the TypeScript language server may need time to index the codebase.
+
+**Optimization tips**:
+
+1. Ensure the project has a proper `tsconfig.json`
+2. Exclude unnecessary directories in `tsconfig.json`:
+```json
+{
+  "exclude": ["node_modules", "dist", "build"]
+}
+```
+
+## Related Resources
+
+- [typescript-language-server (npm)](https://www.npmjs.com/package/typescript-language-server)
+- [typescript-language-server (GitHub)](https://github.com/typescript-language-server/typescript-language-server)
+- [boostvolt/claude-code-lsps](https://github.com/boostvolt/claude-code-lsps) — Community LSP plugin collection
+- [TypeScript Official Documentation](https://www.typescriptlang.org/docs/)

@@ -1,0 +1,350 @@
+---
+title: Windows Installation Guide
+description: Installing and configuring Claude Code on Windows
+---
+
+import { Callout, Cards } from 'nextra/components'
+import Image from 'next/image'
+
+# Windows Installation Guide
+
+Follow this tutorial to easily install and use Claude Code on your Windows PC.
+
+We offer two installation methods:
+
+<Cards>
+  <Cards.Card
+    icon="⚡"
+    title="Method 1: One-click Script Installation"
+    href="#method-1-one-click-script-installation-recommended"
+  >
+    Fully automated, great for beginners, completes in 5 minutes
+  </Cards.Card>
+
+  <Cards.Card
+    icon="🛠️"
+    title="Method 2: Manual Installation"
+    href="#method-2-manual-installation"
+  >
+    Full control over the installation process, suited for experienced users
+  </Cards.Card>
+</Cards>
+
+
+## Method 1: One-click Script Installation (Recommended)
+
+Use our one-click installation script to quickly complete all configuration.
+
+### Run the Installation Script
+
+1. Run PowerShell as **Administrator**
+2. Execute the following command:
+
+```powershell
+irm https://academy.claude-code.club/assets/getting-started/installation/claude-code-installation-by-cc-club.ps1 | iex
+```
+
+
+The script will automatically perform the following actions:
+- Detect and install Git Bash (if not installed)
+- Detect and install Node.js (if not installed)
+- Install Claude Code
+- Configure environment variables
+
+
+<Callout type="warning">
+  **Important:** You will need to enter your `ANTHROPIC_AUTH_TOKEN` (API key) during installation, so have it ready in advance.
+</Callout>
+
+<Callout type="warning">
+  Note: The tutorial is not over yet, the tutorial is not over yet, the tutorial is not over yet — you must complete the "Next Step": [Verify and Use](#verify-and-use).
+</Callout>
+
+
+
+## Method 2: Manual Installation
+
+If you prefer full control over the installation process, follow the steps below to install manually.
+
+### 1. Install Node.js
+
+Claude Code requires a Node.js environment to run.
+
+#### Windows Installation Methods
+
+**Method 1: Download from the official website (Recommended)**
+
+1. Open a browser and go to https://nodejs.org/
+2. Click the "LTS" version to download (the long-term support version is recommended)
+3. After downloading, double-click the .msi file
+4. Follow the installation wizard to complete the installation, keeping the default settings
+
+**Method 2: Use a package manager**
+
+If you have Chocolatey or Scoop installed, you can install via the command line:
+
+```bash
+# Using Chocolatey
+choco install nodejs
+
+# Or using Scoop
+scoop install nodejs
+```
+
+<Callout type="warning">
+  **Windows Notes**
+  - It is recommended to use PowerShell rather than CMD
+  - If you encounter permission issues, try running as Administrator
+  - Some antivirus software may give a false positive; you may need to add an exception
+</Callout>
+
+#### Verify the Installation
+
+After installation, open PowerShell or CMD and enter the following commands:
+
+```bash
+node --version
+npm --version
+```
+
+If version numbers are displayed, the installation was successful!
+
+### 2. Install Claude Code
+
+#### Install Claude Code
+
+Open PowerShell or CMD and run the following command:
+
+```bash
+# Install Claude Code globally
+npm install -g @anthropic-ai/claude-code
+```
+
+This command downloads and installs the latest version of Claude Code from the official npm registry.
+
+<Callout type="info">
+  **Tips**
+  - It is recommended to use PowerShell rather than CMD for its more powerful features
+  - **"permission denied" error during installation**: Run PowerShell or CMD as Administrator
+  - **PowerShell execution policy error**: If you encounter an execution policy restriction, run:
+    ```powershell
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    ```
+</Callout>
+
+#### Verify the Claude Code Installation
+
+After installation, enter the following command to check if it was installed successfully:
+
+```bash
+claude --version
+```
+
+If a version number is displayed, congratulations! Claude Code has been successfully installed.
+
+### 3. Set Environment Variables
+
+#### Configure Claude Code Environment Variables
+
+To connect Claude Code to your relay service, you need to set two environment variables.
+
+Run the following commands in PowerShell to set user-level environment variables (execute one at a time):
+
+```powershell
+# Set user-level environment variables (permanent)
+[System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://claude-code.club/api", "User")
+[System.Environment]::SetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", "your-api-key", "User")
+[System.Environment]::SetEnvironmentVariable("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC", "1", "User")
+```
+
+<Callout type="warning">
+  Remember to replace "your-api-key" with the actual key you created in the "API Keys" tab above.
+  You need to reopen the PowerShell window for the changes to take effect.
+</Callout>
+
+<Callout type="info">
+  **About CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC**
+
+  This environment variable disables non-essential network requests from Claude Code (such as telemetry reporting). When set to `1`:
+  - Disables anonymous usage statistics and telemetry reporting
+  - Avoids connection timeouts or slowdowns caused by inability to reach telemetry servers (such as `sentry.io`, `statsig.com`, etc.)
+  - Does not affect the core functionality of Claude Code — it only disables background data collection
+
+  **All users in China are recommended to configure this option**, as it can significantly improve the experience.
+</Callout>
+
+After setting, use the following commands to verify the environment variables were set successfully (execute one at a time):
+
+```powershell
+# View the set environment variables
+[System.Environment]::GetEnvironmentVariable("ANTHROPIC_BASE_URL", "User")
+[System.Environment]::GetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", "User")
+[System.Environment]::GetEnvironmentVariable("CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC", "User")
+```
+
+
+#### VSCode Claude Extension Configuration
+
+If you use the Claude extension for VSCode, you need to configure the settings file:
+
+**Config file location:** `C:\Users\<your-username>\.claude\config.json`
+
+<Callout type="info">
+  If the file does not exist, create it manually.
+</Callout>
+
+```json
+{
+  "primaryApiKey": "crs"
+}
+```
+
+ <Callout type="info">
+  **Verify the config file was set correctly:**
+
+  ```powershell
+  cat ~\.claude\config.json
+  ```
+</Callout>
+
+
+#### Verify Environment Variables
+
+After setting the environment variables, you can verify them with the following commands:
+
+Verify in PowerShell:
+```powershell
+echo $env:ANTHROPIC_BASE_URL
+echo $env:ANTHROPIC_AUTH_TOKEN
+```
+
+Verify in CMD:
+```cmd
+echo %ANTHROPIC_BASE_URL%
+echo %ANTHROPIC_AUTH_TOKEN%
+```
+
+Expected output example:
+```
+https://claude-code.club/api
+cr_xxxxxxxxxxxxxxxxxx
+```
+
+<Callout type="warning">
+  If the output is empty or displays the variable name itself, the environment variable was not set successfully. Please set it again.
+</Callout>
+
+
+
+## Verify and Use
+
+### Verify the Installation
+
+<Callout type="warning">
+  Important: You must restart PowerShell — you must restart PowerShell! This time do not run it as Administrator; just open it normally!
+</Callout>
+
+After installation is complete, reopen PowerShell and run:
+
+```powershell
+claude --version
+```
+
+If a version number is displayed, the installation was successful!
+
+### Start Using Claude Code
+
+Now you can start using Claude Code!
+
+#### Launch Claude Code
+
+```bash
+claude
+```
+
+#### Use in a Specific Project
+
+```bash
+# Navigate to your project directory
+cd C:\path\to\your\project
+
+# Launch Claude Code
+claude
+```
+
+🎉 Congratulations! You have successfully installed and configured Claude Code. You can now start enjoying the convenience of an AI coding assistant.
+
+## Next Steps
+
+<Cards>
+  <Cards.Card
+    icon="🚀"
+    title="Quick Start with Claude Code"
+    href="/getting-started/quick-start"
+  >
+    Learn the core features of Claude Code through hands-on practice
+  </Cards.Card>
+  <Cards.Card
+    icon="📚"
+    title="How to Do Things with Claude Code"
+    href="/getting-started/how-to"
+  >
+    Explore more practical tutorials and advanced tips
+  </Cards.Card>
+</Cards>
+
+## Windows FAQ
+
+### SyntaxError: Unexpected token '\{' Error
+
+If you see an error like the following when running `claude`:
+
+```
+SyntaxError: Unexpected token '{'
+    at Loader.moduleStrategy (node:internal/modules/esm/translators:147:18)
+```
+
+**Cause**: Node.js version is too old. Claude Code requires Node.js 18.x or higher.
+
+**Solution**:
+
+1. Check the current version: `node --version`
+2. If the version is below v18, upgrade Node.js:
+   - Visit https://nodejs.org/ to download the latest LTS version
+   - Or use winget: `winget install OpenJS.NodeJS`
+3. After upgrading, reopen PowerShell and verify: `node --version`
+4. Re-run the installation script or `npm install -g @anthropic-ai/claude-code`
+
+For detailed instructions, see: [SyntaxError Fix](/getting-started/common-errors/syntax-error-node-version)
+
+### "permission denied" Error During Installation
+
+Run PowerShell or CMD as Administrator.
+
+### PowerShell Execution Policy Error
+
+If you encounter an execution policy restriction, run:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+### Environment Variables Not Taking Effect After Setting
+
+After setting permanent environment variables, you need to:
+- Restart PowerShell or CMD
+- Or log out and log back in to Windows
+- Verify the setting: `echo $env:ANTHROPIC_BASE_URL`
+
+## Need Help?
+
+If you run into any tricky installation issues, scan the QR code below to join the Claude Code Club community group. There you can:
+- Exchange AI programming experience and get answers from 3000+ excellent developers
+- Get the latest Claude Code tips and tricks
+
+<div style={{ display: 'flex', justifyContent: 'top', margin: '2rem 0' }}>
+  <Image src="/images/discord-group-qrcode.svg" alt="Discord Group QR Code" width={300} height={300} />
+</div>
+
+
+
+

@@ -1,0 +1,822 @@
+---
+title: Network Diagnosis and API Endpoint Selection Guide
+description: Fully understand your network conditions, identify the root cause of issues, and choose the best API endpoint for your situation
+---
+
+import { Callout, Tabs, Steps } from 'nextra/components'
+
+# Network Diagnosis and API Endpoint Selection Guide
+
+Have you ever experienced slow Claude Code requests, timeouts, or failures? These issues are often not caused by the server, but by a specific link in the complex network chain. This guide will help you fully understand how the network works, develop diagnostic skills, identify the root cause of problems, and choose the best API endpoint for your situation.
+
+## Understanding the Full Request Chain
+
+When we send a request in Claude Code, the data passes through the following steps:
+
+```
+Our Computer → Local Network → ISP Network → International Gateway → Overseas Network → CC Club Server → Anthropic API
+                                    ↑
+                           Most likely point of failure
+```
+
+### Potential Issues at Each Link
+
+| Link | Potential Issues | Symptoms |
+|------|-----------|----------|
+| Local Network | Weak WiFi signal, router issues | All websites are slow |
+| ISP Network | Line congestion, DNS pollution | Slow at specific times |
+| International Gateway | Bandwidth limits, policy interference | Only overseas services are slow |
+| VPN/Proxy | Crowded nodes, routing detours | Different behavior with VPN on/off |
+| CC Club Server | Server load (very rare) | All users report issues simultaneously |
+
+<Callout type="info">
+Based on our statistics, **over 90% of "slow request" problems originate from the client network environment**, not the server side.
+</Callout>
+
+## The Complexity of China's Outbound Internet
+
+### Why Is It So Hard to Access Overseas Services?
+
+China's international internet gateways are limited, and all outbound traffic must pass through a few major nodes:
+
+1. **The three major ISPs have limited international bandwidth**: Especially congested during peak hours (8–11 PM)
+2. **Significant differences between ISPs**: China Telecom, Unicom, and Mobile have noticeably different line quality to different regions
+3. **Geographic impact**: Coastal cities generally have faster overseas access than inland cities
+4. **Policy interference**: Outbound networks can become particularly unstable during certain periods
+
+### Characteristics of Different ISPs
+
+| ISP | To Japan | To Hong Kong | Notes |
+|--------|--------|--------|------|
+| China Telecom | Good | Average | CN2 line has the best quality |
+| China Unicom | Average | Good | Large fluctuations during peak hours |
+| China Mobile | Average | Good | CMI line is relatively stable |
+
+<Callout type="warning">
+These are general patterns — actual performance varies by region and time of day. The most reliable approach is to test yourself.
+</Callout>
+
+## Comprehensive Network Diagnosis Guide
+
+### Step 1: Rule Out Local Network Issues
+
+First, confirm your local network is functioning normally:
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+```bash
+# Test local network connectivity
+ping -c 5 baidu.com
+
+# If this fails, there is a local network issue
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+# Test local network connectivity
+ping -n 5 baidu.com
+
+# If this fails, there is a local network issue
+```
+  </Tabs.Tab>
+</Tabs>
+
+**Normal result**: 0% packet loss, latency < 50ms
+
+### Step 2: Test Network Quality to Each API Endpoint
+
+CC Club provides three API endpoints. Test which one works best for you:
+
+| Endpoint | Server Location | Cloud Provider | Notes |
+|---------|-----------|---------|------|
+| `https://claude-code.club/api` | Japan (Tokyo) | AWS | Default address, good stability |
+| `https://jp.claude-code.club/api` | Japan | Alibaba Cloud | Optimized routing |
+| `https://hk.claude-code.club/api` | Hong Kong | Alibaba Cloud | Optimized routing |
+
+<Callout type="info">
+**How to Choose the Best Node?**
+- **Direct connection latency &lt; 100ms**: If your ping to `claude-code.club` is under 100ms, your outbound network is clear. Using the default `claude-code.club` address is fastest because the path is shortest.
+- **Outbound congestion or high latency**: If the direct connection latency exceeds 200ms or packet loss is severe, try the Alibaba Cloud `jp` or `hk` nodes. Generally, users in eastern/northern China are recommended to use the `jp` node, and users in southern China the `hk` node — but this can vary by ISP, so test both.
+</Callout>
+
+#### Ping Test (Basic Connectivity)
+
+<Callout type="warning">
+**Note**: Ping only measures your latency to the proxy server — **it does not include the path from the proxy server to the AI model API**. Low ping latency does not mean fast actual requests. To test true end-to-end latency, use the **Curl Test** below.
+</Callout>
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+```bash
+# Test each node (30 packets each, more accurate)
+echo "=== Default Node (AWS Tokyo) ===" && ping -c 30 claude-code.club
+echo "=== Japan Node (Alibaba Cloud) ===" && ping -c 30 jp.claude-code.club
+echo "=== Hong Kong Node (Alibaba Cloud) ===" && ping -c 30 hk.claude-code.club
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+# Test each node (30 packets each, more accurate)
+Write-Host "=== Default Node (AWS Tokyo) ==="
+ping -n 30 claude-code.club
+Write-Host "=== Japan Node (Alibaba Cloud) ==="
+ping -n 30 jp.claude-code.club
+Write-Host "=== Hong Kong Node (Alibaba Cloud) ==="
+ping -n 30 hk.claude-code.club
+```
+  </Tabs.Tab>
+</Tabs>
+
+**How to Interpret the Results:**
+
+```
+--- claude-code.club ping statistics ---
+7 packets transmitted, 6 packets received, 14.3% packet loss
+round-trip min/avg/max/stddev = 85.010/85.833/87.800/0.931 ms
+```
+
+- **Packet loss**: < 2% excellent, 2–5% acceptable, > 5% poor
+- **Average latency (avg)**: < 100ms excellent, 100–200ms acceptable, > 200ms slow
+- **Latency variance (mdev/jitter)**: Smaller is more stable
+
+#### MTR Test (Trace the Full Path)
+
+MTR is more powerful than ping — it shows every hop the packet takes:
+
+<Tabs items={['macOS', 'Linux', 'Windows']}>
+  <Tabs.Tab>
+```bash
+# Install mtr (if not installed)
+brew install mtr
+
+# Test the path to each node
+sudo mtr -r -c 30 claude-code.club
+sudo mtr -r -c 30 jp.claude-code.club
+sudo mtr -r -c 30 hk.claude-code.club
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```bash
+# Install mtr (if not installed)
+# Debian/Ubuntu
+sudo apt install mtr
+# CentOS/RHEL
+sudo yum install mtr
+
+# Test the path to each node
+mtr -r -c 30 claude-code.club
+mtr -r -c 30 jp.claude-code.club
+mtr -r -c 30 hk.claude-code.club
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+# Windows can use WinMTR (GUI tool)
+# Download: https://winmtr.net/
+
+# Or use the tracert command (less powerful than mtr)
+tracert claude-code.club
+```
+  </Tabs.Tab>
+</Tabs>
+
+**Interpreting MTR Output:**
+
+```
+Host                          Loss%   Snt   Last   Avg  Best  Wrst StDev
+1. 192.168.1.1                 0.0%    30    1.2   1.5   0.8   3.2   0.5   ← Our router
+2. 10.0.0.1                    0.0%    30    5.3   6.1   4.2   8.7   1.2   ← ISP gateway
+3. 202.97.xxx.xxx              3.3%    30   30.5  35.2  28.1  52.3   6.8   ← ISP backbone
+4. 202.97.xxx.xxx             10.0%    30   45.2  48.6  42.1  68.9   8.2   ← International gateway ⚠️
+5. ...
+```
+
+**Key points**:
+- Look for which hop introduces high packet loss or high latency
+- `202.97.x.x` is typically China Telecom backbone
+- `219.158.x.x` is typically China Unicom backbone
+- Heavy packet loss at the international gateway indicates outbound bandwidth issues
+
+#### Curl Test (Actual HTTP Request) ⭐ Recommended
+
+<Callout type="info">
+**This is the most accurate test method!** A curl test actually accesses the API endpoint and measures the complete end-to-end latency, including: your network → proxy server → Anthropic API → response. This truly reflects the actual speed of each node.
+</Callout>
+
+**Quick Test (Recommended):**
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+```bash
+# Use the time command to measure total request time
+time curl -s https://claude-code.club/api/health
+time curl -s https://jp.claude-code.club/api/health
+time curl -s https://hk.claude-code.club/api/health
+```
+
+Sample output:
+```
+{"status":"healthy","service":"claude-relay-service",...}
+curl -s https://claude-code.club/api/health  0.01s user 0.01s system 6% cpu 0.243 total
+                                                                          ↑
+                                                            Real end-to-end latency (243ms)
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+# Use Measure-Command to measure request time
+Measure-Command { curl.exe -s https://claude-code.club/api/health } | Select-Object TotalMilliseconds
+Measure-Command { curl.exe -s https://jp.claude-code.club/api/health } | Select-Object TotalMilliseconds
+Measure-Command { curl.exe -s https://hk.claude-code.club/api/health } | Select-Object TotalMilliseconds
+```
+  </Tabs.Tab>
+</Tabs>
+
+**Detailed Test (View time per stage):**
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+```bash
+# Test HTTP response time for each node (by stage)
+echo "=== Default Node ===" && curl -w "DNS: %{time_namelookup}s, Connect: %{time_connect}s, TTFB: %{time_starttransfer}s, Total: %{time_total}s\n" -o /dev/null -s https://claude-code.club/api/health
+
+echo "=== Japan Node ===" && curl -w "DNS: %{time_namelookup}s, Connect: %{time_connect}s, TTFB: %{time_starttransfer}s, Total: %{time_total}s\n" -o /dev/null -s https://jp.claude-code.club/api/health
+
+echo "=== Hong Kong Node ===" && curl -w "DNS: %{time_namelookup}s, Connect: %{time_connect}s, TTFB: %{time_starttransfer}s, Total: %{time_total}s\n" -o /dev/null -s https://hk.claude-code.club/api/health
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+# Windows PowerShell test
+@("claude-code.club", "jp.claude-code.club", "hk.claude-code.club") | ForEach-Object {
+    Write-Host "=== $_ ===" -ForegroundColor Green
+    $stats = curl.exe -w "%{time_total}" -o NUL -s "https://$_/api/health"
+    $ms = [math]::Round([double]$stats * 1000)
+    Write-Host "Response time: ${ms}ms"
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+**Interpreting each metric:**
+- **DNS**: Domain resolution time, should be &lt; 0.1s
+- **Connect**: TCP handshake time, reflects network latency between you and the proxy server
+- **TTFB**: Time to first byte, reflects proxy server processing + latency to the AI model API
+- **Total**: Full request time — **this is the most important metric**, should be &lt; 1s
+
+#### TLS Handshake Check (Detect Connection Interception)
+
+Some regional ISPs intercept or interfere with outbound HTTPS requests during the TLS handshake. Use `curl -v` to view the complete connection process and determine whether interception is occurring:
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+```bash
+# Verbose mode test (-v shows the full handshake process)
+curl -v https://claude-code.club/api/health
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+# Windows requires curl (built into Windows 10+)
+curl.exe -v https://claude-code.club/api/health
+```
+  </Tabs.Tab>
+</Tabs>
+
+**Sample normal TLS handshake output:**
+
+```
+* Host claude-code.club:443 was resolved.
+* IPv4: 54.250.224.68
+*   Trying 54.250.224.68:443...
+* Connected to claude-code.club (54.250.224.68) port 443
+* ALPN: curl offers h2,http/1.1
+* (304) (OUT), TLS handshake, Client hello (1):
+*  CAfile: /etc/ssl/cert.pem
+* (304) (IN), TLS handshake, Server hello (2):
+* (304) (IN), TLS handshake, Unknown (8):
+* (304) (IN), TLS handshake, Certificate (11):
+* (304) (IN), TLS handshake, CERT verify (15):
+* (304) (IN), TLS handshake, Finished (20):
+* (304) (OUT), TLS handshake, Finished (20):
+* SSL connection using TLSv1.3 / AEAD-CHACHA20-POLY1305-SHA256
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=claude-code.club
+*  start date: Dec 22 14:32:56 2025 GMT
+*  expire date: Mar 22 14:32:55 2026 GMT
+*  issuer: C=US; O=Let's Encrypt; CN=E7
+*  SSL certificate verify ok.
+* using HTTP/2
+< HTTP/2 200
+```
+
+**Interpreting Key Information:**
+
+| Output | Meaning | Expected Value |
+|---------|------|--------|
+| `Connected to ... port 443` | TCP connection successful | Should show the target IP |
+| `TLS handshake, Client hello` | Client initiates TLS handshake | Must appear |
+| `TLS handshake, Server hello` | Server responds to handshake | Must appear |
+| `TLS handshake, Certificate` | Server sends certificate | Must appear |
+| `SSL certificate verify ok` | Certificate verification passed | Must appear |
+| `TLSv1.3` | TLS version | 1.2 or 1.3 |
+| `issuer: ... Let's Encrypt` | Certificate authority | Should be Let's Encrypt |
+| `HTTP/2 200` | Request successful | Status code 200 |
+
+**Abnormal Situations and Diagnosis:**
+
+<Callout type="warning">
+If any of the following occur, the connection may be intercepted or interfered with:
+</Callout>
+
+**1. Connection timeout or reset**
+```
+* connect to 54.250.224.68 port 443 failed: Connection timed out
+* Failed to connect to claude-code.club port 443: Connection refused
+* Connection reset by peer
+```
+**Cause**: ISP may be blocking the connection at the TCP layer
+
+**2. TLS handshake failure**
+```
+* TLS handshake, Client hello (1):
+* OpenSSL SSL_connect: Connection reset by peer
+* Closing connection 0
+curl: (35) OpenSSL SSL_connect: Connection reset by peer
+```
+**Cause**: ISP sends a RST packet during TLS handshake to interrupt the connection — this is typical SNI blocking
+
+**3. Abnormal certificate issuer**
+```
+* Server certificate:
+*  subject: CN=claude-code.club
+*  issuer: C=CN; O=China Internet Network Information Center; CN=...
+```
+**Cause**: If the certificate issuer is not `Let's Encrypt` but another organization (especially a Chinese one), there may be a man-in-the-middle attack or SSL hijacking
+
+**4. Certificate verification failure**
+```
+* SSL certificate problem: unable to get local issuer certificate
+* SSL certificate problem: self signed certificate in certificate chain
+```
+**Cause**: May be a local certificate store issue or traffic hijacking
+
+**5. Long wait followed by failure**
+```
+* TLS handshake, Client hello (1):
+[Long wait...]
+curl: (28) Operation timed out after 30000 milliseconds
+```
+**Cause**: Request is "black-holed" — packets are silently dropped with no response
+
+**What to Do If Intercepted?**
+
+1. **Switch nodes**: Try other API endpoints (jp.claude-code.club or hk.claude-code.club)
+2. **Use a proxy**: Bypass interception with a VPN or proxy
+3. **Switch networks**: Try a mobile hotspot or a different ISP's network
+4. **Change DNS**: Use `1.1.1.1` (Cloudflare) or `223.5.5.5` (Alibaba Cloud) to avoid DNS pollution
+
+### Step 3: Continuous Monitoring Test
+
+Network conditions change over time. It is recommended to test at different times of day:
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+```bash
+# Test every 5 seconds for 1 minute (12 times)
+for i in {1..12}; do
+    echo "$(date '+%H:%M:%S') - Test #$i"
+    curl -w "Total: %{time_total}s\n" -o /dev/null -s https://claude-code.club/api/health
+    sleep 5
+done
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+# Test every 5 seconds for 1 minute
+for ($i=1; $i -le 12; $i++) {
+    $now = Get-Date -Format "HH:mm:ss"
+    Write-Host "$now - Test #$i" -NoNewline
+    $stats = curl.exe -w "%{time_total}" -o NUL -s "https://claude-code.club/api/health"
+    $ms = [math]::Round([double]$stats * 1000)
+    Write-Host " - Time: ${ms}ms"
+    Start-Sleep -Seconds 5
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+## Common Scenarios and Solutions
+
+### Scenario 1: All Nodes Are Slow
+
+**Possible causes**:
+- Local network issue
+- ISP overall outbound bandwidth congestion
+- VPN node poor quality
+
+**Solutions**:
+1. Check local WiFi/network connection
+2. Try switching to a mobile hotspot
+3. If using VPN, try switching nodes or disabling VPN for a direct connection test
+
+### Scenario 2: One Node Is Particularly Slow, Others Are Fine
+
+**Possible cause**: Poor ISP line quality to that region
+
+**Solution**: Choose the node with the best test results
+
+### Scenario 3: Fine During the Day, Slow at Night
+
+**Possible cause**: Peak hour (20:00–23:00) outbound bandwidth congestion
+
+**Solutions**:
+1. Try switching to a different node
+2. Use it during off-peak hours
+3. Use a VPN to bypass congested routes
+
+### Scenario 4: Intermittent — Sometimes Good, Sometimes Bad
+
+**Possible causes**:
+- Network quality fluctuations
+- VPN node load changes
+- Routing changes
+
+**Solutions**:
+1. Choose the node with the lowest latency variance (mdev/jitter)
+2. If using VPN, select a more stable node
+
+### Scenario 5: Slower with VPN Than Without
+
+**Possible causes**:
+- VPN node overcrowded
+- Routing detour (e.g., you are in Shanghai, VPN routes through the US then to Singapore)
+- VPN node bandwidth insufficient
+
+**Solutions**:
+1. Choose VPN nodes close to the API server (Japan, Hong Kong, Singapore)
+2. Test without VPN (direct connection) for comparison
+3. Switch VPN providers or nodes
+
+## Understanding Proxy Tool Configuration Modes
+
+Many users use proxy tools like Clash Verge, ClashX, or Surge without fully understanding how they work, leading to misconfiguration and network issues. **Sometimes enabling a proxy can actually make things worse** — understanding proxy configuration modes is critical.
+
+### The Three Proxy Modes
+
+Using Clash Verge as an example, proxy tools typically provide three modes:
+
+| Mode | How It Works | Scope | Does It Affect Terminal Tools? |
+|------|---------|---------|----------------|
+| **System Proxy** | Modifies system proxy settings so apps that support system proxy route through it | Browsers, some GUI apps | No |
+| **TUN Mode (Tunnel Mode)** | Creates a virtual network card that intercepts all traffic at the network layer | All network traffic | Yes (forced) |
+| **Environment Variable Proxy** | Sets `http_proxy` and similar environment variables; terminal tools read and use them | Current terminal session only | Yes |
+
+<Callout type="warning">
+**Note**: All three modes can be active simultaneously! If TUN mode and environment variable proxy are both active, traffic may be proxied twice, causing connection failures or slower speeds.
+</Callout>
+
+### How Terminal Tools (Claude Code, Gemini CLI, etc.) Use a Proxy
+
+Claude Code, Codex, Gemini CLI, and similar terminal tools do **not** automatically use the system proxy. They rely on:
+
+1. **Environment variables**: Reading `http_proxy`, `https_proxy`, `HTTP_PROXY`, `HTTPS_PROXY`, etc.
+2. **TUN mode**: If the proxy tool has TUN mode enabled, all traffic (including terminal) is forcibly intercepted
+
+### Configuring Environment Variable Proxy
+
+If you need terminal tools to use a proxy, set environment variables:
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+**Method 1: Create a config file, load on demand**
+
+```bash
+# Create a proxy config file
+cat > ~/.proxy << 'EOF'
+export http_proxy=http://127.0.0.1:7897
+export https_proxy=http://127.0.0.1:7897
+export HTTP_PROXY=http://127.0.0.1:7897
+export HTTPS_PROXY=http://127.0.0.1:7897
+export all_proxy=socks5://127.0.0.1:7897
+export NO_PROXY=localhost,127.0.0.1,::1
+EOF
+
+# Create an unset proxy config file
+cat > ~/.unset_proxy << 'EOF'
+unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY all_proxy NO_PROXY
+EOF
+```
+
+**Usage:**
+
+```bash
+# Enable proxy (takes effect in the current terminal)
+source ~/.proxy
+
+# Verify proxy is active
+echo $http_proxy
+# Output: http://127.0.0.1:7897
+
+# Disable proxy
+source ~/.unset_proxy
+
+# Verify proxy is disabled
+echo $http_proxy
+# Output: (empty)
+```
+
+**Method 2: Define shortcut commands**
+
+Add to `~/.zshrc` or `~/.bashrc`:
+
+```bash
+# Proxy toggle shortcuts
+alias proxy_on='export http_proxy=http://127.0.0.1:7897 https_proxy=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897'
+alias proxy_off='unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY all_proxy NO_PROXY'
+alias proxy_status='echo "http_proxy=$http_proxy"'
+```
+
+Then run `source ~/.zshrc` to apply. Afterwards use `proxy_on`, `proxy_off`, and `proxy_status` to toggle quickly.
+  </Tabs.Tab>
+  <Tabs.Tab>
+**Method 1: Temporary setting (current terminal only)**
+
+```powershell
+# Enable proxy
+$env:HTTP_PROXY = "http://127.0.0.1:7897"
+$env:HTTPS_PROXY = "http://127.0.0.1:7897"
+
+# Disable proxy
+Remove-Item Env:HTTP_PROXY -ErrorAction SilentlyContinue
+Remove-Item Env:HTTPS_PROXY -ErrorAction SilentlyContinue
+```
+
+**Method 2: Define functions in your PowerShell profile**
+
+Edit `$PROFILE` and add:
+
+```powershell
+function proxy_on {
+    $env:HTTP_PROXY = "http://127.0.0.1:7897"
+    $env:HTTPS_PROXY = "http://127.0.0.1:7897"
+    Write-Host "Proxy enabled: $env:HTTP_PROXY"
+}
+
+function proxy_off {
+    Remove-Item Env:HTTP_PROXY -ErrorAction SilentlyContinue
+    Remove-Item Env:HTTPS_PROXY -ErrorAction SilentlyContinue
+    Write-Host "Proxy disabled"
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+<Callout type="info">
+Port `7897` is the default port for Clash Verge. If you use a different proxy tool, check its settings for the local port number. Common ports: Clash 7890, ClashX 7890, V2rayN 10809, Surge 6152.
+</Callout>
+
+### Check Current Proxy Status
+
+When diagnosing network issues, first clarify your current proxy configuration:
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+```bash
+# Check environment variable proxy
+echo "http_proxy: $http_proxy"
+echo "https_proxy: $https_proxy"
+echo "HTTP_PROXY: $HTTP_PROXY"
+echo "HTTPS_PROXY: $HTTPS_PROXY"
+
+# Check which path the request actually takes
+curl -v https://claude-code.club/api/health 2>&1 | grep -E "(Trying|Connected|proxy)"
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+# Check environment variable proxy
+Write-Host "HTTP_PROXY: $env:HTTP_PROXY"
+Write-Host "HTTPS_PROXY: $env:HTTPS_PROXY"
+
+# Check system proxy settings
+Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings' | Select-Object ProxyEnable, ProxyServer
+```
+  </Tabs.Tab>
+</Tabs>
+
+### Recommended Proxy Configuration Strategy
+
+Based on different scenarios, here are the recommended configurations:
+
+| Scenario | System Proxy | TUN Mode | Env Vars | Notes |
+|------|---------|---------|---------|------|
+| **Direct connection test** | Off | Off | None | Test raw performance |
+| **Browser only through proxy** | On | Off | None | Terminal connects directly |
+| **Terminal through proxy** | Off | Off | Set | Enable on demand |
+| **Global proxy** | Off | On | None | All traffic through proxy |
+| **Avoid** | On | On | Set | May conflict! |
+
+<Callout type="warning">
+**Common Mistake**: Enabling TUN mode and setting environment variable proxy simultaneously, causing traffic to be proxied twice, resulting in request failures or abnormally slow speeds. If you have TUN mode enabled, make sure to clear the environment variable proxy.
+</Callout>
+
+### Test Whether Proxy Is Working
+
+```bash
+# Direct request without proxy (for comparison)
+curl --noproxy '*' -w "Total: %{time_total}s\n" -o /dev/null -s https://claude-code.club/api/health
+
+# Request through proxy (if environment variables are set)
+curl -w "Total: %{time_total}s\n" -o /dev/null -s https://claude-code.club/api/health
+
+# Force use of a specific proxy
+curl -x http://127.0.0.1:7897 -w "Total: %{time_total}s\n" -o /dev/null -s https://claude-code.club/api/health
+```
+
+Compare the response times of all three approaches and choose the fastest configuration.
+
+### End-to-End Test Using Claude Code
+
+The ping and curl tests above only verify network connectivity. To test the **actual working condition** of the API, send a simple request directly with Claude Code:
+
+```bash
+# Use the time command to measure the full request time
+time claude --model claude-haiku-4-5-20251001 -p "hi"
+```
+
+**Sample output:**
+
+```
+Hi! How can I help you today?
+
+real    0m2.847s    ← Total time (key metric)
+user    0m0.312s
+sys     0m0.089s
+```
+
+**How to interpret:**
+
+| real Time | Status | Notes |
+|----------|------|------|
+| < 10s | Excellent | Network and API are both normal |
+| 10–18s | Acceptable | Slight delays possible |
+| 18–25s | Slow | Network congestion or node issue |
+| > 25s or timeout | Abnormal | Investigate network or switch node |
+
+<Callout type="info">
+Using the `claude-haiku-4-5-20251001` model because Haiku responds fastest and consumes the fewest tokens, making it ideal for network testing. This test will consume a small amount of tokens but accurately reflects the end-to-end API latency.
+</Callout>
+
+**Compare different configurations:**
+
+```bash
+# 1. Direct connection test (disable proxy first)
+source ~/.unset_proxy
+time claude --model claude-haiku-4-5-20251001 -p "hi"
+
+# 2. Proxy test (enable proxy)
+source ~/.proxy
+time claude --model claude-haiku-4-5-20251001 -p "hi"
+```
+
+Compare the `real` times and choose the faster configuration.
+
+### Collect Debug Logs for Admin Analysis
+
+If the above methods do not resolve the issue, use Claude Code's debug mode to collect detailed logs and send them to an administrator for deep analysis.
+
+**Collect debug logs:**
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+```bash
+# Send a test request in debug mode and collect complete logs
+claude --debug-file /tmp/claude-network-debug.log \
+      --debug "api,mcp" \
+      --model claude-haiku-4-5-20251001 \
+      -p "test network connection"
+```
+
+After collection, the log is saved to `/tmp/claude-network-debug.log`
+
+```bash
+# View the log content
+cat /tmp/claude-network-debug.log
+
+# Send the log to an administrator (copy content or send the file)
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+# Send a test request in debug mode and collect complete logs
+claude --debug-file $env:TEMP\claude-network-debug.log `
+      --debug "api,mcp" `
+      --model claude-haiku-4-5-20251001 `
+      -p "test network connection"
+```
+
+After collection, the log is saved to the temp directory
+
+```powershell
+# View the log content
+Get-Content $env:TEMP\claude-network-debug.log
+
+# Log file location
+Write-Host "Log file: $env:TEMP\claude-network-debug.log"
+```
+  </Tabs.Tab>
+</Tabs>
+
+**Parameter Reference:**
+
+| Parameter | Description |
+|-----|------|
+| `--debug-file` | Specify the log file path |
+| `--debug "api,mcp"` | Enable detailed debug info for API and MCP |
+| `--model claude-haiku-4-5-20251001` | Use the fastest model to minimize wait time |
+| `-p "test network connection"` | Send a simple test message |
+
+**Key information in the logs:**
+
+- Complete HTTP request and response details
+- Network connection establishment process
+- TLS handshake details
+- API call timing and duration
+- Error stack traces (if any)
+- MCP server connection status
+
+<Callout type="warning">
+Debug logs may contain sensitive information (such as API key fragments, request paths, etc.). Review the log content before sending to an administrator, or upload securely via CC Club's [support system](https://claude-code.club).
+</Callout>
+
+<Callout type="info">
+Using the Haiku model minimizes token consumption and wait time while still generating a complete network request log. This test consumes very few tokens.
+</Callout>
+
+## Choosing the Best API Endpoint
+
+Based on your test results, select the most suitable endpoint:
+
+<Steps>
+
+### Run the Full Test
+
+Following the steps above, test ping and curl response times for all three nodes.
+
+### Compare Results
+
+Select the node with the lowest packet loss, lowest average latency, and smallest latency variance.
+
+### Update Configuration
+
+Set `ANTHROPIC_BASE_URL` to the best node:
+
+```bash
+# If the default node is fastest (direct connection latency < 100ms)
+export ANTHROPIC_BASE_URL="https://claude-code.club/api"
+
+# If the Japan node is fastest
+export ANTHROPIC_BASE_URL="https://jp.claude-code.club/api"
+
+# If the Hong Kong node is fastest
+export ANTHROPIC_BASE_URL="https://hk.claude-code.club/api"
+```
+
+For detailed setup instructions, refer to:
+- [Set Environment Variables on macOS](/getting-started/installation/macos#3-设置环境变量)
+- [Set Environment Variables on Windows](/getting-started/installation/windows#3-设置环境变量)
+- [Set Environment Variables on Linux](/getting-started/installation/linux#3-设置环境变量)
+
+### Review Periodically
+
+Network conditions change over time. If things feel slow, retest and adjust.
+
+</Steps>
+
+## General Recommendations
+
+1. **Prefer direct connection when the network is clear**: If your ping to `claude-code.club` is under 100ms with low packet loss, using the default address is fastest — the path is shortest with the fewest intermediate hops
+2. **Choose the nearest node**: In general, geographic proximity means lower latency (though not always)
+3. **Avoid peak hours**: If possible, avoid the 8–11 PM network peak hours
+4. **Keep multiple options**: Remember several available nodes so you can switch quickly when one fails
+5. **Update DNS**: Use a reliable public DNS (such as `1.1.1.1` from Cloudflare or `223.5.5.5` from Alibaba Cloud)
+
+<Callout type="info">
+Network diagnostics is a complex technical domain. If you still have questions after following this guide, feel free to share your test results (ping, mtr, curl output) in the community group and we will help you analyze them.
+</Callout>
+
+## Summary
+
+When API requests are slow, troubleshoot in the following order:
+
+1. Confirm local network is functioning normally
+2. Check proxy configuration status (ensure environment variables and TUN mode are not conflicting)
+3. Test network quality to each API endpoint
+4. Use `curl -v` to check whether TLS handshake is normal
+5. Use MTR to trace which hop is causing the problem
+6. Based on test results, select the best node
+7. Flexibly switch proxy configuration and compare direct vs. proxied performance
+
+Remember: **90% of network problems occur on the link between the client and the server** — mastering diagnostic skills helps us quickly identify and resolve issues.

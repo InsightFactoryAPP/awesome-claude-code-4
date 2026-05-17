@@ -1,0 +1,66 @@
+---
+title: Use Specialized Subagents
+description: Learn how to use specialized AI subagents to handle specific tasks more effectively
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Use Specialized Subagents
+
+Suppose you want to use specialized AI subagents to handle specific tasks more effectively.
+
+<Steps>
+
+### View Available Subagents
+
+```
+> /agents
+```
+
+This displays all available subagents and allows you to create new ones.
+
+### Use Subagents Automatically
+
+Claude Code automatically delegates appropriate tasks to specialized subagents:
+
+```
+> review my recent code changes for security issues
+```
+
+```
+> run all tests and fix any failures
+```
+
+### Explicitly Request a Specific Subagent
+
+```
+> use the code-reviewer subagent to check the auth module
+```
+
+```
+> have the debugger subagent investigate why users can't log in
+```
+
+### Create Custom Subagents for Your Workflow
+
+```
+> /agents
+```
+
+Then select "Create New subagent" and follow the prompts to define:
+
+* Subagent type (e.g., `api-designer`, `performance-optimizer`)
+* When to use it
+* Which tools it can access
+* Its specialized system prompt
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* Create project-specific subagents in `.claude/agents/` for team sharing
+* Use a descriptive `description` field to enable automatic delegation
+* Restrict tool access to only what each subagent actually needs
+* See the [subagent documentation](https://docs.claude.com/en/docs/claude-code/sub-agents) for detailed examples
+</Callout>

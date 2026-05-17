@@ -1,7 +1,271 @@
 ---
-title: 省钱秘笈 - 如何最大化你的 Claude Code 使用时长
+title: Save Tokens — Maximize Your Claude Code Usage
+description: Master token management techniques to get more out of your subscription
 ---
 
-# 省钱秘笈 - 如何最大化你的 Claude Code 使用时长
+import { Callout, Steps, Tabs } from 'nextra/components'
 
-> 🚧 English translation coming soon.
+# Save Tokens
+
+## Why Can Some People Use Claude Code All Day While Others Run Out in 3 Hours?
+
+Two developers, same Max plan — one can code all day, the other burns through their quota in 3 hours. The key difference is understanding and managing **token consumption**.
+
+Claude Code uses a token-based billing model: every interaction consumes tokens. Without understanding how tokens are spent, it's easy to waste large amounts of your quota without realizing it.
+
+<Callout type="info">
+**Real-world data**: Based on 200+ hours of actual coding sessions, with sensible MCP usage and a consistent `/clear` habit, $7 lasts about 2 hours. For a 10-hour development day, that's roughly $35.
+</Callout>
+
+## Understanding Token Consumption: The `/context` Command
+
+To optimize token usage, you first need to know where your tokens are going. Claude Code provides the `/context` command to show your current token usage.
+
+### Viewing Token Usage
+
+Type `/context` in Claude Code and you'll see output like this:
+
+```
+Context Usage
+⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   claude-sonnet-4-5-20250929 · 81k/200k tokens (40%)
+⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛀ ⛀ ⛀
+⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ System prompt: 2.8k tokens (1.4%)
+⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ System tools: 13.4k tokens (6.7%)
+⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ MCP tools: 19.2k tokens (9.6%)
+⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ Memory files: 457 tokens (0.2%)
+⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ Messages: 105 tokens (0.1%)
+⛶ ⛶ ⛶ ⛶ ⛶ ⛝ ⛝ ⛝ ⛝ ⛝   ⛶ Free space: 119k (59.5%)
+⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝   ⛝ Autocompact buffer: 45.0k tokens (22.5%)
+  
+MCP tools · /mcp
+     └ mcp__chrome-devtools__click (chrome-devtools): 651 tokens
+     └ mcp__chrome-devtools__close_page (chrome-devtools): 639 tokens
+     └ mcp__chrome-devtools__drag (chrome-devtools): 653 tokens
+     └ mcp__chrome-devtools__emulate (chrome-devtools): 731 tokens
+     └ mcp__chrome-devtools__evaluate_script (chrome-devtools): 795 tokens
+     └ mcp__chrome-devtools__fill (chrome-devtools): 659 tokens
+     └ mcp__chrome-devtools__fill_form (chrome-devtools): 691 tokens
+     └ mcp__chrome-devtools__get_console_message (chrome-devtools): 646 tokens
+     └ mcp__chrome-devtools__get_network_request (chrome-devtools): 650 tokens
+...
+```
+
+### Reading the Output
+
+| Item | Description | Example |
+|------|------|--------|
+| **Overview** | Tokens used vs. total capacity | 81k/200k tokens (40%) |
+| **System prompt** | Claude Code's system prompt usage | 2.8k tokens (1.4%) |
+| **System tools** | Built-in tool description text | 13.4k tokens (6.7%) |
+| **MCP tools** | Tool descriptions from MCP servers | 19.2k tokens (9.6%) |
+| **Memory files** | CLAUDE.md and other memory files | 457 tokens (0.2%) |
+| **Messages** | Current conversation history | 105 tokens (0.1%) |
+| **Free space** | Remaining available space | 119k (59.5%) |
+| **Autocompact buffer** | Auto-compaction buffer | 45.0k tokens (22.5%) |
+
+<Callout type="warning">
+**Key takeaway**: In this example, MCP tools consume 19.2k tokens (9.6%) — the largest cost outside of system components. If you have many MCP servers installed, this number can be much higher.
+</Callout>
+
+## The Main Drivers of Token Consumption
+
+Claude Code's token usage comes primarily from:
+
+1. **MCP server tools**: Each MCP tool includes detailed documentation and usage instructions that continuously occupy context
+2. **Conversation history**: Every interaction's history is retained in context
+3. **Project files**: CLAUDE.md and other project config files are sent with every request
+4. **Code files**: The content of files Claude Code reads
+5. **System components**: System prompt and built-in tools (relatively fixed, not optimizable)
+
+## Six Strategies to Save Tokens
+
+<Steps>
+
+### Disable Unnecessary MCP Servers
+
+**Problem**: Every MCP server's tools include large amounts of descriptive text that consume tokens even when unused.
+
+**Solution**:
+- Regularly review your installed MCP servers
+- Keep only the servers your current project actually needs
+- Disable servers you're not using temporarily — re-enable when needed
+
+<Callout type="tip">
+In the example above, MCP tools use 19.2k tokens. If you're doing pure backend work, you can temporarily disable frontend-focused servers like chrome-devtools.
+</Callout>
+
+### Make `/clear` a Habit
+
+**Problem**: Conversation history accumulates continuously, consuming more and more tokens.
+
+**Solution**:
+- Run `/clear` after completing each independent task
+- Use `/clear` to reset context when starting a new feature or requirement
+- Clearing history not only saves tokens but also improves model accuracy
+
+<Callout type="info">
+**Best practice**: Think of `/clear` like a git commit — clear at the end of each feature point. This saves tokens and keeps each conversation focused.
+</Callout>
+
+### Use `/compact` to Compress History
+
+**Problem**: Some tasks require a longer context, but you don't want to wipe the history entirely.
+
+**Solution**:
+- When token usage is high but the task isn't finished, use `/compact` to compress the conversation history
+- Compression retains key information while removing redundant content
+- Works well when used periodically during long sessions
+
+### Monitor Token Usage Regularly with `/context`
+
+**Problem**: Without knowing where tokens are going, you can't optimize effectively.
+
+**Solution**:
+- Make `/context` part of your routine
+- Address unusual token consumption as soon as you spot it
+- Learn which operations consume large amounts of tokens
+
+<Callout>
+**Suggested frequency**: Check `/context` at the start of each new development phase, or whenever responses feel slower than usual.
+</Callout>
+
+### Keep CLAUDE.md Concise
+
+**Problem**: CLAUDE.md is sent with every request — an overly long file continuously drains tokens.
+
+**Solution**:
+- Keep only the core project information in CLAUDE.md
+- Remove redundant descriptions and example code
+- Use concise language to describe rules and conventions
+- Put detailed documentation elsewhere and reference it when needed
+
+**Before and after:**
+
+<Tabs items={['Before', 'After']}>
+  <Tabs.Tab>
+  ```markdown
+  # Project Description
+
+  This is a modern web application built with React and TypeScript.
+
+  ## Detailed Tech Stack
+
+  We use the following technologies:
+  1. React 18.2.0 - for building user interfaces
+  2. TypeScript 5.0 - for type safety
+  3. Vite 4.0 - as the build tool
+
+  ### About React
+  React is a JavaScript library for building user interfaces...
+  (many more lines of detail)
+
+  ## Code Standards
+  We follow these coding standards...
+  (many more lines with examples)
+  ```
+  </Tabs.Tab>
+
+  <Tabs.Tab>
+  ```markdown
+  # Project Description
+
+  React 18 + TypeScript 5 + Vite 4 project
+
+  ## Core Conventions
+  - Functional components with hooks
+  - Type definitions go in types/
+  - ESLint + Prettier
+  ```
+  </Tabs.Tab>
+</Tabs>
+
+### Keep Code Files Lean
+
+**Problem**: Claude Code reads files at the file level — the larger the file, the more tokens it consumes.
+
+**Solution**:
+- Follow the single responsibility principle; avoid bloated files
+- Split large files into multiple smaller modules
+- Delete unused code and comments regularly
+- Use code organization tools (e.g., barrel exports) to manage exports
+
+<Callout type="warning">
+If a single file exceeds 500 lines, consider whether it can be split. This not only saves tokens but also aligns with good code design principles.
+</Callout>
+
+</Steps>
+
+## Understanding the Claude API Cache
+
+To help you better understand and control Claude Code API costs, here's a closer look at the built-in **caching mechanism**.
+
+### How Caching Works
+
+When you send requests that include the same context (e.g., command files, MCP tools, skills, and other fixed system prompt content), the API automatically uses a cache:
+
+| Scenario | Description |
+|------|------|
+| **First request** | The system needs to create the cache — more computation, noticeably higher cost |
+| **Subsequent identical requests** | Cache hit — costs drop dramatically (often a fraction of the initial request) |
+| **Cache TTL** | The cache stays valid for **5 minutes after its last use** |
+
+### Cache Pricing Reference
+
+Using Claude Opus 4.5 as an example (similar for Sonnet and other models):
+
+| Type | Price (per million tokens) | Notes |
+|------|---------------------|------|
+| **Standard input** | $5.00 | Default price with no cache |
+| **Cache write** | $6.25 | First write to cache, 25% above standard |
+| **Cache read** | $0.50 | Cache hit — 90% cheaper than standard |
+
+<Callout type="info">
+**Huge price difference**: Cache reads cost only 1/10 of standard input! That's why back-to-back operations can dramatically lower your costs.
+</Callout>
+
+<Callout type="warning">
+If the same context is unused for more than 5 minutes, the cache expires. The next request must recreate it, and costs jump back up.
+</Callout>
+
+### Why Costs Fluctuate
+
+Cost variation is primarily driven by cache hit vs. miss:
+- **Lower cost**: Frequent, continuous use of the same or highly similar context
+- **Higher cost**: Long gaps between sessions or frequent context switches, which trigger repeated cache creation
+
+### Optimization Tips
+
+1. **Work continuously**: Complete related tasks in one session or within short intervals — avoid gaps longer than 5 minutes
+2. **Keep context stable**: Commands, MCP tools, and skills don't need frequent changes — stability maximizes cache hit rate
+3. **Plan your work in phases**: For long sessions, keep each phase under 5 minutes of idle time
+
+<Callout type="success">
+By taking advantage of the caching system, you can meaningfully reduce overall costs and stretch your budget further.
+</Callout>
+
+## Real-World Data
+
+Based on **200 hours** of genuine coding sessions:
+
+- **Average cost**: $7 ≈ 2 hours of intensive development
+- **Typical day**: 10 hours/day ≈ $35
+- **Assumptions**:
+  - Sensible MCP server management (only enable what's needed)
+  - Consistent `/clear` habit
+  - Regular `/context` monitoring
+  - Concise CLAUDE.md
+
+<Callout type="success">
+**The results are dramatic**: With these habits, the same budget can give you 2–3× more development time!
+</Callout>
+
+## Summary
+
+Token management isn't about limiting your creativity — it's about using Claude Code more efficiently. With good habits, you can:
+
+- ✅ Significantly extend your daily development time
+- ✅ Reduce unnecessary costs
+- ✅ Maintain a cleaner conversation context
+- ✅ Improve Claude Code's response accuracy
+
+Remember: **`/clear` after every task, `/context` checks regularly, and disable unused MCP servers**. These three habits alone can cut your token consumption by 50% or more.

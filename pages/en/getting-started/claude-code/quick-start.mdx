@@ -1,0 +1,246 @@
+---
+title: Quick Start with Claude Code
+description: Learn how to use Claude Code for project initialization, sessions, code changes, Git operations, and common workflows.
+reference: https://docs.claude.com/en/docs/claude-code/quickstart
+---
+
+import { Cards, Card, Callout } from 'nextra/components'
+
+# Quick Start with Claude Code
+
+## Step 1: Start Your First Session
+
+Open a terminal in any project directory and launch Claude Code:
+
+```bash
+cd /path/to/your/project
+claude
+```
+
+You will see the Claude Code welcome screen, which includes session information, recent conversations, and the latest updates. Type `/help` to view available commands, or `/resume` to continue a previous conversation.
+
+<Callout type="info">
+After logging in, your credentials are stored in the system. Learn more in [Credential Management](https://docs.claude.com/en/docs/claude-code/iam#credential-management).
+</Callout>
+
+## Step 2: Ask Your First Question
+
+Let's start by exploring your codebase. Try these prompts:
+
+```
+> what does this project do?
+```
+
+Claude will analyze your files and provide a summary. You can also ask more specific questions:
+
+```
+> what technologies does this project use?
+```
+
+```
+> where is the main entry point?
+```
+
+```
+> explain the folder structure
+```
+
+You can also ask Claude about its own capabilities:
+
+```
+> what can Claude Code do?
+```
+
+```
+> how do I use slash commands in Claude Code?
+```
+
+```
+> can Claude Code work with Docker?
+```
+
+<Callout type="info">
+Claude Code reads your files as needed — you don't have to add context manually. Claude can also access its own documentation and answer questions about its features and capabilities.
+</Callout>
+
+## Step 3: Make Your First Code Change
+
+Now let's have Claude Code do some actual coding. Try a simple task:
+
+```
+> add a hello world function to the main file
+```
+
+Claude Code will:
+
+1. Find the appropriate file
+2. Show you the proposed changes
+3. Ask for your approval
+4. Apply the edits
+
+<Callout type="info">
+Claude Code always asks for permission before modifying files. You can approve individual changes, or enable "Accept all" mode for the session.
+</Callout>
+
+## Step 4: Use Git with Claude Code
+
+Claude Code makes Git operations conversational:
+
+```
+> what files have I changed?
+```
+
+```
+> commit my changes with a descriptive message
+```
+
+You can also perform more complex Git operations:
+
+```
+> create a new branch called feature/quickstart
+```
+
+```
+> show me the last 5 commits
+```
+
+```
+> help me resolve merge conflicts
+```
+
+## Step 5: Fix a Bug or Add a Feature
+
+Claude excels at debugging and feature implementation.
+
+Describe what you want in natural language:
+
+```
+> add input validation to the user registration form
+```
+
+Or fix an existing issue:
+
+```
+> there's a bug where users can submit empty forms - fix it
+```
+
+Claude Code will:
+
+* Locate the relevant code
+* Understand the context
+* Implement the solution
+* Run tests if available
+
+## Step 6: Try Other Common Workflows
+
+There are many ways to collaborate with Claude:
+
+**Refactor Code**
+
+```
+> refactor the authentication module to use async/await instead of callbacks
+```
+
+**Write Tests**
+
+```
+> write unit tests for the calculator functions
+```
+
+**Update Documentation**
+
+```
+> update the README with installation instructions
+```
+
+**Code Review**
+
+```
+> review my changes and suggest improvements
+```
+
+<Callout type="info">
+**Remember**: Claude Code is your AI pair programming partner. Talk to it like a helpful colleague — describe what you want to achieve and it will help you get there.
+</Callout>
+
+## Essential Commands
+
+Here are the most important commands for everyday use:
+
+| Command | Purpose | Example |
+| ------------------- | ------------------------ | ----------------------------------- |
+| `claude`            | Start interactive mode   | `claude`                            |
+| `claude "task"`     | Run a one-off task       | `claude "fix the build error"`      |
+| `claude -p "query"` | Run a one-off query and exit | `claude -p "explain this function"` |
+| `claude -c`         | Continue the most recent conversation | `claude -c`              |
+| `claude -r`         | Resume a previous conversation | `claude -r`                   |
+| `claude commit`     | Create a Git commit      | `claude commit`                     |
+| `/clear`            | Clear conversation history | `> /clear`                        |
+| `/help`             | Show available commands  | `> /help`                           |
+| `exit` or Ctrl+C    | Exit Claude Code         | `> exit`                            |
+
+See the [CLI Reference](https://docs.claude.com/en/docs/claude-code/cli-reference) for the full list of commands.
+
+## Tips for Beginners
+
+### Be Specific with Your Requests
+
+Instead of: "fix the bug"
+
+Say: "fix the login bug where users see a blank screen after entering wrong credentials"
+
+### Use Step-by-Step Instructions
+
+Break complex tasks into steps:
+
+```
+> 1. create a new database table for user profiles
+```
+
+```
+> 2. create an API endpoint to get and update user profiles
+```
+
+```
+> 3. build a webpage that allows users to see and edit their information
+```
+
+### Let Claude Explore First
+
+Before making changes, let Claude understand your code:
+
+```
+> analyze the database schema
+```
+
+```
+> build a dashboard showing products that are most frequently returned by our UK customers
+```
+
+### Use Shortcuts to Save Time
+
+* Use Tab for command completion
+* Press ↑ to scroll through command history
+* Type `/` to see all slash commands
+
+
+## Getting Help
+
+* **Inside Claude Code**: Type `/help` or ask "how do I..."
+
+## Next Steps
+
+Now that you've mastered the basics, you can start exploring Claude Code in real development scenarios. Here are some of the most common workflows to help you integrate Claude Code into your daily development:
+
+<Cards>
+  <Cards.Card title="Understanding New Codebases" href="/getting-started/how-to/understand-new-codebases" />
+  <Cards.Card title="Fixing Bugs Efficiently" href="/getting-started/how-to/fix-bugs-efficiently" />
+  <Cards.Card title="Refactoring Code" href="/getting-started/how-to/refactor-code" />
+  <Cards.Card title="Using Plan Mode" href="/getting-started/how-to/use-plan-mode" />
+  <Cards.Card title="Creating Pull Requests" href="/getting-started/how-to/create-pull-requests" />
+</Cards>
+
+
+## References
+
+1. https://docs.claude.com/en/docs/claude-code/quickstart

@@ -1,0 +1,133 @@
+# Windows Manual Troubleshooting Guide
+
+If you cannot run the diagnostic script, or prefer to troubleshoot Claude Code's connectivity and authentication issues step by step manually, follow the steps below.
+
+## Preparation
+
+Open **PowerShell** (it is recommended to run as Administrator to execute certain network diagnostic commands).
+
+## Step 1: Check the Basic Environment
+
+Claude Code requires the `curl` tool to test network connectivity.
+
+1.  **Check the curl version**
+    ```powershell
+    curl --version
+    ```
+    *Expected result*: Displays curl version information (e.g., `curl 8.x.x ...`).
+    *If it fails*: Windows 10/11 usually comes with curl pre-installed. If not, install it via `winget install curl`.
+
+2.  **Check the PowerShell version**
+    ```powershell
+    $PSVersionTable.PSVersion
+    ```
+    *Expected result*: Displays the Major version number (5.1 or higher is recommended).
+
+## Step 2: Check Authentication
+
+Claude Code authenticates using the `ANTHROPIC_AUTH_TOKEN` environment variable.
+
+1.  **Check whether the token is set**
+    ```powershell
+    $env:ANTHROPIC_AUTH_TOKEN.Substring(0, 10) + "..."
+    ```
+    *Expected result*: Displays the first 10 characters of the token.
+    *If it errors or is empty*: The token is not set.
+    *Set for current session*: `$env:ANTHROPIC_AUTH_TOKEN='your-token'`
+    *Set permanently*: Search for "Edit system environment variables" and add `ANTHROPIC_AUTH_TOKEN` under user variables.
+
+2.  **Check for an incorrectly set API Key**
+    ```powershell
+    $env:ANTHROPIC_API_KEY
+    ```
+    *Expected result*: **Should be empty.**
+    *Note*: `claude-code.club` does not use `ANTHROPIC_API_KEY`. If this variable is set, it may cause conflicts.
+    *How to remove*: `Remove-Item Env:\ANTHROPIC_API_KEY`.
+
+3.  **Check the Base URL (optional)**
+    ```powershell
+    $env:ANTHROPIC_BASE_URL
+    ```
+    *Expected result*: Empty (default) or `https://claude-code.club/api`.
+
+## Step 3: Network Connectivity Check
+
+We need to confirm that `claude-code.club` is reachable.
+
+1.  **DNS resolution test**
+    ```powershell
+    Resolve-DnsName claude-code.club
+    ```
+    *Expected result*: Displays an IPAddress.
+    *If it fails*: Shows an error. Try `ipconfig /flushdns` to flush DNS.
+
+2.  **TCP connection test (alternative to Telnet/NC)**
+    ```powershell
+    Test-NetConnection -ComputerName claude-code.club -Port 443
+    ```
+    *Expected result*: `TcpTestSucceeded : True`.
+    *If False*: Port 443 is blocked by a firewall or network policy.
+
+3.  **API connectivity test**
+    Try making a direct API request (requires the token from Step 2 to be set).
+    ```powershell
+    curl -v "https://claude-code.club/api/v1/models" `
+      -H "x-api-key: $env:ANTHROPIC_AUTH_TOKEN" `
+      -H "anthropic-version: 2023-06-01"
+    ```
+    *Expected result*: HTTP status code **200**.
+    *Common errors*:
+   - **401 Unauthorized**: Token is invalid or expired.
+   - **403 Forbidden**: Token has insufficient permissions.
+   - **Connection refused**: Network is unreachable.
+
+## Step 4: Check Proxy and VPN
+
+1.  **Check proxy environment variables**
+    ```powershell
+    Get-ChildItem Env: | Where-Object { $_.Name -match "proxy" }
+    ```
+    *Expected result*: Empty if no proxy is in use.
+    *Note*: If `HTTP_PROXY` or `HTTPS_PROXY` is set, make sure they point to the correct proxy server.
+    *Important*: Ensure `claude-code.club` is in the `NO_PROXY` list.
+
+2.  **Check Windows system proxy**
+    ```powershell
+    Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings' | Select-Object ProxyEnable, ProxyServer, ProxyOverride
+    ```
+    * `ProxyEnable`: 1 means enabled.
+    * `ProxyServer`: Proxy address.
+    * `ProxyOverride`: The list of hosts that bypass the proxy (i.e. NO_PROXY).
+
+3.  **Check WinHTTP proxy**
+    ```powershell
+    netsh winhttp show proxy
+    ```
+    *Expected result*: Usually should be "Direct access (no proxy server)".
+
+4.  **Check VPN**
+    ```powershell
+    Get-NetAdapter | Where-Object { $_.InterfaceDescription -match "VPN|TAP|TUN|Cisco|AnyConnect" -and $_.Status -eq "Up" }
+    ```
+    If there is any output, a VPN is running. Try disconnecting the VPN or checking the routing table.
+
+## Step 5: Check Installation
+
+Confirm that the `claude` command is in the PATH.
+
+1.  **Find the claude binary**
+    ```powershell
+    Get-Command claude
+    ```
+    *Expected result*: Displays the Source path, e.g. `C:\Users\...\npm\claude.cmd`.
+    *If it errors*: Claude Code is not installed or not added to PATH.
+
+2.  **Check the PATH variable**
+    ```powershell
+    $env:Path -split ';'
+    ```
+    Confirm that the npm or Claude installation directory is included.
+
+---
+
+**If the steps above still do not resolve the issue**, record the output of the commands above and contact technical support.

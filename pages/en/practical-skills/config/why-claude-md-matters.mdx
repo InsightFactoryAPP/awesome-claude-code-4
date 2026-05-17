@@ -1,7 +1,518 @@
 ---
-title: 为什么 CLAUDE.md 如此重要
+title: Why CLAUDE.md Matters
+description: A deep dive into the value, core modules, and best practices of the CLAUDE.md configuration file
 ---
 
-# 为什么 CLAUDE.md 如此重要
+import { Callout, Steps } from 'nextra/components'
 
-> 🚧 English translation coming soon.
+# Why CLAUDE.md Matters
+
+CLAUDE.md is the core configuration file for Claude Code. It determines how the AI assistant understands your project, what standards it follows, and what quality of code it produces.
+
+## 1. The Pain of Working Without CLAUDE.md
+
+If you use Claude Code without configuring a CLAUDE.md, you will likely run into the following problems:
+
+{/* Comparison: with vs. without CLAUDE.md */}
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '24px 0' }}>
+  <div style={{ padding: '16px', backgroundColor: '#fff5f5', borderRadius: '8px', border: '2px solid #fc8181' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#c53030' }}>Without CLAUDE.md</h4>
+    <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#2d3748' }}>
+      <p>User: "Write a login function"</p>
+      <p>↓</p>
+      <p>Claude: starts coding immediately</p>
+      <p>↓</p>
+      <p>Output: camelCase naming, no error handling, uses `any` type</p>
+      <p>↓</p>
+      <p>User: "Change to snake_case"</p>
+      <p>User: "Add error handling"</p>
+      <p>User: "Don't use any"</p>
+      <p>↓</p>
+      <p style={{ fontWeight: 'bold', color: '#c53030' }}>3–5 rounds of revision</p>
+    </div>
+  </div>
+  <div style={{ padding: '16px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '2px solid #48bb78' }}>
+    <h4 style={{ margin: '0 0 12px 0', color: '#22543d' }}>With CLAUDE.md</h4>
+    <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#2d3748' }}>
+      <p>User: "Write a login function"</p>
+      <p>↓</p>
+      <p>Claude: reviews existing code first</p>
+      <p>↓</p>
+      <p>Claude: drafts an implementation plan</p>
+      <p>↓</p>
+      <p>Claude: waits for confirmation before coding</p>
+      <p>↓</p>
+      <p>Output: matches project conventions, full error handling, correct type definitions</p>
+      <p>↓</p>
+      <p style={{ fontWeight: 'bold', color: '#22543d' }}>Right the first time</p>
+    </div>
+  </div>
+</div>
+
+### 1.1 Inconsistent Output
+
+Given the same requirement, Claude may produce completely different implementations. Today it uses `camelCase`, tomorrow `snake_case`; this time arrow functions, next time regular functions.
+
+### 1.2 Style Chaos
+
+Claude doesn't know your project's conventions:
+- Tabs or spaces?
+- Single or double quotes?
+- `.tsx` or `.jsx` for component files?
+
+### 1.3 Inconsistent Quality
+
+Without clear constraints, Claude may:
+- Omit error handling: "For simplicity, skipping exception handling here"
+- Use the `any` type: "For a quick implementation..."
+- Leave TODO comments: "Production code needs to fill this in..."
+
+### 1.4 Repeated Communication Cost
+
+You end up repeating yourself every conversation:
+- "Please use TypeScript strict mode"
+- "No emojis"
+- "Check existing code before making changes"
+
+<Callout type="info">
+The essence of CLAUDE.md is a **work contract**: define your standards once, and Claude will follow them consistently across the entire project.
+</Callout>
+
+## 2. CLAUDE.md vs. Per-Conversation Instructions
+
+<div style={{ maxWidth: '600px' }}>
+
+| Dimension | Per-Conversation Instructions | CLAUDE.md Configuration |
+|:------|:-------------|:---------------|
+| Consistency | Easy to forget or phrase differently | Always the same |
+| Efficiency | Must repeat every time | Configure once, works forever |
+| Team collaboration | Everyone says it differently | Unified project standard |
+| Maintainability | Scattered across chat history | Centrally managed, version controlled |
+| Coverage | Ad hoc, whatever comes to mind | Systematic and comprehensive |
+
+</div>
+
+## 3. What a Good CLAUDE.md Should Contain
+
+A complete CLAUDE.md should cover the following 8 core modules, ordered by importance:
+
+{/* CLAUDE.md module architecture diagram */}
+<div style={{ margin: '24px 0' }}>
+  <div style={{ marginBottom: '16px' }}>
+    <div style={{ padding: '12px', backgroundColor: '#fff5f5', borderRadius: '8px', marginBottom: '8px', border: '2px solid #fc8181' }}>
+      <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#c53030' }}>High Priority (must configure)</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+        <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', textAlign: 'center', fontSize: '13px', color: '#2d3748' }}>
+          <div style={{ fontWeight: 'bold' }}>Core Workflow</div>
+          <div style={{ color: '#718096' }}>Research→Plan→Implement</div>
+        </div>
+        <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', textAlign: 'center', fontSize: '13px', color: '#2d3748' }}>
+          <div style={{ fontWeight: 'bold' }}>Quality Gates</div>
+          <div style={{ color: '#718096' }}>Prohibition list + checklist</div>
+        </div>
+        <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', textAlign: 'center', fontSize: '13px', color: '#2d3748' }}>
+          <div style={{ fontWeight: 'bold' }}>Coding Standards</div>
+          <div style={{ color: '#718096' }}>Naming + function rules</div>
+        </div>
+        <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', textAlign: 'center', fontSize: '13px', color: '#2d3748' }}>
+          <div style={{ fontWeight: 'bold' }}>Security Standards</div>
+          <div style={{ color: '#718096' }}>Input validation + data safety</div>
+        </div>
+      </div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: '#fffbeb', borderRadius: '8px', marginBottom: '8px', border: '2px solid #fbbf24' }}>
+      <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#92400e' }}>Medium Priority (recommended)</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+        <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', textAlign: 'center', fontSize: '13px', color: '#2d3748' }}>
+          <div style={{ fontWeight: 'bold' }}>Tech Stack</div>
+          <div style={{ color: '#718096' }}>Frameworks + dependency management</div>
+        </div>
+        <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', textAlign: 'center', fontSize: '13px', color: '#2d3748' }}>
+          <div style={{ fontWeight: 'bold' }}>Testing Standards</div>
+          <div style={{ color: '#718096' }}>Coverage + file organization</div>
+        </div>
+        <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', textAlign: 'center', fontSize: '13px', color: '#2d3748' }}>
+          <div style={{ fontWeight: 'bold' }}>Git Standards</div>
+          <div style={{ color: '#718096' }}>Branches + commit format</div>
+        </div>
+      </div>
+    </div>
+    <div style={{ padding: '12px', backgroundColor: '#eff6ff', borderRadius: '8px', border: '2px solid #60a5fa' }}>
+      <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#1e40af' }}>Low Priority (optional)</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '8px', maxWidth: '200px' }}>
+        <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', textAlign: 'center', fontSize: '13px', color: '#2d3748' }}>
+          <div style={{ fontWeight: 'bold' }}>Communication Style</div>
+          <div style={{ color: '#718096' }}>Language preference + interaction style</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+### 3.1 Core Workflow (Priority: High)
+
+**Purpose**: Define the standard process Claude follows when handling tasks — preventing the impulse to "just start writing code."
+
+{/* Three-phase workflow diagram */}
+<div style={{ margin: '24px 0', padding: '20px', backgroundColor: '#f0fff4', borderRadius: '8px', border: '1px solid #86efac' }}>
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
+    <div style={{ padding: '16px 24px', backgroundColor: '#d1fae5', borderRadius: '8px', textAlign: 'center', border: '1px solid #6ee7b7' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#065f46' }}>1. Research Phase</div>
+      <div style={{ fontSize: '12px', color: '#047857', marginTop: '4px' }}>RESEARCH</div>
+      <div style={{ fontSize: '12px', marginTop: '8px', textAlign: 'left', color: '#1f2937' }}>
+        - Check existing code<br/>
+        - Glob/Grep searches<br/>
+        - Understand architecture
+      </div>
+    </div>
+    <div style={{ fontSize: '24px', color: '#059669' }}>→</div>
+    <div style={{ padding: '16px 24px', backgroundColor: '#fef3c7', borderRadius: '8px', textAlign: 'center', border: '1px solid #fcd34d' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#78350f' }}>2. Plan Phase</div>
+      <div style={{ fontSize: '12px', color: '#92400e', marginTop: '4px' }}>PLAN</div>
+      <div style={{ fontSize: '12px', marginTop: '8px', textAlign: 'left', color: '#1f2937' }}>
+        - List files to change<br/>
+        - Explain approach<br/>
+        - Identify risks
+      </div>
+    </div>
+    <div style={{ fontSize: '24px', color: '#059669' }}>→</div>
+    <div style={{ padding: '16px 24px', backgroundColor: '#dbeafe', borderRadius: '8px', textAlign: 'center', border: '1px solid #93c5fd' }}>
+      <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#1e3a8a' }}>3. Implement Phase</div>
+      <div style={{ fontSize: '12px', color: '#1e40af', marginTop: '4px' }}>IMPLEMENT</div>
+      <div style={{ fontSize: '12px', marginTop: '8px', textAlign: 'left', color: '#1f2937' }}>
+        - Follow code style<br/>
+        - Complete error handling<br/>
+        - Write tests as you go
+      </div>
+    </div>
+  </div>
+  <div style={{ textAlign: 'center', marginTop: '16px', padding: '8px', backgroundColor: '#fee2e2', borderRadius: '4px', maxWidth: '200px', margin: '16px auto 0', border: '1px solid #fca5a5', color: '#991b1b', fontWeight: 'bold' }}>
+    Wait for user confirmation before coding
+  </div>
+</div>
+
+**Configuration example**:
+
+```markdown
+## Core Workflow
+
+### 1. Research Phase
+- Check the codebase for similar existing implementations
+- Use Glob/Grep to search for related code
+- Understand the project architecture and dependencies
+
+### 2. Plan Phase
+- List the files to modify/create
+- Explain the implementation approach and key steps
+- **Wait for user confirmation before beginning to code**
+
+### 3. Implementation Phase
+- Follow the project's existing code style
+- Include complete error handling
+- Write tests alongside the implementation
+```
+
+<Callout type="warning">
+**Why it matters**: Forces Claude to think before acting, reducing rework and incorrect implementations. Without this workflow, Claude may start writing code immediately — leading to wrong direction or missed requirements.
+</Callout>
+
+---
+
+### 3.2 Quality Gates (Priority: High)
+
+**Purpose**: Define hard boundaries on what is never allowed — the floor for code quality.
+
+**Configuration example**:
+
+```markdown
+## Quality Gates
+
+### Mandatory Pre-Commit Checks
+- Must pass Linter (zero warnings, zero errors)
+- Must pass all tests
+- Must complete code formatting
+- Must pass type checking
+
+### Absolute Prohibitions
+- Never commit code that fails tests
+- Never use TODO/placeholders in final code
+- Never skip error handling
+- Never hardcode secrets/credentials
+- Never use the `any` type (use `unknown` instead)
+```
+
+<Callout type="error">
+**Why it matters**: Without explicit prohibitions, Claude may cut corners or "simplify." Quality gates are the last line of defense for code quality.
+</Callout>
+
+---
+
+### 3.3 Coding Standards (Priority: High)
+
+**Purpose**: Define code style and quality requirements.
+
+**Configuration example**:
+
+```markdown
+## Coding Standards
+
+### Naming Conventions
+- Files: kebab-case.ts, PascalCase.tsx (components)
+- Variables/functions: camelCase
+- Classes/components: PascalCase
+- Constants: SCREAMING_SNAKE_CASE
+
+### Function Rules
+- Single function no more than 30 lines
+- Function names must be verbs
+- A function does one thing only
+
+### Error Handling
+- Must use unknown, never any
+- Never swallow exceptions — must log or re-throw
+- Must check for null/undefined and boundary conditions
+```
+
+<Callout type="info">
+**Why it matters**: Ensures Claude's output matches team conventions, reducing the amount of changes needed in code review.
+</Callout>
+
+---
+
+### 3.4 Security Standards (Priority: High)
+
+**Purpose**: Security issues are non-negotiable.
+
+**Configuration example**:
+
+```markdown
+## Security Standards
+
+### Input Validation
+- Must validate all user input
+- Must use validation libraries (Zod, Joi, Pydantic)
+- Never trust client-side data
+
+### Database Security
+- Must use parameterized queries
+- Must prevent SQL injection
+
+### Authentication & Authorization
+- Never hardcode secrets in code
+- Must use environment variables for sensitive data
+```
+
+<Callout type="error">
+**Why it matters**: The cost of fixing security vulnerabilities is far higher than preventing them. A single data breach can have catastrophic consequences.
+</Callout>
+
+---
+
+### 3.5 Tech Stack (Priority: Medium)
+
+**Purpose**: Tell Claude what technologies your project uses.
+
+**Configuration example**:
+
+```markdown
+## Tech Stack
+
+- Frontend: React 18 + TypeScript + Tailwind CSS
+- Backend: Node.js + Express + Prisma
+- Database: PostgreSQL
+- Testing: Jest + React Testing Library
+
+**Important: Follow the project's existing code style. Do not introduce new dependencies or patterns.**
+```
+
+<Callout type="info">
+**Why it matters**: Prevents Claude from recommending incompatible technologies or pulling in unnecessary dependencies.
+</Callout>
+
+---
+
+### 3.6 Testing Standards (Priority: Medium)
+
+**Purpose**: Define testing requirements and file organization.
+
+**Configuration example**:
+
+```markdown
+## Testing Standards
+
+### Coverage Requirements
+- Business logic: ≥ 80%
+- Critical paths: 100%
+
+### Test File Locations
+- Unit tests: same directory as source files
+- Integration tests: tests/integration/
+- E2E tests: tests/e2e/
+
+### Testing Principles
+- Must clean up test data after each test
+- Never modify production data in tests
+```
+
+<Callout type="info">
+**Why it matters**: Ensures Claude's tests follow the project's file organization structure.
+</Callout>
+
+---
+
+### 3.7 Git Standards (Priority: Medium)
+
+**Purpose**: Unify commit style.
+
+**Configuration example**:
+
+```markdown
+## Git Standards
+
+### Branch Naming
+- feature/description
+- bugfix/description
+- hotfix/description
+
+### Commit Messages
+type(scope): short description
+
+Types: feat, fix, docs, style, refactor, perf, test, chore
+```
+
+<Callout type="info">
+**Why it matters**: Keeps Git history clean and readable.
+</Callout>
+
+---
+
+### 3.8 Communication Style (Priority: Low)
+
+**Purpose**: Optional preference settings.
+
+**Configuration example**:
+
+```markdown
+## Communication Guidelines
+
+- Use clear, professional language
+- Avoid over-explaining
+- Ask questions proactively when requirements are unclear
+- Avoid social filler phrases ("You're right!", "Great question!")
+```
+
+<Callout type="default">
+**Why it matters**: Reduces unnecessary back-and-forth, improving communication efficiency.
+</Callout>
+
+---
+
+## 4. How to Start Writing CLAUDE.md
+
+<Steps>
+
+### Step 1: Start with Your Biggest Pain Point
+
+You don't have to write it all at once. Start by solving the most efficiency-killing problem:
+- If Claude keeps forgetting error handling → write quality gates first
+- If code style is inconsistent → write coding standards first
+- If Claude never checks existing code → write the workflow first
+
+### Step 2: Get a CLAUDE.md Template
+
+We've prepared a ready-to-use CLAUDE.md template. Join our Discord community to get it:
+
+<div style={{ textAlign: 'center', margin: '20px 0' }}>
+  <img src="/images/discord-group-qrcode.svg" alt="Discord community QR code" width="200" />
+  <p style={{ marginTop: '10px', color: '#666' }}>Join the <a href="https://discord.gg/VCdTwvYBJd" target="_blank">Discord community</a> to get the CLAUDE.md template</p>
+</div>
+
+Once you have the template, tailor it to your project:
+- Remove sections that don't apply
+- Add project-specific rules
+- Adjust strictness levels
+
+### Step 3: Iterate Gradually
+
+As you use it, add new rules whenever you discover new problems:
+- Claude used emojis again? Add them to the prohibition list
+- Test files ended up in the wrong place? Clarify the testing standard
+- Forgot to run lint? Add it to the pre-commit checks
+
+### Step 4: Team Review
+
+For team projects, have team members review CLAUDE.md together:
+- Ensure conventions reflect team consensus
+- Collect problems each person has encountered
+- Unify standards to avoid conflicts
+
+</Steps>
+
+## 5. Where to Store the Configuration File
+
+{/* Config file hierarchy diagram */}
+<div style={{ margin: '24px 0' }}>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '500px' }}>
+    <div style={{ padding: '16px', backgroundColor: '#f0fdf4', borderRadius: '8px', border: '2px solid #4ade80' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <div style={{ fontWeight: 'bold', color: '#15803d' }}>Project-level (highest priority)</div>
+          <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Location: project root/CLAUDE.md</div>
+          <div style={{ fontSize: '13px', color: '#4b5563' }}>Purpose: project-specific rules</div>
+        </div>
+        <div style={{ fontSize: '24px', color: '#15803d', fontWeight: 'bold' }}>1</div>
+      </div>
+    </div>
+    <div style={{ textAlign: 'center', fontSize: '20px', color: '#059669' }}>↓ overrides</div>
+    <div style={{ padding: '16px', backgroundColor: '#eff6ff', borderRadius: '8px', border: '2px solid #3b82f6' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <div style={{ fontWeight: 'bold', color: '#1e40af' }}>Global (lower priority)</div>
+          <div style={{ fontSize: '13px', color: '#4b5563', marginTop: '4px' }}>Location: ~/.claude/CLAUDE.md</div>
+          <div style={{ fontSize: '13px', color: '#4b5563' }}>Purpose: personal preferences for all projects</div>
+        </div>
+        <div style={{ fontSize: '24px', color: '#1e40af', fontWeight: 'bold' }}>2</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style={{ maxWidth: '600px' }}>
+
+| Location | Scope | When to use |
+|:------|:---------|:---------|
+| `project root/CLAUDE.md` | Current project | Project-specific rules |
+| `~/.claude/CLAUDE.md` | All projects | Personal preferences |
+
+</div>
+
+<Callout type="warning">
+Project-level configuration overrides global configuration for any rules with the same name. Keep general conventions in the global config and project-specific rules in the project config.
+</Callout>
+
+## 6. Summary
+
+CLAUDE.md is not an optional "nice to have" — it is a **prerequisite** for getting the most out of Claude Code:
+
+<div style={{ maxWidth: '500px' }}>
+
+| Value | Description |
+|:------|:------|
+| **Consistency** | Ensures every output matches your style — no more repetitive revisions |
+| **Quality** | Sets a floor, preventing "cut corners" code |
+| **Efficiency** | Configure once, works permanently — saves communication overhead |
+| **Collaboration** | Shared team standards reduce conflicts |
+
+</div>
+
+<Callout type="info">
+Investing time in writing a good CLAUDE.md pays dividends in every subsequent use. It is the single best investment for boosting your Claude Code productivity.
+</Callout>
+
+## Next Steps
+
+Ready to write your CLAUDE.md? Continue with:
+
+- [Three-Phase Workflow Configuration](/practical-skills/config/workflow)
+- [Quality Gates in Depth](/practical-skills/config/quality-gates)
+- [Coding Standards Templates](/practical-skills/config/coding-standards)

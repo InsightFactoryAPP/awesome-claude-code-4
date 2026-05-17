@@ -1,0 +1,124 @@
+---
+title: What to Do When Requests Are Very Slow or Stuck
+description: Solutions for requests that take more than 1 minute or hang completely
+---
+
+import { Callout, Tabs } from 'nextra/components'
+
+# What to Do When Requests Are Very Slow or Stuck?
+
+If you encounter requests that take more than 1 minute, or even hang completely (the timer keeps running but tokens do not move), refer to the following cause analysis and solutions.
+
+## Cause 1: Occasional Network Hiccup (90% probability)
+
+This is the most common situation — occasional network fluctuations cause request timeouts.
+
+**Solution:** Press `ESC` to cancel the current request, then retry.
+
+## Cause 2: ISP International Bandwidth Congestion (5% probability)
+
+Some domestic broadband providers have very limited international bandwidth, leading to congestion and high packet loss.
+
+### How to Test Network Quality?
+
+#### 1. Ping Test (Check for Packet Loss)
+
+Use the `ping` command to test basic connectivity and packet loss to the proxy servers:
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+```bash
+# Test the default node (send 20 packets)
+ping -c 20 claude-code.club
+
+# Test the Japan node
+ping -c 20 jp.claude-code.club
+
+# Test the Hong Kong node
+ping -c 20 hk.claude-code.club
+
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+# Test the default node (send 20 packets)
+ping -n 20 claude-code.club
+
+# Test the Japan node
+ping -n 20 jp.claude-code.club
+
+# Test the Hong Kong node
+ping -n 20 hk.claude-code.club
+
+```
+  </Tabs.Tab>
+</Tabs>
+
+Observe the packet loss rate: above 5% indicates an unstable network — consider switching nodes.
+
+#### 2. Curl Test (Measure Real Latency) ⭐ Recommended
+
+<Callout type="warning">
+**Note**: Ping only measures latency from you to the proxy server — **it does not include the path from the proxy server to the Anthropic API**. To test the true end-to-end latency, use the `curl` command.
+</Callout>
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+```bash
+# Test real end-to-end latency
+time curl -s https://claude-code.club/api/health
+time curl -s https://jp.claude-code.club/api/health
+time curl -s https://hk.claude-code.club/api/health
+```
+
+Sample output:
+```
+{"status":"healthy","service":"claude-relay-service",...}
+curl -s https://claude-code.club/api/health  0.01s user 0.01s system 6% cpu 0.243 total
+                                                                          ↑
+                                                            Real end-to-end latency (243ms)
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```powershell
+# Test real latency
+Measure-Command { curl.exe -s https://claude-code.club/api/health } | Select-Object TotalMilliseconds
+Measure-Command { curl.exe -s https://jp.claude-code.club/api/health } | Select-Object TotalMilliseconds
+Measure-Command { curl.exe -s https://hk.claude-code.club/api/health } | Select-Object TotalMilliseconds
+```
+  </Tabs.Tab>
+</Tabs>
+
+Choose the node with the shortest total time (ideally &lt; 500ms).
+
+### Solutions
+
+#### Option A: Switch Proxy Address
+
+Change the `ANTHROPIC_BASE_URL` environment variable to a different proxy address based on your network conditions:
+
+| Proxy Address | Server Location | Notes |
+|---------|-----------|------|
+| `https://claude-code.club/api` | Japan (Tokyo) | Default address; fastest when direct connection latency is &lt; 100ms |
+| `https://jp.claude-code.club/api` | Japan | Alibaba Cloud, optimized routing |
+| `https://hk.claude-code.club/api` | Hong Kong | Alibaba Cloud, optimized routing |
+
+<Callout type="info">
+**Selection Tips:**
+- If your ping to `claude-code.club` is under 100ms, your outbound network is clear — use the default address
+- If outbound latency is high or packet loss is severe, try the `jp` or `hk` nodes (eastern/northern China users generally prefer `jp`; southern China users prefer `hk`, though this may vary by ISP — test both)
+</Callout>
+
+**How to Change:**
+
+Modify the `ANTHROPIC_BASE_URL` environment variable. Refer to the environment variable setup guide for your operating system:
+
+- [Set Environment Variables on macOS](/getting-started/installation/macos#3-设置环境变量)
+- [Set Environment Variables on Windows](/getting-started/installation/windows#3-设置环境变量)
+- [Set Environment Variables on Linux](/getting-started/installation/linux#3-设置环境变量)
+
+For example, change `ANTHROPIC_BASE_URL` from `https://claude-code.club/api` to `https://jp.claude-code.club/api` or `https://hk.claude-code.club/api`.
+
+#### Option B: Use a VPN or Proxy Tool
+
+Install a VPN or proxy tool for your network environment, then select a node close to the proxy address (e.g., Japan, Hong Kong, Singapore).

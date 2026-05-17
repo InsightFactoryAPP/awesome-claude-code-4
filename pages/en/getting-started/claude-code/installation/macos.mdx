@@ -1,0 +1,293 @@
+---
+title: macOS Installation Guide
+description: Installing and configuring Claude Code on macOS
+---
+
+import { Callout, Cards } from 'nextra/components'
+import Image from 'next/image'
+
+# macOS Installation Guide
+
+Follow this tutorial to easily install and use Claude Code on macOS.
+
+We offer two installation methods:
+
+<Cards>
+  <Cards.Card
+    icon="⚡"
+    title="Method 1: One-click Script Installation"
+    href="#method-1-one-click-script-installation-recommended"
+  >
+    Fully automated, great for beginners, completes in 5 minutes
+  </Cards.Card>
+
+  <Cards.Card
+    icon="🛠️"
+    title="Method 2: Manual Installation"
+    href="#method-2-manual-installation"
+  >
+    Full control over the installation process, suited for experienced users
+  </Cards.Card>
+</Cards>
+
+
+## Method 1: One-click Script Installation (Recommended)
+
+Use our one-click installation script to quickly complete all configuration.
+
+### Run the Installation Script
+
+Open Terminal and execute the following command:
+
+```bash
+curl -fsSL https://academy.claude-code.club/assets/getting-started/installation/claude-code-installation-by-cc-club.sh | bash
+```
+
+<Callout type="info">
+  The script will automatically perform the following actions:
+  - Detect and install Homebrew (if not installed)
+  - Detect and install Node.js (if not installed)
+  - Install Claude Code
+  - Configure environment variables and shell profile
+</Callout>
+
+<Callout type="warning">
+  **Important:** You will need to enter your `ANTHROPIC_AUTH_TOKEN` (API key) during installation, so have it ready in advance.
+</Callout>
+
+<Callout type="warning">
+  Note: The tutorial is not over yet, the tutorial is not over yet, the tutorial is not over yet — you must complete the "Next Step": [Verify and Use](#verify-and-use).
+</Callout>
+
+
+
+## Method 2: Manual Installation
+
+If you prefer full control over the installation process, follow the steps below to install manually.
+
+### 1. Install Node.js
+
+Claude Code requires a Node.js environment to run.
+
+#### macOS Installation Methods
+
+**Method 1: Using Homebrew (Recommended)**
+
+If you already have Homebrew installed, using it to install Node.js is more convenient:
+
+```bash
+# Update Homebrew
+brew update
+
+# Install Node.js
+brew install node
+```
+
+**Method 2: Download from the official website**
+
+1. Visit https://nodejs.org/
+2. Download the LTS version for macOS
+3. Open the downloaded .pkg file
+4. Follow the installer prompts to complete the installation
+
+<Callout type="warning">
+  **macOS Notes**
+  - If you encounter permission issues, you may need to use sudo
+  - The first run may require granting permission in System Preferences
+  - It is recommended to use Terminal or iTerm2
+</Callout>
+
+#### Verify the Installation
+
+After installation, open Terminal and enter the following commands:
+
+```bash
+node --version
+npm --version
+```
+
+If version numbers are displayed, the installation was successful!
+
+### 2. Install Claude Code
+
+#### Install Claude Code
+
+Open Terminal and run the following command:
+
+```bash
+# Install Claude Code globally
+npm install -g @anthropic-ai/claude-code
+```
+
+If you encounter permission issues, you can use sudo:
+
+```bash
+sudo npm install -g @anthropic-ai/claude-code
+```
+
+#### Verify the Claude Code Installation
+
+After installation, enter the following command to check if it was installed successfully:
+
+```bash
+claude --version
+```
+
+If a version number is displayed, congratulations! Claude Code has been successfully installed.
+
+### 3. Set Environment Variables
+
+#### Configure Claude Code Environment Variables
+
+To connect Claude Code to your relay service, you need to set two environment variables.
+
+Run the following commands in Terminal to set permanent environment variables (execute one at a time):
+
+```bash
+# For zsh (default)
+echo 'export ANTHROPIC_BASE_URL="https://claude-code.club/api"' >> ~/.zshrc
+echo 'export ANTHROPIC_AUTH_TOKEN="your-api-key"' >> ~/.zshrc
+echo 'export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1' >> ~/.zshrc
+source ~/.zshrc
+
+# For bash
+echo 'export ANTHROPIC_BASE_URL="https://claude-code.club/api"' >> ~/.bash_profile
+echo 'export ANTHROPIC_AUTH_TOKEN="your-api-key"' >> ~/.bash_profile
+echo 'export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1' >> ~/.bash_profile
+source ~/.bash_profile
+```
+
+<Callout type="warning">
+  Remember to replace "your-api-key" with the actual key you created in the "API Keys" tab above.
+  You need to reopen the Terminal window for the changes to take effect.
+</Callout>
+
+<Callout type="info">
+  **About CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC**
+
+  This environment variable disables non-essential network requests from Claude Code (such as telemetry reporting). When set to `1`:
+  - Disables anonymous usage statistics and telemetry reporting
+  - Avoids connection timeouts or slowdowns caused by inability to reach telemetry servers (such as `sentry.io`, `statsig.com`, etc.)
+  - Does not affect the core functionality of Claude Code — it only disables background data collection
+
+  **All users in China are recommended to configure this option**, as it can significantly improve the experience.
+</Callout>
+
+After setting, use the following commands to verify the environment variables were set successfully:
+
+```bash
+echo $ANTHROPIC_BASE_URL
+echo $ANTHROPIC_AUTH_TOKEN
+echo $CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC
+```
+
+
+#### VSCode Claude Extension Configuration
+
+If you use the Claude extension for VSCode, you need to configure the settings file:
+
+**Config file location:** `~/.claude/config.json`
+
+<Callout type="info">
+  If the file does not exist, create it manually.
+</Callout>
+
+```json
+{
+  "primaryApiKey": "crs"
+}
+```
+
+ <Callout type="info">
+  **Verify the config file was set correctly:**
+
+  ```bash
+  cat ~/.claude/config.json
+  ```
+</Callout>
+
+
+
+## Verify and Use
+
+### Verify the Installation
+
+
+<Callout type="warning">
+  Important: You must close Terminal and reopen it!
+</Callout>
+
+After installation is complete, reopen Terminal or run `source ~/.zshrc`, then execute:
+
+```bash
+claude --version
+```
+
+If a version number is displayed, the installation was successful!
+
+### Start Using Claude Code
+
+Now you can start using Claude Code!
+
+#### Launch Claude Code
+
+```bash
+claude
+```
+
+#### Use in a Specific Project
+
+```bash
+# Navigate to your project directory
+cd /path/to/your/project
+
+# Launch Claude Code
+claude
+```
+
+🎉 Congratulations! You have successfully installed and configured Claude Code. You can now start enjoying the convenience of an AI coding assistant.
+
+## Next Steps
+
+<Cards>
+  <Cards.Card
+    icon="🚀"
+    title="Quick Start with Claude Code"
+    href="/getting-started/quick-start"
+  >
+    Learn the core features of Claude Code through hands-on practice
+  </Cards.Card>
+  <Cards.Card
+    icon="📚"
+    title="How to Do Things with Claude Code"
+    href="/getting-started/how-to"
+  >
+    Explore more practical tutorials and advanced tips
+  </Cards.Card>
+</Cards>
+
+## macOS FAQ
+
+### Permission Error During Installation
+
+Use the sudo command for installation.
+
+### macOS Security Settings Blocking Execution
+
+Allow execution in System Preferences → Security & Privacy.
+
+### Environment Variables Not Taking Effect
+
+Confirm that you modified the correct configuration file (zsh or bash) and reloaded the configuration file.
+
+
+
+## Need Help?
+
+If you run into any tricky installation issues, scan the QR code below to join the Claude Code Club community group. There you can:
+- Exchange AI programming experience and get answers from 3000+ excellent developers
+- Get the latest Claude Code tips and tricks
+
+<div style={{ display: 'flex', justifyContent: 'top', margin: '2rem 0' }}>
+  <Image src="/images/discord-group-qrcode.svg" alt="Discord Group QR Code" width={300} height={300} />
+</div>

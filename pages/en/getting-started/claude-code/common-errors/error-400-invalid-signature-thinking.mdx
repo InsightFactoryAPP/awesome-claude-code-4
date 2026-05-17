@@ -1,0 +1,60 @@
+import { Callout, Steps } from 'nextra/components'
+
+# Error 400 "Invalid `signature` in `thinking` block"
+
+Some users encounter the following error:
+
+```
+API Error: 400 {"type":"error","error":{"type":"invalid_request_error","message":"messages.1.content.0: Invalid `signature` in
+     `thinking` block"},"request_id":"req_011CYc2cTJr6BJ6Tti3qfPhf"}
+```
+
+## Cause
+
+This error occurs because the `thinking` block signature in the current session context is inconsistent with the server side. This typically happens when the session state changes.
+
+## Solution
+
+Depending on whether you need to preserve the current session context, there are two approaches:
+
+### Method 1: Restart Claude Directly (without preserving context)
+
+<Callout type="info">
+When the session context is not important, simply use the `/clear` command or restart Claude Code to resolve the issue.
+</Callout>
+
+### Method 2: Preserve the Session Context
+
+If you need to keep your current session content, choose the appropriate action based on how you use Claude Code:
+
+#### Command Line (CLI) Users
+
+<Steps>
+
+### Export the session
+
+Use the `/export` command to copy the current session content to your clipboard.
+
+### Clear the session
+
+Use the `/clear` command to clear the current session.
+
+### Restore the session
+
+Paste the clipboard content back into the input box to restore the context.
+
+</Steps>
+
+#### VS Code Extension Users
+
+<Steps>
+
+### Restart the extension
+
+Restart the Claude Code VS Code extension.
+
+### Restore the session
+
+Type "restore last session" in the input box to restore the previous session context.
+
+</Steps>

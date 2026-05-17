@@ -1,0 +1,46 @@
+---
+title: Work with Tests
+description: Learn how to use Claude Code to add tests for uncovered code
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Work with Tests
+
+Suppose you need to add tests for uncovered code.
+
+<Steps>
+
+### Identify Untested Code
+
+```
+> find functions in NotificationsService.swift that are not covered by tests
+```
+
+### Generate Test Scaffolding
+
+```
+> add tests for the notification service
+```
+
+### Add Meaningful Test Cases
+
+```
+> add test cases for edge conditions in the notification service
+```
+
+### Run and Verify Tests
+
+```
+> run the new tests and fix any failures
+```
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* Request tests that cover edge cases and error conditions
+* Ask for both unit tests and integration tests where appropriate
+* Ask Claude to explain the testing strategy
+</Callout>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'nextra/hooks'
 import { useConfig } from 'nextra-theme-docs'
 
@@ -108,22 +109,45 @@ export default {
       const router = useRouter()
       const { locale, asPath } = router
       const [open, setOpen] = React.useState(false)
-      const containerRef = React.useRef(null)
+      const [dropdownPos, setDropdownPos] = React.useState({ top: 0, right: 0 })
+      const [mounted, setMounted] = React.useState(false)
+      const buttonRef = React.useRef(null)
 
       const LOCALES = [
         { code: 'zh', label: '中文' },
         { code: 'en', label: 'English' }
       ]
 
+      React.useEffect(() => { setMounted(true) }, [])
+
       React.useEffect(() => {
-        function handleClickOutside(e) {
-          if (containerRef.current && !containerRef.current.contains(e.target)) {
-            setOpen(false)
-          }
+        if (!open) return
+        function handleClose(e) {
+          if (buttonRef.current && buttonRef.current.contains(e.target)) return
+          setOpen(false)
         }
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-      }, [])
+        function handleKey(e) {
+          if (e.key === 'Escape') setOpen(false)
+        }
+        // Close on scroll so fixed dropdown doesn't drift from button
+        function handleScroll() { setOpen(false) }
+        document.addEventListener('mousedown', handleClose)
+        document.addEventListener('keydown', handleKey)
+        window.addEventListener('scroll', handleScroll, { passive: true })
+        return () => {
+          document.removeEventListener('mousedown', handleClose)
+          document.removeEventListener('keydown', handleKey)
+          window.removeEventListener('scroll', handleScroll)
+        }
+      }, [open])
+
+      function handleToggle() {
+        if (!open && buttonRef.current) {
+          const r = buttonRef.current.getBoundingClientRect()
+          setDropdownPos({ top: r.bottom + 6, right: window.innerWidth - r.right })
+        }
+        setOpen((v) => !v)
+      }
 
       function switchLocale(newLocale) {
         setOpen(false)
@@ -136,78 +160,116 @@ export default {
 
       const current = LOCALES.find((l) => l.code === locale) || LOCALES[0]
 
+      const dropdown = open && mounted && createPortal(
+        <>
+          <style>{`
+            @keyframes _ls_fadein {
+              from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+              to   { opacity: 1; transform: translateY(0)    scale(1);    }
+            }
+            ._ls_item:hover { background: var(--_ls_hover) !important; }
+          `}</style>
+          <ul
+            role="listbox"
+            aria-label="Select language"
+            onMouseDown={e => e.stopPropagation()}
+            style={{
+              position: 'fixed',
+              top: dropdownPos.top,
+              right: dropdownPos.right,
+              minWidth: '9rem',
+              margin: 0,
+              padding: '0.3rem',
+              listStyle: 'none',
+              /* Explicit solid backgrounds — never transparent */
+              background: 'var(--nextra-bg, #ffffff)',
+              border: '1px solid var(--nextra-border, rgba(0,0,0,0.12))',
+              borderRadius: '8px',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.14), 0 2px 6px rgba(0,0,0,0.08)',
+              zIndex: 99999,
+              animation: '_ls_fadein 0.14s ease-out both',
+            }}
+          >
+            {LOCALES.map((l) => (
+              <li key={l.code}>
+                <button
+                  className="_ls_item"
+                  onClick={() => switchLocale(l.code)}
+                  role="option"
+                  aria-selected={l.code === locale}
+                  style={{
+                    '--_ls_hover': 'var(--nextra-border, rgba(0,0,0,0.06))',
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '0.5rem',
+                    textAlign: 'left',
+                    background: l.code === locale ? 'var(--nextra-border, rgba(0,0,0,0.06))' : 'transparent',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    padding: '0.45rem 0.65rem',
+                    fontSize: '0.875rem',
+                    color: 'inherit',
+                    fontWeight: l.code === locale ? 600 : 400,
+                    transition: 'background 0.1s',
+                  }}
+                >
+                  <span>{l.label}</span>
+                  {l.code === locale && (
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>,
+        document.body
+      )
+
       return (
-        <div ref={containerRef} style={{ position: 'relative', marginLeft: '0.5rem' }}>
+        <>
           <button
-            onClick={() => setOpen(!open)}
+            ref={buttonRef}
+            onClick={handleToggle}
+            aria-haspopup="listbox"
+            aria-expanded={open}
+            title="Switch language"
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '0.375rem',
               background: 'none',
-              border: '1px solid var(--nextra-border, rgba(0,0,0,0.1))',
+              border: '1px solid var(--nextra-border, rgba(0,0,0,0.12))',
               borderRadius: '6px',
               cursor: 'pointer',
               padding: '0.3rem 0.6rem',
               fontSize: '0.875rem',
               color: 'inherit',
-              lineHeight: 1
+              lineHeight: 1,
+              marginLeft: '0.5rem',
             }}
-            aria-haspopup="listbox"
-            aria-expanded={open}
-            title="Language"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M2 12h20"></path>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M2 12h20"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
             </svg>
             <span>{current.label}</span>
-          </button>
-          {open && (
-            <ul
-              role="listbox"
-              style={{
-                position: 'absolute',
-                top: 'calc(100% + 4px)',
-                right: 0,
-                minWidth: '8rem',
-                margin: 0,
-                padding: '0.25rem',
-                listStyle: 'none',
-                background: 'var(--nextra-bg, #fff)',
-                border: '1px solid var(--nextra-border, rgba(0,0,0,0.1))',
-                borderRadius: '6px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                zIndex: 50
-              }}
+            <svg
+              width="10" height="10" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
+              aria-hidden="true"
+              style={{ opacity: 0.5, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}
             >
-              {LOCALES.map((l) => (
-                <li key={l.code}>
-                  <button
-                    onClick={() => switchLocale(l.code)}
-                    role="option"
-                    aria-selected={l.code === locale}
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      background: l.code === locale ? 'rgba(0, 0, 0, 0.05)' : 'none',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      padding: '0.4rem 0.6rem',
-                      fontSize: '0.875rem',
-                      color: 'inherit',
-                      fontWeight: l.code === locale ? 600 : 400
-                    }}
-                  >
-                    {l.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+          {dropdown}
+        </>
       )
     }
   },

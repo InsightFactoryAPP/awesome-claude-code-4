@@ -1,0 +1,168 @@
+---
+title: How to Use Claude Code in VS Code
+description: A complete guide to using Claude Code in VS Code, Cursor, Trae, and other IDEs
+---
+
+import { Callout, Steps, Tabs } from 'nextra/components'
+
+# How to Use Claude Code in VS Code (or Other IDEs)?
+
+There are two approaches to using Claude Code in VS Code (or other IDEs):
+
+1. **Terminal approach** — Works with any IDE, no UI dependency
+2. **Extension approach** — Exclusive to VS Code and its derivatives (Cursor, Trae, Codium, etc.)
+
+## Approach 1: Command-Line Terminal (Universal)
+
+This is the most flexible method, compatible with all IDEs including VS Code, IntelliJ, Eclipse, Vim, and more.
+
+<Steps>
+
+### Install the Claude Code CLI
+
+Follow the installation guide for your operating system:
+
+- [macOS Installation Guide](/getting-started/installation/macos)
+- [Windows Installation Guide](/getting-started/installation/windows)
+- [Linux Installation Guide](/getting-started/installation/linux)
+
+### Open a Terminal in Your IDE
+
+- **VS Code**: `` Ctrl+` `` or menu `View → Terminal`
+- **IntelliJ/WebStorm**: `Alt+F12` or the `Terminal` tab at the bottom
+- **Other IDEs**: Find the built-in terminal feature
+
+### Launch Claude Code
+
+In the terminal, type:
+
+```bash
+claude
+```
+
+### Start a Conversation
+
+Type your request directly. Claude Code will:
+- Automatically analyze project files
+- Show diffs and file changes in real time
+- Support `ESC ESC` to create a checkpoint so you can roll back accidental changes
+
+### Connect to Your IDE with `/ide` (Optional but Highly Recommended)
+
+Type `/ide` in the terminal to attach the current session to the **VS Code / Cursor / JetBrains** extension, enabling:
+
+- Real-time reading of the file currently open in the IDE and the cursor selection
+- Code changes highlighted directly in the IDE's Diff view, instead of plain text in the terminal
+- Shared IDE linter errors so Claude can fix them in one step
+
+| Scenario | Action |
+|---|---|
+| **First connection** | Type `/ide` in the terminal `claude` session |
+| **Check status** | `/ide status` |
+| **Reconnect** | If you switch to a different IDE window, just type `/ide` again |
+| **Shortcut** | After connecting, press `Cmd+Esc` / `Ctrl+Esc` in the IDE to quickly open the Claude side panel |
+
+<Callout type="info">
+**One-liner to remember**: `/ide` = instantly give the "black terminal" a "graphical upgrade" — visual diffs, selection-as-context, and instant error fixes.
+</Callout>
+
+</Steps>
+
+**Pros:**
+- No UI dependency — works with monorepos, CI, and remote servers
+- Universal across all IDEs — learn once, use everywhere
+
+**Cons:**
+- Pure command-line interface; requires typing commands
+
+---
+
+## Approach 2: VS Code Extension (GUI)
+
+Compatible with VS Code and its derivatives (Cursor, Trae, Windsurf, Codium, etc.).
+
+<Steps>
+
+### Install the Claude Code Extension
+
+1. Open the VS Code Extensions panel (`Ctrl+Shift+X`)
+2. Search for **"Claude Code"**
+3. Select the official extension published by **Anthropic**
+4. Click **Install**
+
+### Configure the API (Required for CC Club Users)
+
+<Callout type="warning">
+If you are using CC Club's service, this configuration step is mandatory!
+</Callout>
+
+You need to set `primaryApiKey` in the config file:
+
+<Tabs items={['macOS / Linux', 'Windows']}>
+  <Tabs.Tab>
+**Config file location:** `~/.claude/config.json`
+
+```json
+{
+  "primaryApiKey": "crs"
+}
+```
+
+Verify the config:
+```bash
+cat ~/.claude/config.json
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+**Config file location:** `C:\Users\<your-username>\.claude\config.json`
+
+```json
+{
+  "primaryApiKey": "crs"
+}
+```
+
+Verify the config:
+```powershell
+cat ~\.claude\config.json
+```
+  </Tabs.Tab>
+</Tabs>
+
+<Callout type="info">
+If this file does not exist, create it manually.
+</Callout>
+
+### Use the Claude Code Extension
+
+There are multiple ways to interact:
+
+| Method | Action |
+|--------|--------|
+| Command Palette | `Ctrl+Shift+P` → type **"Claude Code: Start Chat"** |
+| Sidebar | Click the Claude icon in the sidebar and start chatting |
+| Drag and drop files | Drag files into the chat window to use them as context |
+
+</Steps>
+
+**Pros:**
+- Graphical interface with intuitive controls
+- Sidebar chat — no need to switch windows
+- Supports dragging files as context
+
+**Cons:**
+- Only available for VS Code-based IDEs
+
+---
+
+## Quick Decision Guide
+
+| You are... | Recommended approach |
+|------------|----------------------|
+| Terminal user / remote dev / CI integration | **CLI approach** (Approach 1) |
+| GUI user / prefer sidebar chat | **VS Code extension** (Approach 2) |
+| Want both | Install the extension, use the CLI as backup |
+
+<Callout type="info">
+Both approaches share the same login session and config files, so you can switch between them seamlessly at any time.
+</Callout>

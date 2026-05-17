@@ -1,0 +1,252 @@
+---
+title: Desktop Client Configuration
+description: A complete guide to connecting the Codex Desktop (GUI client) to an OpenAI-compatible Gateway
+---
+
+import { Callout, Tabs } from 'nextra/components'
+
+# Codex Desktop Client Configuration Guide
+
+This guide is for users who have **Codex Desktop** (the GUI client) installed and want to connect it to the OpenAI-compatible gateway at `https://claude-code.club/openai/v1`. If you are only using the Codex CLI, refer to [Installation and Configuration](/getting-started/codex-installation) first.
+
+## 1. Prerequisites
+
+- Codex Desktop is installed (if not, refer to Section 1 of [Installation and Configuration](/getting-started/codex-installation), or visit the [Codex official documentation](https://github.com/openai/codex))
+- You have a valid API key (refer to [Get API Key](/getting-started/get-api-key))
+- Do not use keys that have been exposed in chats, screenshots, or repositories — compromised keys should be invalidated and regenerated immediately
+
+## 2. Relationship Between Desktop and CLI Configuration
+
+Codex Desktop and the Codex CLI **share** the same set of configuration files:
+
+| File | Path | Purpose |
+|------|------|---------|
+| `config.toml` | `~/.codex/config.toml` | Model and gateway definitions |
+| `auth.json` | `~/.codex/auth.json` | Authentication credentials |
+
+<Callout type="info">
+  Desktop and CLI share configuration, but they differ in **restart behavior** and **environment variable scope**: Desktop is a GUI process that must be fully quit and relaunched; on macOS, GUI apps cannot read `export` statements from `~/.zshrc` — you must use `launchctl setenv` instead. These two points are the focus of this page.
+</Callout>
+
+## 3. Minimum Working Configuration
+
+If you have not previously configured `~/.codex/`, complete the steps below in one pass. If you already have a configuration, keep your existing blocks and just ensure the following key-value pairs are present and correct.
+
+### 3.1 Create / Open the Configuration Directory
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    ```bash
+    mkdir -p ~/.codex
+    open ~/.codex
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```powershell
+    New-Item -ItemType Directory -Force "$env:USERPROFILE\.codex"
+    explorer "$env:USERPROFILE\.codex"
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### 3.2 Back Up Existing Files (if they exist)
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    ```bash
+    cp ~/.codex/config.toml ~/.codex/config.toml.bak 2>/dev/null
+    cp ~/.codex/auth.json   ~/.codex/auth.json.bak   2>/dev/null
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```powershell
+    Copy-Item "$env:USERPROFILE\.codex\config.toml" "$env:USERPROFILE\.codex\config.toml.bak" -ErrorAction SilentlyContinue
+    Copy-Item "$env:USERPROFILE\.codex\auth.json"   "$env:USERPROFILE\.codex\auth.json.bak"   -ErrorAction SilentlyContinue
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### 3.3 Edit `config.toml`
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    ```bash
+    nano ~/.codex/config.toml
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```powershell
+    notepad "$env:USERPROFILE\.codex\config.toml"
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+Write or merge the following content:
+
+```toml
+model_provider = "club"
+model = "gpt-5.5"
+model_reasoning_effort = "high"
+preferred_auth_method = "apikey"
+disable_response_storage = true
+
+[model_providers.club]
+name = "Claude Code Club OpenAI Gateway"
+base_url = "https://claude-code.club/openai/v1"
+wire_api = "responses"
+requires_openai_auth = true
+env_key = "OPENAI_API_KEY"
+```
+
+<Callout type="info">
+  For detailed explanations of fields like `wire_api` and `requires_openai_auth`, refer to Section 2 of [Installation and Configuration](/getting-started/codex-installation).
+</Callout>
+
+### 3.4 Edit `auth.json`
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    ```bash
+    nano ~/.codex/auth.json
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```powershell
+    notepad "$env:USERPROFILE\.codex\auth.json"
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+Write the following structure, replacing the placeholder with your actual API key:
+
+```json
+{
+  "auth_mode": "apikey",
+  "OPENAI_API_KEY": "your-api-key-here"
+}
+```
+
+<Callout type="warning">
+  `auth.json` stores your real API key in **plain text**. Do not screenshot this file, upload it to GitHub, or share it with others. If the key has already been exposed, invalidate it and regenerate immediately.
+</Callout>
+
+## 4. Restart Codex Desktop
+
+After editing the configuration, **simply closing the window will not apply the changes** — you must fully quit the Codex Desktop process and relaunch it.
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    1. Click `Codex` → `Quit Codex` in the menu bar, or press `Cmd + Q`
+    2. Open **Activity Monitor**, search for `Codex`, and confirm all related processes (including `Codex Helper`) have exited
+    3. Relaunch Codex Desktop
+    4. Open any project and send a simple request to verify the configuration is working
+  </Tabs.Tab>
+  <Tabs.Tab>
+    1. Close the Codex Desktop main window
+    2. Open **Task Manager** (`Ctrl + Shift + Esc`), find all `Codex`-related entries under "Processes," and end each one
+    3. Relaunch Codex Desktop
+    4. Open any project and send a simple request to verify the configuration is working
+  </Tabs.Tab>
+</Tabs>
+
+<Callout type="warning">
+  If you only clicked the window's close button, the process is often still running in the background and changes to the configuration files will not be picked up. Make sure the process has fully exited.
+</Callout>
+
+## 5. macOS: launchctl Environment Variables (Optional)
+
+If certain OpenAI-compatible SDKs or Codex Desktop extensions need to read the key from an environment variable, and you only want it to apply to GUI processes, you can use `launchctl setenv`.
+
+<Callout type="info">
+  If you have already completed the configuration via `config.toml` + `auth.json` and can chat normally, **this section can be skipped**.
+</Callout>
+
+```bash
+launchctl setenv OPENAI_BASE_URL "https://claude-code.club/openai/v1"
+launchctl setenv OPENAI_API_KEY  "your-api-key-here"
+```
+
+<Callout type="warning">
+  GUI apps (including Codex Desktop) **do not** read `export` statements from `~/.zshrc` / `~/.bashrc`. This is due to the environment isolation between macOS terminal shells and the Aqua GUI layer — which is why `launchctl setenv` is required. Note that `launchctl setenv` settings are reset on system restart; to persist them across reboots, use a LaunchAgent.
+</Callout>
+
+If you are only using the Codex CLI in the terminal, refer to Section 3 of [Installation and Configuration](/getting-started/codex-installation).
+
+## 6. Connectivity Test (Optional Diagnostic)
+
+If you want to confirm that the gateway and key are working before launching Desktop, you can call the OpenAI Responses-style API directly with `curl`.
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    ```bash
+    curl -sS "https://claude-code.club/openai/v1/responses" \
+      -H "Authorization: Bearer your-api-key-here" \
+      -H "Content-Type: application/json" \
+      -d '{"model":"gpt-5.5","input":"Hello, reply with: test successful"}'
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```powershell
+    $body = @{
+      model = "gpt-5.5"
+      input = "Hello, reply with: test successful"
+    } | ConvertTo-Json -Depth 10
+
+    curl.exe -sS "https://claude-code.club/openai/v1/responses" `
+      -H "Authorization: Bearer your-api-key-here" `
+      -H "Content-Type: application/json" `
+      -d $body
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+If the returned JSON contains a model response, the gateway and key are working correctly. If Desktop still cannot connect after this, the problem is most likely in the `config.toml` fields or the process not being fully restarted.
+
+## 7. Troubleshooting
+
+| Symptom | Resolution |
+|------|---------|
+| `Invalid API key` | The key in `auth.json` or the environment variable is incorrect, expired, or disabled — regenerate and replace it |
+| `stream disconnected before completion: stream closed before response.completed` | `base_url` is missing the trailing `/v1`. Starting with Codex CLI v0.130, the URL is constructed as `{base_url}/responses`. Without `/v1`, the request goes to `/openai/responses` and the gateway returns an empty SSE stream that closes immediately. Change to `https://claude-code.club/openai/v1` |
+| Still connecting to old gateway | Check that `base_url` in `config.toml` is not still the old `https://cc.ai-code.club` — change it to `https://claude-code.club/openai/v1` |
+| Model not available | The `model` value is not supported by the current gateway — switch to a supported model, e.g. `gpt-5.5` |
+| `JSON` format error | `auth.json` must be valid JSON — no trailing commas after the last entry |
+| `TOML` format error | Strings in `config.toml` must use ASCII double quotes; check the spelling of `[model_providers.club]` |
+| Changes not taking effect | Fully quit Codex Desktop (see Section 4); restart the system if necessary |
+
+## 8. Restore Default Configuration
+
+If your configuration becomes broken, you can restore from the backup files:
+
+<Tabs items={['macOS / Linux', 'Windows (PowerShell)']}>
+  <Tabs.Tab>
+    ```bash
+    cp ~/.codex/config.toml.bak ~/.codex/config.toml
+    cp ~/.codex/auth.json.bak   ~/.codex/auth.json
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```powershell
+    Copy-Item "$env:USERPROFILE\.codex\config.toml.bak" "$env:USERPROFILE\.codex\config.toml" -Force
+    Copy-Item "$env:USERPROFILE\.codex\auth.json.bak"   "$env:USERPROFILE\.codex\auth.json"   -Force
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+After restoring, you still need to fully restart Codex Desktop as described in Section 4.
+
+## 9. Security Best Practices
+
+<Callout type="warning">
+  - The `OPENAI_API_KEY` in `auth.json` is equivalent to a password — do not write it in public documentation, screenshots, or Git repositories
+  - `config.toml` / `auth.json` / other exported files may contain plain-text keys — store them only on trusted devices for short periods
+  - When sharing configurations with a team, share only the steps and placeholders, not the actual keys
+  - If a key has ever appeared in a chat, screenshot, log, or public repository, invalidate it and regenerate it immediately
+</Callout>
+
+## 10. References
+
+- [OpenAI Codex Installation and Configuration](/getting-started/codex-installation) — Complete installation guide from the Codex CLI perspective
+- [Get API Key](/getting-started/get-api-key) — How to apply for a claude-code.club API key
+- [Configure Base URL and Auth Token](/getting-started/faq/config-baseurl-authtoken) — Three methods: environment variables / config files / project-level configuration
+- [Codex Official Repository](https://github.com/openai/codex)

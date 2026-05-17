@@ -1,0 +1,91 @@
+---
+title: Alternatives When fetch and web_search Tools Are Restricted
+description: Solutions for when Claude Code's built-in fetch or web_search tools are restricted
+---
+
+import { Callout } from 'nextra/components'
+
+# Alternatives When fetch and web_search Tools Are Restricted
+
+When Claude Code's built-in `fetch` or `web_search` tools are restricted, you can consider the following alternatives. They offer more powerful capabilities and more flexible configuration.
+
+## Alternatives for the `fetch` Tool
+
+We recommend using Fetch MCP, Playwright MCP, or Chrome DevTools MCP as replacements.
+
+These tools allow the AI assistant to retrieve web content, control a browser to perform web interactions, API testing, and other complex operations.
+
+<Callout type="info">
+**Extra advantages of Playwright MCP and Chrome DevTools MCP:** Once a browser is opened, these tools provide full website browsing capabilities. They can not only perform search and fetch operations, but also take screenshots or retrieve page content to extract information. Compared to a plain fetch approach, they can handle dynamically rendered pages that require JavaScript, pages behind a login, and other complex scenarios.
+</Callout>
+
+### Fetch MCP Server (Recommended)
+
+**Functionality:** Retrieves URL content from the internet and automatically converts HTML to Markdown format, making it easy for AI to analyze web content. Supports fetching web pages, API responses, and more.
+
+**Installation (via Claude Code CLI):**
+
+```bash
+claude mcp add --scope user fetch -- uvx mcp-server-fetch
+```
+
+Or install via pip and then configure:
+
+```bash
+pip install mcp-server-fetch
+claude mcp add --scope user fetch -- python -m mcp_server_fetch
+```
+
+**Usage example:** After installation, you can use the fetch tool directly in Claude Code to retrieve web content:
+
+```
+/fetch:fetch https://juejin.cn/user/4151367379457848
+```
+
+Or ask the AI in natural language:
+
+```
+Please use the fetch tool to retrieve the content of https://example.com
+```
+
+**Features:**
+- **Not subject to Anthropic's built-in fetch tool policy restrictions** — can access more websites
+- Use `--ignore-robots-txt` to bypass a site's robots.txt restrictions
+- Automatically converts HTML to Markdown for easier AI comprehension
+- Supports setting a maximum return character count (`max_length`)
+- Supports paginated retrieval of large content (`start_index`)
+- Supports custom User-Agent (`--user-agent`) and proxy (`--proxy-url`)
+- HTTP automatically upgraded to HTTPS
+- Built-in 15-minute cache for faster repeated access
+
+### Playwright MCP
+
+**Functionality:** Automates browser interactions and API testing; supports Chromium, Firefox, and WebKit.
+
+**Installation (via Claude Code CLI):**
+
+```bash
+claude mcp add --scope user playwright npx @playwright/mcp@latest
+```
+
+**Configuration:** This command automatically adds the `playwright` MCP server configuration to your MCP client config file (such as `claude-desktop-config.json` or the Gemini CLI config).
+
+**Usage:** Start the MCP server (`npx playwright launch --server`), then the AI assistant can send instructions in natural language, for example: "Use playwright to navigate to google.com and take a screenshot".
+
+### Chrome DevTools MCP
+
+**Functionality:** Control Chrome via natural language to perform automation, debugging, and inspection tasks, based on Puppeteer.
+
+**Installation (via Claude Code CLI):**
+
+```bash
+claude mcp add --scope user chrome-devtools npx chrome-devtools-mcp@latest
+```
+
+**Configuration:** This command automatically adds the `chrome-devtools` MCP server configuration to your MCP client config file.
+
+**Usage:** Once configured, the AI assistant can control Chrome via natural language instructions, for example: "Navigate to this page and check for console errors".
+
+## Alternatives for the `web_search` Tool
+
+If the `web_search` tool is restricted, you can also use the Playwright MCP or Chrome DevTools MCP mentioned above to open a search engine and perform searches, then retrieve the search results page content.

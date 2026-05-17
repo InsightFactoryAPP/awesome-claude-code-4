@@ -1,0 +1,81 @@
+---
+title: Resume Previous Conversations
+description: Learn how to resume a previous Claude Code conversation to continue your work
+---
+
+import { Steps, Callout } from 'nextra/components'
+
+# Resume Previous Conversations
+
+Suppose you have been working on a task with Claude Code and need to pick up where you left off in a subsequent session.
+
+Claude Code provides two options to resume previous conversations:
+
+* `--continue` automatically resumes the most recent conversation
+* `--resume` shows a conversation picker
+
+<Steps>
+
+### Resume the Most Recent Conversation
+
+```bash
+claude --continue
+```
+
+This immediately resumes your most recent conversation without any prompts.
+
+### Continue in Non-Interactive Mode
+
+```bash
+claude --continue --print "Continue with my task"
+```
+
+Use `--print` with `--continue` to resume the most recent conversation in non-interactive mode — ideal for scripts or automation.
+
+### Show the Conversation Picker
+
+```bash
+claude --resume
+```
+
+This displays an interactive conversation picker with a clear list view showing:
+
+* Session summary (or initial prompt)
+* Metadata: elapsed time, message count, and git branch
+
+Use arrow keys to navigate and press Enter to select a conversation. Press Esc to exit.
+
+</Steps>
+
+<Callout type="info">
+**Tips:**
+
+* Conversation history is stored on your local machine
+* Use `--continue` for quick access to the most recent conversation
+* Use `--resume` when you need to select a specific past conversation
+* When resuming, you will see the entire conversation history before continuing
+* Resumed conversations start with the same model and configuration as the original
+
+**How It Works:**
+
+1. **Conversation storage**: All conversations are automatically saved locally with the complete message history
+2. **Message deserialization**: When resuming, the entire message history is restored to maintain context
+3. **Tool state**: Tool usage and results from the previous conversation are preserved
+4. **Context restoration**: The conversation resumes with all previous context intact
+
+**Examples:**
+
+```bash
+# Resume the most recent conversation
+claude --continue
+
+# Resume the most recent conversation with a specific prompt
+claude --continue --print "Show me our progress"
+
+# Show the conversation picker
+claude --resume
+
+# Resume the most recent conversation in non-interactive mode
+claude --continue --print "Run the tests again"
+```
+</Callout>

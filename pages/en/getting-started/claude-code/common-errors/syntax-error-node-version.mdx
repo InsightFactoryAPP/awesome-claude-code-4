@@ -1,0 +1,142 @@
+---
+title: "SyntaxError - Node.js Version Too Old"
+description: "Resolve the SyntaxError: Unexpected token error when starting Claude Code"
+---
+
+import { Callout } from 'nextra/components'
+
+# SyntaxError: Unexpected token '\{' Error
+
+## Error Message
+
+When running the `claude` command, the following error appears:
+
+```
+SyntaxError: Unexpected token '{'
+    at Loader.moduleStrategy (node:internal/modules/esm/translators:147:18)
+    at async link (node:internal/modules/esm/module_job:48:21)
+```
+
+Or a similar syntax error:
+
+```
+SyntaxError: Unexpected token '...'
+SyntaxError: Unexpected identifier
+```
+
+## Root Cause
+
+This error indicates your **Node.js version is too old**.
+
+Claude Code uses modern JavaScript syntax features (such as object destructuring, optional chaining, and nullish coalescing operators) that require Node.js 18.x or higher.
+
+If your system has an older version of Node.js installed (e.g., v14 or v16), syntax errors will occur when parsing the code.
+
+## Solution
+
+### Step 1: Check Your Current Node.js Version
+
+Open PowerShell or a terminal and run:
+
+```powershell
+node --version
+```
+
+If the version shown is less than `v18` (for example `v14.17.0` or `v16.13.0`), you need to upgrade.
+
+### Step 2: Upgrade Node.js
+
+#### Windows
+
+**Option 1: Use winget (recommended)**
+
+```powershell
+winget install OpenJS.NodeJS
+```
+
+**Option 2: Manual download and install**
+
+1. Visit the [Node.js official website](https://nodejs.org/)
+2. Download the LTS (Long-Term Support) version
+3. Run the installer and follow the wizard to complete installation
+
+**Option 3: Use Chocolatey**
+
+```powershell
+choco upgrade nodejs
+```
+
+#### macOS
+
+**Using Homebrew:**
+
+```bash
+brew upgrade node
+```
+
+**Or download manually:**
+
+Visit the [Node.js official website](https://nodejs.org/) and download the latest LTS version.
+
+#### Linux
+
+**Using nvm (recommended):**
+
+```bash
+nvm install --lts
+nvm use --lts
+```
+
+**Using a package manager:**
+
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install nodejs npm
+
+# CentOS/RHEL
+sudo dnf install nodejs npm
+```
+
+### Step 3: Verify the Upgrade
+
+After upgrading, **open a new terminal window** and verify the version:
+
+```powershell
+node --version
+```
+
+Ensure the version shown is `v18.x.x` or higher.
+
+### Step 4: Reinstall Claude Code
+
+If the previous installation failed, it is recommended to reinstall:
+
+```powershell
+npm install -g @anthropic-ai/claude-code
+```
+
+Then run `claude` to verify it works correctly.
+
+<Callout type="info">
+  **Note**: After upgrading Node.js, globally installed npm packages may need to be reinstalled. If you encounter issues, try uninstalling and reinstalling Claude Code:
+
+  ```powershell
+  npm uninstall -g @anthropic-ai/claude-code
+  npm install -g @anthropic-ai/claude-code
+  ```
+</Callout>
+
+## Prevention
+
+To avoid similar issues in the future:
+
+1. **Use a Node.js LTS version**: LTS (Long-Term Support) versions are more stable and have better compatibility
+2. **Keep Node.js updated**: Stay on the latest LTS version
+3. **Use a version manager**: Tools like nvm (Node Version Manager) make it easy to switch between and manage multiple Node.js versions
+
+## Related Links
+
+- [Node.js official website](https://nodejs.org/)
+- [nvm for Windows](https://github.com/coreybutler/nvm-windows)
+- [nvm for macOS/Linux](https://github.com/nvm-sh/nvm)

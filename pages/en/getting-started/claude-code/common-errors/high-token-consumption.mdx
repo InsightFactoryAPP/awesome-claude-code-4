@@ -1,0 +1,27 @@
+---
+title: What to Do When Token Consumption Is Very High
+description: Solutions for single-window hourly token consumption exceeding $5
+---
+
+import { Callout } from 'nextra/components'
+
+# What to Do When Token Consumption Is Very High?
+
+If you find that a single window is consuming more than $5 worth of tokens per hour, this is usually caused by an excessively long conversation context, frequent reading of large files, or suboptimal usage patterns.
+
+<Callout type="info">
+**Recommended Reading:** For detailed tips on saving tokens, see [How to Save Tokens](/practical-skills/commands/save-tokens)
+</Callout>
+
+## Common Causes
+
+1. **Too many conversation turns** - Not resetting the conversation for a long time causes the context to grow increasingly large
+2. **Frequently reading large files** - Each request includes a large amount of file content
+3. **Using a high-consumption model** - For example, the Opus model consumes several times more tokens than Sonnet
+
+## Quick Solutions
+
+1. Use the `/clear` command regularly to clear conversation history
+2. Use the `/compact` command to compress the current context
+3. Choose your model wisely — Sonnet is sufficient for everyday tasks
+4. Avoid reading too many files at once
