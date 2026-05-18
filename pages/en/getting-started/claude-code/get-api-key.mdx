@@ -4,7 +4,7 @@ description: Obtain a free API Key from Claude Code Club and start your AI codin
 ---
 
 import { Callout, Steps, Cards } from 'nextra/components'
-import Image from 'next/image'
+import DiscordButton from '@/components/DiscordButton'
 
 
 # Get a Free API Key
@@ -58,13 +58,12 @@ Once you have your API Key, visit the [Installation and Configuration](/getting-
 
 ### Join the Community
 
-Scan the QR code below or click the link to join the Claude Code Club Discord community. There you can:
+Join the Claude Code Club Discord community where you can:
 - Exchange AI coding experiences with great developers and get your questions answered
 - Get the latest Claude Code tips and tricks
 
-<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', margin: '2rem 0', gap: '1rem' }}>
-  <Image src="/images/discord-group-qrcode.svg" alt="Discord QR Code" width={300} height={300} />
-  <a href="https://discord.gg/TaeaUp3cYv" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', padding: '0.5rem 1.25rem', background: '#5865F2', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}>Join Discord Directly →</a>
+<div style={{ margin: '2rem 0' }}>
+  <DiscordButton />
 </div>
 
 </Steps>
@@ -94,8 +93,7 @@ If you encounter any issues while applying for or using your API Key, please vis
 
 <Callout type="success">
 🎉 Ready to start your AI coding journey? Join the CC Club Discord now to get your free API Key!
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', margin: '1rem 0', gap: '1rem' }}>
-    <Image src="/images/discord-group-qrcode.svg" alt="Discord QR Code" width={300} height={300} />
-    <a href="https://discord.gg/TaeaUp3cYv" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', padding: '0.5rem 1.25rem', background: '#5865F2', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}>Join Discord Directly →</a>
+  <div style={{ margin: '1rem 0' }}>
+    <DiscordButton />
   </div>
 </Callout>
