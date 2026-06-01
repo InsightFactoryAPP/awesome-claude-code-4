@@ -1,0 +1,401 @@
+---
+title: 1 分钟快速配置 Claude
+description: 不用命令行，三步装好 Claude Code。适合完全没用过终端的同学。
+---
+
+import { Callout, Tabs, Steps } from 'nextra/components'
+
+# 分钟快速配置 Claude
+
+<Callout type="info">
+**这页是给完全没用过终端的同学准备的。** 全程不需要打字命令，只需要：① 下载一个软件 ② 复制粘贴一段 Key ③ 点一下"激活"。  
+看完跟着做，1 分钟能让 Claude Code 跑起来。
+</Callout>
+
+---
+
+## 你需要准备的两样东西
+
+<Steps>
+
+### 一台 Windows 或 Mac 电脑
+
+Windows 10/11 或 macOS 都可以。
+
+### 一个 CC Club API Key
+
+如果还没有，先去 [获取 API Key](/getting-started/claude-code/get-api-key) 免费申请一把（领完回到这页继续）。
+
+API Key 形如 `cr_xxxxxxxxxxxxxxxxxxxxxxxxxxxx`，**先把它复制到一个记事本里**，等下要用。
+
+</Steps>
+
+---
+
+## 第 1 步：下载并安装 CC Switch
+
+CC Switch 是一个**桌面应用**，帮你管理 API 配置 —— 全程只需复制粘贴，无脑操作。
+
+<Tabs items={['Windows', 'macOS']}>
+  <Tabs.Tab>
+
+    1. 点击下载：[CC Switch Windows 版 (.msi, 12 MB)](https://github.com/farion1231/cc-switch/releases/download/v3.15.0/CC-Switch-v3.15.0-Windows.msi)
+    2. 双击下载好的安装包，按提示完成安装
+    3. 安装完成后，从开始菜单打开 **CC Switch**
+
+    <Callout type="warning">
+    第一次打开如果 Windows 弹出 "Windows 已保护你的电脑"，点 **"更多信息" → "仍要运行"**。这是 Windows 对未签名应用的默认拦截，不影响使用。
+    </Callout>
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+    1. 点击下载：[CC Switch macOS 版 (.dmg, 26 MB)](https://github.com/farion1231/cc-switch/releases/download/v3.15.0/CC-Switch-v3.15.0-macOS.dmg)
+    2. 双击下载好的 `.dmg`，把 **CC Switch** 图标拖到 **Applications** 文件夹
+    3. 从启动台（Launchpad）打开 **CC Switch**
+
+    <Callout type="warning">
+    第一次打开如果 macOS 提示 "无法打开，因为无法验证开发者"，去 **系统设置 → 隐私与安全性**，下拉到最下方点 **"仍要打开"**。
+    </Callout>
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## 第 2 步：在 CC Switch 里填一份配置
+
+打开 CC Switch 后，照下面三个动作做：
+
+<div style={{
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.75rem',
+  margin: '1.5rem 0 2rem',
+  padding: '1rem',
+  background: 'linear-gradient(180deg, rgba(251, 146, 60, 0.06) 0%, rgba(251, 146, 60, 0.02) 100%)',
+  border: '1px solid rgba(251, 146, 60, 0.2)',
+  borderRadius: '12px'
+}}>
+  <div style={{ fontSize: '0.85rem', color: '#9a3412', fontWeight: 600, letterSpacing: '0.02em' }}>
+    👀 全流程预览（先看一眼，下面有逐步说明）
+  </div>
+  <figure style={{ margin: 0, position: 'relative' }}>
+    <span style={{
+      position: 'absolute', top: '8px', left: '8px', zIndex: 1,
+      width: '28px', height: '28px', borderRadius: '50%',
+      background: '#f97316', color: '#fff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontWeight: 700, fontSize: '0.9rem',
+      boxShadow: '0 2px 8px rgba(249, 115, 22, 0.4)'
+    }}>1</span>
+    <img src="/images/quick-install-claude-code/01-pick-claude-and-add.png"
+         alt="切到 Claude 分组并点击 + 按钮"
+         style={{ width: '100%', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)', display: 'block' }} />
+    <figcaption style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', textAlign: 'center' }}>
+      点 <strong>Claude</strong> 图标 → 点右上角橙色 <strong>+</strong> 按钮
+    </figcaption>
+  </figure>
+  <figure style={{ margin: 0, position: 'relative' }}>
+    <span style={{
+      position: 'absolute', top: '8px', left: '8px', zIndex: 1,
+      width: '28px', height: '28px', borderRadius: '50%',
+      background: '#f97316', color: '#fff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontWeight: 700, fontSize: '0.9rem',
+      boxShadow: '0 2px 8px rgba(249, 115, 22, 0.4)'
+    }}>2</span>
+    <img src="/images/quick-install-claude-code/02-fill-name-key-url.png"
+         alt="填写供应商名称、API Key、请求地址"
+         style={{ width: '100%', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)', display: 'block' }} />
+    <figcaption style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', textAlign: 'center' }}>
+      填 <strong>供应商名称</strong>、<strong>API Key</strong>、<strong>请求地址</strong>
+    </figcaption>
+  </figure>
+  <figure style={{ margin: 0, position: 'relative' }}>
+    <span style={{
+      position: 'absolute', top: '8px', left: '8px', zIndex: 1,
+      width: '28px', height: '28px', borderRadius: '50%',
+      background: '#f97316', color: '#fff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontWeight: 700, fontSize: '0.9rem',
+      boxShadow: '0 2px 8px rgba(249, 115, 22, 0.4)'
+    }}>3</span>
+    <img src="/images/quick-install-claude-code/03-paste-json.png"
+         alt="在配置 JSON 框里粘贴配置"
+         style={{ width: '100%', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)', display: 'block' }} />
+    <figcaption style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', textAlign: 'center' }}>
+      展开 <strong>高级选项</strong> → 在 <strong>配置 JSON</strong> 框里整段贴下方代码
+    </figcaption>
+  </figure>
+</div>
+
+<Steps>
+
+### 切到 Claude 分组
+
+CC Switch 左侧有一列分组：**Claude / Claude Desktop / Codex / OpenCode / Gemini**。点 **Claude**。
+
+### 点 "+ 添加供应商"
+
+页面右上角的蓝色按钮。会弹出一个表单。
+
+### 复制下面这段到 "配置 JSON" 框
+
+把整段贴进去，**只改一个地方**：把 `"ANTHROPIC_AUTH_TOKEN"` 后面那对空引号 `""` 里填上你的 API Key。
+
+```json
+{
+  "effortLevel": "medium",
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "你的 API 密钥",
+    "ANTHROPIC_BASE_URL": "https://claude-code.club/api"
+  },
+  "model": "sonnet[1m]"
+}
+```
+
+其他字段照下表填：
+
+| 字段 | 填什么 |
+|------|--------|
+| 供应商名称 | 随便取，比如 `CC Club Claude` |
+| 官网链接 | **留空** |
+| API | 把你的 Key 再贴一遍 |
+| 请求地址 | `https://claude-code.club/api` |
+| API 格式 | 下拉选 **Anthropic Messages（原生）** |
+| 模型区域 | **留空** |
+
+### 点右下角 "保存"
+
+成功会回到列表，看到一条新的 `CC Club Claude` 供应商。
+
+</Steps>
+
+---
+
+## 第 3 步：测试、激活、验证
+
+保存好的供应商**还没生效**。这一步分三个动作：先 **测试** 配置（确认 Key + 地址都对）→ 再 **启用**（让它生效）→ 最后在终端 **验证**（端到端跑一次）。
+
+<div style={{
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.75rem',
+  margin: '1.5rem 0 2rem',
+  padding: '1rem',
+  background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.07) 0%, rgba(16, 185, 129, 0.02) 100%)',
+  border: '1px solid rgba(16, 185, 129, 0.22)',
+  borderRadius: '12px'
+}}>
+  <div style={{ fontSize: '0.85rem', color: '#065f46', fontWeight: 600, letterSpacing: '0.02em' }}>
+    ✅ 全流程预览（先看一眼，下面有逐步说明）
+  </div>
+
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+    <figure style={{ margin: 0, position: 'relative', flex: '1 1 320px' }}>
+      <span style={{
+        position: 'absolute', top: '8px', left: '8px', zIndex: 1,
+        width: '28px', height: '28px', borderRadius: '50%',
+        background: '#10b981', color: '#fff',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontWeight: 700, fontSize: '0.9rem',
+        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+      }}>1</span>
+      <img src="/images/quick-install-claude-code/step3-01-test-button.jpg"
+           alt="点击供应商行右侧的测试按钮"
+           style={{ width: '100%', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)', display: 'block' }} />
+      <figcaption style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', textAlign: 'center' }}>
+        在那条供应商上点 <strong>测试</strong>（蓝色按钮）
+      </figcaption>
+    </figure>
+    <figure style={{ margin: 0, position: 'relative', flex: '1 1 220px' }}>
+      <span style={{
+        position: 'absolute', top: '8px', left: '8px', zIndex: 1,
+        width: '28px', height: '28px', borderRadius: '50%',
+        background: '#10b981', color: '#fff',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontWeight: 700, fontSize: '0.9rem',
+        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+      }}>2</span>
+      <div style={{
+        width: '100%', borderRadius: '8px',
+        border: '1px solid rgba(0,0,0,0.08)',
+        background: '#f9fafb',
+        padding: '2rem 1rem',
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
+      }}>
+        <img src="/images/quick-install-claude-code/step3-02-test-success.png"
+             alt="测试成功的绿色提示"
+             style={{ maxWidth: '100%', display: 'block' }} />
+      </div>
+      <figcaption style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', textAlign: 'center' }}>
+        看到绿色 <strong>测试成功</strong> 提示
+      </figcaption>
+    </figure>
+  </div>
+
+  <figure style={{ margin: 0, position: 'relative' }}>
+    <span style={{
+      position: 'absolute', top: '8px', left: '8px', zIndex: 1,
+      width: '28px', height: '28px', borderRadius: '50%',
+      background: '#10b981', color: '#fff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontWeight: 700, fontSize: '0.9rem',
+      boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+    }}>3</span>
+    <img src="/images/quick-install-claude-code/step3-03-activate-button.jpg"
+         alt="点击启用按钮激活这条供应商"
+         style={{ width: '100%', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)', display: 'block' }} />
+    <figcaption style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', textAlign: 'center' }}>
+      点 <strong>启用</strong>（绿色按钮），行首出现 <strong>✓</strong> 即生效
+    </figcaption>
+  </figure>
+
+  <figure style={{ margin: 0, position: 'relative' }}>
+    <span style={{
+      position: 'absolute', top: '8px', left: '8px', zIndex: 1,
+      width: '28px', height: '28px', borderRadius: '50%',
+      background: '#10b981', color: '#fff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontWeight: 700, fontSize: '0.9rem',
+      boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+    }}>4</span>
+    <img src="/images/quick-install-claude-code/step3-04-terminal-verify.png"
+         alt="终端运行 claude 你好 看到中文回复"
+         style={{ width: '100%', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)', display: 'block' }} />
+    <figcaption style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', textAlign: 'center' }}>
+      终端跑 <code>claude "你好"</code>，几秒内看到中文回复 —— <strong>链路就通了</strong>
+    </figcaption>
+  </figure>
+</div>
+
+<Steps>
+
+### 先点 "测试" 验证配置
+
+在刚保存的那条供应商行上，点蓝色 **测试** 按钮（如上方图 ①）。CC Switch 会用你填的 Key + 请求地址向上游发一次握手请求。
+
+- ✅ **看到绿色 "测试成功" 提示**（图 ②）：Key 和地址都对，可以继续下一步
+- ❌ **看到红色错误**：通常是 Key 错了 / 地址错了 / 网络不通。点 **编辑** 检查 `ANTHROPIC_AUTH_TOKEN` 和 `ANTHROPIC_BASE_URL`，最常见的坑是 **Key 首尾带了空格**
+
+<Callout type="info">
+**为什么先测试？** 测试只验证"CC Switch 能连上 API"，不需要 Claude Code 本体。先把这一步走通，等下装命令行才有底。
+</Callout>
+
+### 点 "启用" 激活这条配置
+
+测试通过后，点同一行的绿色 **启用** 按钮（图 ③）。激活成功后：
+
+- 行首会出现一个 **✓ 勾选标记**
+- 状态从"已保存"变成"**当前使用**"
+
+<Callout type="warning">
+**保存 ≠ 启用 ≠ 测试**，三件事各走各的：
+- **保存** = 把这条配置写进 CC Switch
+- **测试** = 检查这条配置能不能连通
+- **启用** = 让 Claude Code 实际用这条配置
+
+不点"启用"，就算测试通过也不生效。
+</Callout>
+
+### 装 Claude Code 本体
+
+CC Switch 只管"配置"，不管"安装"。Claude Code 本体还得装一次 —— 但 CC Switch 提供了**一键安装按钮**：
+
+在 CC Switch 顶部找 **"安装 Claude Code"** 按钮，点一下，它会自动帮你装好。
+
+（如果找不到按钮、或者按钮报错，按 [手动安装步骤](#手动安装-claude-code) 走。）
+
+### 在终端验证一次
+
+打开任意终端（Windows 用 PowerShell / Mac 用 Terminal），输入：
+
+```bash
+claude "你好"
+```
+
+几秒内返回一段中文回复（如上方图 ④），**整条链路就通了** 🎉。
+
+之后你不用再管这些配置 —— 每次启动 `claude`，它都会自动读取 CC Switch 里**已启用**的那条供应商。
+
+</Steps>
+
+---
+
+## 走完了，下一步看什么？
+
+<Callout type="success">
+**已经能跑了，但 Claude Code 真正强大的地方在 IDE 里**。建议接下来看：
+
+- [快速体验](/getting-started/claude-code/quick-start) — 5 分钟感受 Claude Code 能做什么
+- [在 VS Code / JetBrains 里用](/getting-started/claude-code/faq/use-in-ide) — 推荐的工作方式
+</Callout>
+
+---
+
+## 出问题了？
+
+<details>
+<summary>**问题 1：终端输 `claude` 提示 "找不到命令"**</summary>
+
+说明 Claude Code 本体没装好。两个办法：
+
+- **重试 CC Switch 的"一键安装"**：可能上一次因为网络中断没装完
+- **换手动安装**：跟着 [手动安装步骤](#手动安装-claude-code)（下面）走
+</details>
+
+<details>
+<summary>**问题 2：跑 `claude` 报 "Invalid API key"**</summary>
+
+99% 是因为**供应商没启用**。回 CC Switch，先点 **测试** 看是否通过：
+
+- **测试通过但终端报错** → 说明你忘了点 **启用**。点一下，确认行首有 ✓ 勾选标记
+- **测试就报错** → 是 Key 本身有问题。点 **编辑** 检查 `ANTHROPIC_AUTH_TOKEN`，常见原因是首尾带了空格
+</details>
+
+<details>
+<summary>**问题 3：CC Switch 保存时报 "JSON 格式错误"**</summary>
+
+最常见的两个原因：
+
+- API Key **首尾带了空格**（复制粘贴时容易带）
+- JSON 的 `}` 之前**多了逗号**（比如 `"model": "sonnet[1m]",}`）
+
+参照本页"第 2 步"的代码块**整段重粘**最快。
+</details>
+
+<details>
+<summary>**问题 4：响应很慢 / 一直转圈**</summary>
+
+可能是网络节点不合适。回 CC Switch 编辑那条供应商，把 `"ANTHROPIC_BASE_URL"` 改成下面其中一个再试：
+
+- `https://jp.claude-code.club/api` — 日本节点（回国优化）
+- `https://hk.claude-code.club/api` — 香港节点（回国优化）
+- `https://sz.ai-code.club/api` — 深圳节点（国内中转出境）
+
+改完别忘了再单击一次激活。
+</details>
+
+<details>
+<summary id="手动安装-claude-code">**手动安装 Claude Code（备用方案）**</summary>
+
+如果 CC Switch 里没有"一键安装"按钮，或者点了报错，需要手动装一次：
+
+按你的操作系统跳到对应页面：
+
+- [Windows 详细安装](/getting-started/claude-code/installation/windows)
+- [macOS 详细安装](/getting-started/claude-code/installation/macos)
+- [Linux / WSL2 安装](/getting-started/claude-code/installation/linux)
+
+按里面的 **"一键脚本安装"** 走（不用看 "手工安装"）。装完回这页继续做"第 3 步：激活并验证"。
+</details>
+
+---
+
+## 已经是熟手？
+
+如果你看得懂终端、想完全掌控安装过程，**直接走传统路径**：
+
+- [选择操作系统手工安装](/getting-started/claude-code/installation)
+- [CC Switch 完整字段说明](/getting-started/claude-code/installation/ccswitch)

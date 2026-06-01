@@ -1,6 +1,7 @@
 export default {
   introduction: '核心介绍',
   'get-api-key': '获取 API Key',
+  'quick-install': '⚡ 1 分钟快速配置',
   installation: '安装和配置',
   'quick-start': '快速体验',
   'how-to': {
