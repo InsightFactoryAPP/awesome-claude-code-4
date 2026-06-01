@@ -1,0 +1,360 @@
+---
+title: 1-Minute Quick Setup
+description: Connect Gemini CLI to CC Club without using the command line. Perfect for those who have never used a terminal before.
+---
+
+import { Callout, Tabs, Steps } from 'nextra/components'
+
+# Gemini 1-Minute Quick Setup
+
+<Callout type="info">
+**This page is for those who have never used a terminal before.** All you need to do: ① Download an app ② Copy and paste your Key ③ Click "Activate".  
+Follow along and you'll have Gemini running in 1 minute.
+</Callout>
+
+---
+
+## What You Need to Prepare
+
+<Steps>
+
+### A Windows or Mac Computer
+
+Windows 10/11 or macOS will work.
+
+### A CC Club API Key
+
+If you don't have one yet, go to [Get API Key](/getting-started/claude-code/get-api-key) to apply for free (come back to this page after you get it).
+
+The API Key looks like `cr_xxxxxxxxxxxxxxxxxxxxxxxxxxxx`. **Copy it to a notepad first**, you'll need it shortly.
+
+</Steps>
+
+---
+
+## Step 1: Download and Install CC Switch
+
+CC Switch is a **desktop application** that helps you manage API configurations — just copy and paste, no technical knowledge required.
+
+<Tabs items={['Windows', 'macOS']}>
+  <Tabs.Tab>
+
+    1. Click to download: [CC Switch Windows Version (.msi, 12 MB)](https://github.com/farion1231/cc-switch/releases/download/v3.15.0/CC-Switch-v3.15.0-Windows.msi)
+    2. Double-click the downloaded installer and follow the prompts to complete installation
+    3. After installation, open **CC Switch** from the Start menu
+
+    <Callout type="warning">
+    If Windows shows "Windows protected your PC" on first launch, click **"More info" → "Run anyway"**.
+    </Callout>
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+    1. Click to download: [CC Switch macOS Version (.dmg, 26 MB)](https://github.com/farion1231/cc-switch/releases/download/v3.15.0/CC-Switch-v3.15.0-macOS.dmg)
+    2. Double-click the downloaded `.dmg` and drag the **CC Switch** icon to the **Applications** folder
+    3. Open **CC Switch** from Launchpad
+
+    <Callout type="warning">
+    If macOS shows "Cannot be opened" on first launch, go to **System Settings → Privacy & Security**, scroll down and click **"Open Anyway"**.
+    </Callout>
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## Step 2: Fill in Configuration in CC Switch
+
+After opening CC Switch, follow these steps:
+
+<Steps>
+
+### Switch to Gemini Group
+
+On the left side of CC Switch, you'll see groups: **Claude / Claude Desktop / Codex / OpenCode / Gemini**. Click **Gemini**.
+
+### Click "+ Add Provider"
+
+The blue button in the upper right corner. A form will pop up.
+
+### Only Two Fields Need to Be Filled
+
+| Field | What to Fill |
+|------|--------|
+| Provider Name | Any name you like, e.g., `CC Club Gemini` |
+| API | Paste your CC Club API Key here |
+| Request URL | `https://claude-code.club/gemini` |
+
+Leave all other fields (Config JSON, Model Region, etc.) **blank** — Gemini uses the simplest mode and only needs the Key and Request URL to work.
+
+<figure style={{ margin: '0.75rem 0 0', padding: '0.6rem', background: 'rgba(251, 146, 60, 0.05)', border: '1px solid rgba(251, 146, 60, 0.2)', borderRadius: '8px' }}>
+  <img src="/images/quick-install-gemini/02-fill-form.png"
+       alt="What the filled Gemini configuration form looks like"
+       style={{ width: '100%', display: 'block', borderRadius: '4px' }} />
+  <figcaption style={{ fontSize: '0.78rem', color: '#9a3412', marginTop: '0.4rem', textAlign: 'center', fontWeight: 500 }}>
+    ↑ After filling, it should look like this: <strong>API Key</strong> line shows dots + <strong>Request URL</strong> is <code style={{ background: 'rgba(0,0,0,0.04)', padding: '1px 6px', borderRadius: '4px' }}>https://claude-code.club/gemini</code>
+  </figcaption>
+</figure>
+
+<Callout type="info">
+**Why is Gemini simpler than Claude/Codex?** Gemini CLI only reads two values by default: API Key and Base URL. CC Switch fills these two and activates them, and you're ready to go — no additional JSON/TOML configuration blocks needed.
+</Callout>
+
+### Click "Save" in the Bottom Right
+
+Upon success, you'll return to the list and see a new `CC Club Gemini` provider.
+
+</Steps>
+
+---
+
+## Step 3: Test, Enable, and Verify
+
+The saved provider **is not active yet**. This step has three actions: first **test** the configuration (confirm Key + URL are correct) → then **enable** (make it active) → finally **verify** in the terminal (run end-to-end once).
+
+<div style={{
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.75rem',
+  margin: '1.5rem 0 2rem',
+  padding: '1rem',
+  background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.07) 0%, rgba(16, 185, 129, 0.02) 100%)',
+  border: '1px solid rgba(16, 185, 129, 0.22)',
+  borderRadius: '12px'
+}}>
+  <div style={{ fontSize: '0.85rem', color: '#065f46', fontWeight: 600, letterSpacing: '0.02em' }}>
+    ✅ Full Process Preview (take a quick look, detailed steps below)
+  </div>
+
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+    <figure style={{ margin: 0, position: 'relative', flex: '1 1 320px' }}>
+      <span style={{
+        position: 'absolute', top: '8px', left: '8px', zIndex: 1,
+        width: '28px', height: '28px', borderRadius: '50%',
+        background: '#10b981', color: '#fff',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontWeight: 700, fontSize: '0.9rem',
+        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+      }}>1</span>
+      <img src="/images/quick-install-claude-code/step3-01-test-button.jpg"
+           alt="Click the test button on the right side of the provider row"
+           style={{ width: '100%', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)', display: 'block' }} />
+      <figcaption style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', textAlign: 'center' }}>
+        Click <strong>Test</strong> (blue button) on the <strong>CC Club Gemini</strong> row
+      </figcaption>
+    </figure>
+    <figure style={{ margin: 0, position: 'relative', flex: '1 1 220px' }}>
+      <span style={{
+        position: 'absolute', top: '8px', left: '8px', zIndex: 1,
+        width: '28px', height: '28px', borderRadius: '50%',
+        background: '#10b981', color: '#fff',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontWeight: 700, fontSize: '0.9rem',
+        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+      }}>2</span>
+      <div style={{
+        width: '100%', borderRadius: '8px',
+        border: '1px solid rgba(0,0,0,0.08)',
+        background: '#f9fafb',
+        padding: '2rem 1rem',
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
+      }}>
+        <img src="/images/quick-install-claude-code/step3-02-test-success.png"
+             alt="Green test success notification"
+             style={{ maxWidth: '100%', display: 'block' }} />
+      </div>
+      <figcaption style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', textAlign: 'center' }}>
+        See green <strong>Test Successful</strong> notification
+      </figcaption>
+    </figure>
+  </div>
+
+  <figure style={{ margin: 0, position: 'relative' }}>
+    <span style={{
+      position: 'absolute', top: '8px', left: '8px', zIndex: 1,
+      width: '28px', height: '28px', borderRadius: '50%',
+      background: '#10b981', color: '#fff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontWeight: 700, fontSize: '0.9rem',
+      boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+    }}>3</span>
+    <img src="/images/quick-install-claude-code/step3-03-activate-button.jpg"
+         alt="Click the enable button to activate this provider"
+         style={{ width: '100%', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)', display: 'block' }} />
+    <figcaption style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', textAlign: 'center' }}>
+      Click <strong>Enable</strong> (green button), a <strong>✓</strong> appears at the beginning of the row when active
+    </figcaption>
+  </figure>
+
+  <figure style={{ margin: 0, position: 'relative' }}>
+    <span style={{
+      position: 'absolute', top: '8px', left: '8px', zIndex: 1,
+      width: '28px', height: '28px', borderRadius: '50%',
+      background: '#10b981', color: '#fff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontWeight: 700, fontSize: '0.9rem',
+      boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+    }}>4</span>
+    <div style={{
+      width: '100%', borderRadius: '8px',
+      border: '1px dashed rgba(16, 185, 129, 0.4)',
+      background: 'repeating-linear-gradient(45deg, rgba(16, 185, 129, 0.03), rgba(16, 185, 129, 0.03) 8px, rgba(16, 185, 129, 0.06) 8px, rgba(16, 185, 129, 0.06) 16px)',
+      padding: '2.5rem 1rem',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.4rem'
+    }}>
+      <code style={{
+        background: '#0f172a', color: '#a7f3d0',
+        padding: '0.5rem 0.9rem', borderRadius: '6px',
+        fontSize: '0.85rem', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace'
+      }}>$ gemini</code>
+      <div style={{ fontSize: '0.78rem', color: '#065f46', textAlign: 'center', maxWidth: '32rem' }}>
+        Run <code>gemini</code> in terminal, first time choose <strong>2. Use Gemini API Key</strong>, enter interactive interface — <strong>you're done</strong>
+      </div>
+    </div>
+    <figcaption style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.4rem', textAlign: 'center' }}>
+      Run <code>gemini</code> in terminal, enter interactive interface — <strong>connection established</strong>
+    </figcaption>
+  </figure>
+
+  <div style={{ fontSize: '0.72rem', color: '#6b7280', fontStyle: 'italic', textAlign: 'center', marginTop: '0.25rem' }}>
+    📌 Images ①②③ are from Claude configuration example (same CC Switch interface), Gemini operations are in the exact same locations
+  </div>
+</div>
+
+<Steps>
+
+### First Click "Test" to Verify Configuration
+
+On the `CC Club Gemini` provider row you just saved, click the blue **Test** button (as shown in image ① above). CC Switch will send a handshake request to the upstream using your Key + Request URL.
+
+- ✅ **See green "Test Successful" notification** (image ②): Key and URL are correct, proceed to next step
+- ❌ **See red error**: Usually means wrong Key / wrong URL / network issue. Click **Edit** to check API Key and Request URL. The most common issue is **extra spaces at the beginning or end of the Key**
+
+<Callout type="info">
+**Why test first?** Testing only verifies "CC Switch can connect to the API", doesn't require Gemini CLI itself. Get this step working first, then installing the command line will be smooth.
+</Callout>
+
+### Click "Enable" to Activate This Configuration
+
+After the test passes, click the green **Enable** button on the same row (image ③). After successful activation:
+
+- A **✓ checkmark** will appear at the beginning of the row
+- Status changes from "Saved" to "**Currently Active**"
+
+<Callout type="warning">
+**Save ≠ Enable ≠ Test**, three separate actions:
+- **Save** = Write this configuration into CC Switch
+- **Test** = Check if this configuration can connect
+- **Enable** = Make Gemini CLI actually use this configuration
+
+If you don't click "Enable", even if the test passes, it won't take effect.
+</Callout>
+
+### Install Gemini CLI Itself
+
+CC Switch only manages "configuration", not "installation". You still need to install Gemini CLI itself —
+Find the **"Install Gemini CLI"** button at the top of CC Switch, click it, and it will automatically install for you.
+
+(If you can't find the button or the button errors, follow the [Manual Installation Steps](#manual-installation-of-gemini-cli).)
+
+### Verify in Terminal
+
+```bash
+gemini
+```
+
+On first run, it will ask for authentication method, choose **`2. Use Gemini API Key`**. It will automatically read the Key and URL written by CC Switch, and after a few seconds you'll enter the interactive interface (as shown in image ④ above). **The entire connection is established** 🎉.
+
+</Steps>
+
+---
+
+## What's Next?
+
+<Callout type="success">
+**It's working now.** Recommended next steps:
+
+- See [Gemini Detailed Installation and Configuration](/getting-started/gemini/installation) for advanced usage
+- See [FAQ](/getting-started/gemini/faq) to avoid common pitfalls
+</Callout>
+
+---
+
+## Having Issues?
+
+<details>
+<summary>**Issue 1: Terminal shows "command not found" when typing `gemini`**</summary>
+
+This means Gemini CLI itself is not installed. Two solutions:
+
+- **Retry CC Switch's "Install Gemini CLI" button**: The previous attempt may have been interrupted by network issues
+- **Switch to manual installation**: Follow the [Manual Installation Steps](#manual-installation-of-gemini-cli) (below)
+</details>
+
+<details>
+<summary>**Issue 2: Gemini startup reports "Authentication failed" or repeatedly asks for login**</summary>
+
+If the provider in CC Switch **is already activated** (has ✓ in front) but Gemini still cannot authenticate, it's likely because environment variables were not automatically injected. Set them manually:
+
+<Tabs items={['Windows', 'macOS / Linux']}>
+  <Tabs.Tab>
+
+Open **PowerShell**, copy the following two lines, **replace `cr_xxxxxxxxxx` with your API Key**, and press Enter:
+
+```powershell
+[System.Environment]::SetEnvironmentVariable('GEMINI_API_KEY', 'cr_xxxxxxxxxx', 'User')
+[System.Environment]::SetEnvironmentVariable('GOOGLE_GEMINI_BASE_URL', 'https://claude-code.club/gemini', 'User')
+```
+
+After setting, **restart PowerShell** for new processes to read the values.
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+Open **Terminal**, copy the following lines, **replace `cr_xxxxxxxxxx` with your API Key**, and press Enter:
+
+```bash
+echo 'export GEMINI_API_KEY="cr_xxxxxxxxxx"' >> ~/.zshrc
+echo 'export GOOGLE_GEMINI_BASE_URL="https://claude-code.club/gemini"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+After setting, run `gemini` again.
+</details>
+
+<details>
+<summary>**Issue 3: Very slow response / keeps spinning**</summary>
+
+May be due to unsuitable network node. Go back to CC Switch, edit that provider, change `Request URL` to one of the following and save:
+
+- `https://jp.claude-code.club/gemini` — Japan node (optimized for China)
+- `https://hk.claude-code.club/gemini` — Hong Kong node (optimized for China)
+- `https://sz.ai-code.club/gemini` — Shenzhen node (domestic relay)
+
+After changing, don't forget to click activate again.
+</details>
+
+<details>
+<summary id="manual-installation-of-gemini-cli">**Manual Installation of Gemini CLI (Backup Solution)**</summary>
+
+If there's no "Install Gemini CLI" button in CC Switch, or it errors when clicked, install manually.
+
+Requires Node.js (v18+) first:
+
+```bash
+npm install -g @google/gemini-cli
+```
+
+After installation, return to this page and continue with "Step 3".
+</details>
+
+---
+
+## Already Experienced?
+
+If you're comfortable with the terminal and want full control over the installation process, **go directly to the traditional path**:
+
+- [Gemini Detailed Installation and Configuration](/getting-started/gemini/installation)

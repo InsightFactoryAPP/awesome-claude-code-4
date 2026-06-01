@@ -1,0 +1,143 @@
+---
+title: Quick Setup for Claude Code
+description: No command line needed - set up Claude Code in three steps. Perfect for those who've never used a terminal.
+---
+
+import { Callout, Tabs, Steps } from 'nextra/components'
+
+# Quick Setup for Claude Code
+
+<Callout type="info">
+**This page is for those who've never used a terminal.** No typing commands required, just: ① Download a software ② Copy-paste a Key ③ Click "Activate".  
+Follow along and you'll have Claude Code running in 1 minute.
+</Callout>
+
+---
+
+## Two Things You Need to Prepare
+
+<Steps>
+
+### A Windows or Mac Computer
+
+Windows 10/11 or macOS will work.
+
+### A CC Club API Key
+
+If you don't have one yet, go to [Get API Key](/getting-started/claude-code/get-api-key) to apply for free (come back to this page after getting it).
+
+The API Key looks like `cr_xxxxxxxxxxxxxxxxxxxxxxxxxxxx`, **copy it to a notepad first**, you'll need it shortly.
+
+</Steps>
+
+---
+
+## Step 1: Download and Install CC Switch
+
+CC Switch is a **desktop application** that helps you manage API configuration — just copy-paste, no-brainer operation.
+
+<Tabs items={['Windows', 'macOS']}>
+  <Tabs.Tab>
+
+    1. Click to download: [CC Switch Windows version (.msi, 12 MB)](https://github.com/farion1231/cc-switch/releases/download/v3.15.0/CC-Switch-v3.15.0-Windows.msi)
+    2. Double-click the downloaded installer and follow the prompts to complete installation
+    3. After installation, open **CC Switch** from the Start menu
+
+    <Callout type="warning">
+    If Windows shows "Windows protected your PC" on first launch, click **"More info" → "Run anyway"**. This is Windows' default protection for unsigned apps and doesn't affect usage.
+    </Callout>
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+    1. Click to download: [CC Switch macOS version (.dmg, 26 MB)](https://github.com/farion1231/cc-switch/releases/download/v3.15.0/CC-Switch-v3.15.0-macOS.dmg)
+    2. Double-click the downloaded `.dmg`, drag the **CC Switch** icon to the **Applications** folder
+    3. Open **CC Switch** from Launchpad
+
+    <Callout type="warning">
+    If macOS shows "Cannot be opened because the developer cannot be verified" on first launch, go to **System Settings → Privacy & Security**, scroll down and click **"Open Anyway"**.
+    </Callout>
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## Step 2: Fill in Configuration in CC Switch
+
+After opening CC Switch, follow these three actions:
+
+<Steps>
+
+### Click "+ Add Provider"
+
+<img src="/images/quick-install-claude-code/add-provider.png" alt="Click + Add Provider button" style={{ maxWidth: '600px', margin: '20px 0', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
+
+### Fill in Three Fields
+
+<img src="/images/quick-install-claude-code/fill-form.png" alt="Fill in provider configuration form" style={{ maxWidth: '600px', margin: '20px 0', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
+
+Copy-paste the following three items:
+
+| Field | What to Fill |
+|-------|--------------|
+| **Provider Name** | `CC Club` (or any name you like) |
+| **API Key** | Paste the `cr_xxxxxx...` you just copied |
+| **Base URL** | `https://claude-code.club/api` |
+
+<Callout type="info">
+**About Base URL**: CC Club provides three addresses, the default `https://claude-code.club/api` is fastest for most users. If you experience lag, you can try:
+- `https://jp.claude-code.club/api` (Japan node, optimized for China)
+- `https://hk.claude-code.club/api` (Hong Kong node, optimized for China)
+</Callout>
+
+### Click "Save" then "Activate"
+
+<img src="/images/quick-install-claude-code/activate.png" alt="Save and activate provider" style={{ maxWidth: '600px', margin: '20px 0', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
+
+After clicking "Activate", the status will change to **"Active"** (green checkmark).
+
+</Steps>
+
+---
+
+## Step 3: Test if Claude Code Works
+
+Now open your **terminal** (Command Prompt on Windows, Terminal on Mac) and type:
+
+```bash
+claude
+```
+
+If you see output similar to this, **you're all set**:
+
+<img src="/images/quick-install-claude-code/test-success.png" alt="Claude Code test successful" style={{ maxWidth: '700px', margin: '20px 0', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
+
+<Callout type="success">
+**Congratulations!** You can now start using Claude Code. Try asking it: "Help me create a simple HTML page".
+</Callout>
+
+---
+
+## Troubleshooting
+
+<Callout type="warning">
+**If you see "command not found" or "not recognized"**, it means Claude Code CLI is not installed yet. Please follow the [Installation Guide](/getting-started/claude-code/installation) to install it first, then come back to this page to configure.
+</Callout>
+
+### Other Common Issues
+
+| Problem | Solution |
+|---------|----------|
+| CC Switch won't open | Check if your system meets requirements (Windows 10+ / macOS 10.13+) |
+| "Activate" button is grayed out | Make sure all three fields (Name, API Key, Base URL) are filled in |
+| Test shows "API Key invalid" | Verify the Key is copied correctly, no extra spaces |
+| Slow response | Try switching Base URL to Japan or Hong Kong node |
+
+---
+
+## Next Steps
+
+- [Learn Basic Usage](/getting-started/claude-code/basic-usage) - Master common commands
+- [Configure Desktop App](/getting-started/claude-code/desktop) - Use Claude Code with a GUI
+- [Join Community](/community) - Exchange experiences with other users
